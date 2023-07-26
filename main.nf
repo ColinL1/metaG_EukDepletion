@@ -4,14 +4,14 @@ nextflow.enable.dsl=2
 
 // Set params for reads and power 
 params.reads = "$baseDir/input/*.fastq.gz"
-params.outdir = "$baseDir/test_results/"
+params.outdir = "$baseDir/results_full_1/"
 params.cpusHigh = "40"
 params.cpusVHigh = "100"
 params.cpusMin = "4"
 params.memMax = '500 GB'
 
 //temporary fix to multiply the reference channel to match the number of samples
-params.n_samples = 9
+params.n_samples = 108
 
 // // params for mmeseqs2
 // params.diamond_db_nr = "/home/colinl/database/diamond/nr.dmnd"
