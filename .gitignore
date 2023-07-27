@@ -1,7 +1,7 @@
 fastq_raw
 .nextflow.log*
 work/
-results/
+results*/
 temp/
 temp_*
 .nextflow/
