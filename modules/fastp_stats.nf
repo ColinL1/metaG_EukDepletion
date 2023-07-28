@@ -11,8 +11,8 @@ process fastp_report {
     tuple val(sample_name), path(reads)
 
     output:
-    path ("${sample_name}.json"), emit: report_json
-    path ("${sample_name}.html"), emit: report_html
+    tuple val(sample_name), path ("${sample_name}.json"), emit: report_json
+    tuple val(sample_name), path ("${sample_name}.html"), emit: report_html
 
     script:
     """
