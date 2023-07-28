@@ -2,8 +2,8 @@
 
 process split_bac {
     tag "${sample_name}"
-    cpus "${params.cpusMin}"
-    publishDir "$params.outdir/fastq_split/bacteria", mode: 'symlink'
+    // cpus "${params.cpusMin}"
+    publishDir "$params.outdir/fastq_split/bacteria/${sample_name}", mode: 'symlink'
 
     input: 
     tuple val(sample_name), path(kaiju_out), path(reads)

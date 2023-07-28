@@ -2,8 +2,8 @@
 
 process split_bam {
     tag "${sample_name}"
-    cpus "${params.cpusMin}"
-    publishDir "$params.outdir/fastq_split/${ref_name}", mode: 'symlink'
+    // cpus "${params.cpusMin}"
+    publishDir "$params.outdir/fastq_split/${ref_name}/${sample_name}", mode: 'symlink'
 
     input: 
     tuple val(sample_name), path(bam)
@@ -15,8 +15,8 @@ process split_bam {
 
     script:
     """
-    samtools fastq -n -f 4 ${bam} | pigz > ${sample_name}.unmapped.fq.gz
-    samtools fastq -n -F 4 ${bam} | pigz > ${sample_name}.mapped.fq.gz
+    samtools fastq -n -f 4 ${bam} --threads ${task.cpus} | pigz -p ${task.cpus} > ${sample_name}.unmapped.fq.gz
+    samtools fastq -n -F 4 ${bam} --threads ${task.cpus} | pigz -p ${task.cpus} > ${sample_name}.mapped.fq.gz
     """
 }
 
