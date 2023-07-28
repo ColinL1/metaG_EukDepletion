@@ -1,4 +1,5 @@
 fastq_raw
+modules/mmseq2_diamond
 .nextflow.log*
 work/
 results*/
@@ -13,17 +14,17 @@ key_file*
 tmp/
 *.ipynb
 ipynb/
-*.py
 Alpha_div/
 R-scripts/temp_*
 .vscode
 R-scripts/*.tsv
-*temp*
 test*
+reports/
 timelines
 input
 kaiju
-
+dag-20230728*
+report*.html
 .dot
 
 # Byte-compiled / optimized / DLL files
@@ -236,3 +237,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+reports/report-20230727-57269273.html
+report-20230728-55310325.html
+report-20230728-55410376.html
+report-20230728-55425559.html
+.gitignore
+report-20230728-55468357.html
+report-20230728-55379400.html
+parse_json_cl.py
