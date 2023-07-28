@@ -2,7 +2,7 @@
 
 process map2ref {
     tag "${sample_name}"
-    cpus "${params.cpusHigh}"
+    // cpus "${params.cpusHigh}"
     publishDir "$params.outdir/bam/${ref_name}", mode: 'symlink'
 
     input: 
@@ -13,7 +13,15 @@ process map2ref {
     tuple val ("${sample_name}.${ref_name}"), path ("${sample_name}.${ref_name}.bam"), emit: mapp_file
 
     script:
-    """
-    minimap2 -t ${task.cpus} -ax map-ont ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${sample_name}.${ref_name}.bam
-    """
+    
+    if( mode == 'ONT' )
+        """
+        minimap2 -t ${task.cpus} -ax map-ont ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${sample_name}.${ref_name}.bam
+        """
+    else if( mode == 'illumina_contigs' )
+        """
+        minimap2 -t ${task.cpus} -ax asm5 ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${sample_name}.${ref_name}.bam
+        """
+    else
+    error "Invalid alignment mode: ${mode}"
 }
