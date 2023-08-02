@@ -100,7 +100,7 @@ git clone https://github.com/ColinL1/metaG_EukDepletion.git
 
 nextflow run main.nf -profile conda --input path-to-input-folder-with-reads --outdir path-to-output-dir
 ```
-> **Inportant:** Tweak the cpu and ram parameters in the configuration files to match your machine capacity 
+> **Important:** Tweak the cpu and ram parameters in the configuration files to match your machine capacity 
 
 </details>
 <!-- ### TEST RELEASE!
