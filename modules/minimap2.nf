@@ -18,7 +18,7 @@ process map2ref {
         """
         minimap2 -t ${task.cpus} -ax map-ont ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${sample_name}.${ref_name}.bam
         """
-    else if( params.mode == 'illumina_contigs' )
+    else if( params.mode == 'contigs' )
         """
         minimap2 -t ${task.cpus} -ax asm5 ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${sample_name}.${ref_name}.bam
         """

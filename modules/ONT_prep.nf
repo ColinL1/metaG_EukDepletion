@@ -39,3 +39,21 @@ process clean_names {
     pigz -p ${task.cpus} ${sample}_clean_name.fastq
     """
 }
+
+process fasta2fastq {
+    tag "${sample}"
+    // cpus "${params.cpusMin}"
+    // publishDir "$params.outdir/porechop/${sample}", mode: 'symlink'
+    
+    input: 
+    tuple val(sample), val(reads)
+
+    output:
+    tuple val ("${sample}"), path ("${sample}.fq.gz") , emit: converted_fasta
+
+    script:
+    """
+    seqtk seq -F '#' ${reads} > ${sample}.fq
+    pigz *.fq
+    """
+}

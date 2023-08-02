@@ -36,6 +36,9 @@ process kaiju_multi {
     kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
     """
 }
+    // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
+
+            // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${reads} -a mem -z ${task.cpus} -o ${out_names}
 
 // process tax_mmseqs_nr {
 //     tag "${sample}"
