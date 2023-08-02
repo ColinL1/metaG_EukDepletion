@@ -55,10 +55,10 @@ def process_dataframe(data):
 
     # Create 'Kingdom' column based on patterns in 'file_name_og' in a single row
     df['Kingdom'] = df['file_name_og'].replace({
-        r'^(.*?)\.bacteria\.json$': 'bacteria mapped',
-        r'^(.*?)\.non-bacteria\.corals\.mapped\.json$': 'coral mapped',
-        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.mapped\.json$': 'symbiodiniaceae mapped',
-        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.unmapped\.json$': 'unmapped'
+        r'^(.*?)\.bacteria\.json$': 'Bacteria',
+        r'^(.*?)\.non-bacteria\.corals\.mapped\.json$': 'Corals',
+        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.mapped\.json$': 'Symbiodiniaceae',
+        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.unmapped\.json$': 'Other'
     }, regex=True)
 
     # Replace "Kingdom" with "TOTAL" where "file_name_og" is equal to "file_name" + ".json"
@@ -71,12 +71,20 @@ def process_dataframe(data):
     df_pivoted = df_filtered.pivot_table(index='file_name', columns=['Kingdom'], values=['total_reads', 'total_bases'], aggfunc='sum')
 
     # split and merge DataFrame (temporary fix)
-    df_pivoted_split_1 = df_pivoted.loc[:,"total_bases"]
-    df_pivoted_split_1['Type'] = 'total_bases'
+    # df_pivoted_split_1 = df_filtered.loc[:,"total_bases"]
+    # df_pivoted_split_1['Type'] = 'total_bases'
 
-    df_pivoted_split_2 = df_pivoted.loc[:,"total_reads"]
-    df_pivoted_split_2['Type'] = 'total_reads'
-    final_df = pd.concat([df_pivoted_split_1, df_pivoted_split_2])
+    # df_pivoted_split_2 = df_filtered.loc[:,"total_reads"]
+    # df_pivoted_split_2['Type'] = 'total_reads'
+    df_filtered_split_1 = df_filtered[["file_name","Kingdom", "total_bases"]]
+    df_filtered_split_1['Type'] = 'total_bases'
+    df_filtered_split_1 = df_filtered_split_1.rename(columns={'total_bases': 'total'})
+    
+    df_filtered_split_2 = df_filtered[["file_name","Kingdom", "total_reads"]]
+    df_filtered_split_2['Type'] = 'total_reads'
+    df_filtered_split_2 = df_filtered_split_2.rename(columns={'total_reads': 'total'})
+    
+    final_df = pd.concat([df_filtered_split_1, df_filtered_split_2])
 
     return final_df
 

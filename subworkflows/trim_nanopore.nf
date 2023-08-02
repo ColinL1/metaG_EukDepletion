@@ -2,7 +2,7 @@
 
 /*
 ========================================================================================
-    Map to reference and split fastq
+    Trim nanopore long read data and generate fastp report 
 ========================================================================================
 */
 
@@ -15,7 +15,7 @@ include { ont_trim } from '../modules/ONT_prep.nf'
 include { fastp_report } from '../modules/fastp_stats.nf'
 /*
 ========================================================================================
-    Workflow READ_QC
+    Workflow TRIM_NANOPORE
 ========================================================================================
 */
 
