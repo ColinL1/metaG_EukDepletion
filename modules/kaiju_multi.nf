@@ -36,6 +36,25 @@ process kaiju_multi {
     kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
     """
 }
+
+process kaiju_pe {
+    tag "${sample}"
+    // cpus "${params.cpusHigh}"
+    // memory "${params.memMax}"
+    publishDir "$params.outdir/Kaiju_reports/", mode: 'symlink'
+
+    input: 
+    tuple val(sample), path(reads)
+
+    output:
+    tuple val(sample), path("${sample}.out"), emit: report_kaiju_out
+
+    script:
+    """
+    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${sample}.out
+    """
+}
+
     // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
 
             // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${reads} -a mem -z ${task.cpus} -o ${out_names}
