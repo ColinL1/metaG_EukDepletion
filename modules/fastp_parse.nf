@@ -9,7 +9,7 @@ process fastp_parse {
 
     input: 
     // tuple val(sample_name), path(reads)
-    tuple path(reports)
+    tuple val(reports), path(reports)
 
     output:
     path ("report.csv"), emit: report_csv
