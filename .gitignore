@@ -26,6 +26,10 @@ kaiju
 dag-20230728*
 report*.html
 .dot
+kaiju_tables/
+backup_previous_version_misc/
+references/
+tmp_json/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
