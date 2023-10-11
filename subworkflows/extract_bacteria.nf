@@ -12,8 +12,8 @@
 ========================================================================================
 */
 
-include { kaiju; kaiju_multi } from '../modules/kaiju_multi.nf'
-include { split_bac } from '../modules/split_seqkit.nf'
+include { kaiju_pe; kaiju_multi } from '../modules/kaiju_multi.nf'
+include { split_bac; split_bac_pe } from '../modules/split_seqkit.nf'
 include { fastp_report; fastp_fasta_report } from '../modules/fastp_stats.nf'
 
 /*
@@ -46,19 +46,19 @@ workflow EXTRACT_BACTERIA {
         report_json = fastp_report.out.report_json
 }
 
-// workflow EXTRACT_BACTERIA_FA {
-//     take: 
-//         file
-//     main:
-//         kaiju(file)
-//             split_bac(kaiju.out.report_kaiju_out.join(file))
-//                 fastp_fasta_report(split_bac.out.concat())
+workflow EXTRACT_BACTERIA_PE {
+    take: 
+        file
+    main:
+        kaiju_pe(file)
+            split_bac_pe(kaiju_pe.out.report_kaiju_out.join(file))
+                fastp_report(split_bac_pe.out.concat())
     
-//     emit:
-//         bacteria_reads = split_bac.out.bacteria_reads
-//         non_bacteria_reads = split_bac.out.non_bacteria_reads
-//         report_json = fastp_fasta_report.out.report_json
-// }
+    emit:
+        bacteria_reads = split_bac_pe.out.bacteria_reads
+        non_bacteria_reads = split_bac_pe.out.non_bacteria_reads
+        report_json = fastp_report.out.report_json
+}
 
 workflow EXTRACT_BACTERIA_FA {
     take: 
@@ -82,4 +82,13 @@ workflow EXTRACT_BACTERIA_FA {
         bacteria_reads = split_bac.out.bacteria_reads
         non_bacteria_reads = split_bac.out.non_bacteria_reads
         report_json = fastp_fasta_report.out.report_json
+}
+
+// individual tester #TODO:remove once complete
+workflow {
+    Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/input/test_illumina/*_{1,2}_subsample.fq.gz"). set {input_fq}
+    // input_fq.view()
+    kaiju_multi_input_ch.view()
+    // EXTRACT_BACTERIA_FA(input_fq)
+    // EXTRACT_BACTERIA_FA.out.bacteria_reads.view()
 }
