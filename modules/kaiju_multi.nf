@@ -26,7 +26,7 @@ process kaiju_multi {
     publishDir "$params.outdir/Kaiju/", mode: 'symlink'
 
     input: 
-    tuple val(names), path(reads), val(out_names)
+    tuple val(names), path(reads, stageAs: "?/*"), val(out_names)
 
     output:
     path '*_out', emit: kaiju_out
@@ -52,6 +52,24 @@ process kaiju_pe {
     script:
     """
     kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${sample}.out
+    """
+}
+process kaiju_multi_pe {
+    tag "${out_names}"
+    label 'big_mem'
+    // cpus 230
+    // memory "${params.memMax}"
+    publishDir "$params.outdir/Kaiju/", mode: 'symlink'
+
+    input: 
+    tuple val(names), path(reads_1), path(reads_2), val(out_names)
+
+    output:
+    path '*_out', emit: kaiju_out
+
+    script:
+    """
+    kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads_1 as List).join(',')} -j ${(reads_2 as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
     """
 }
 

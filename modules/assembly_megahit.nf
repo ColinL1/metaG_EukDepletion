@@ -30,3 +30,9 @@ process megahit_se {
     megahit -r ${reads}  --out-dir ${sample} --k-min 27 --k-max 127 --k-step 10 --num-cpu-threads ${task.cpus}
     """
 }
+
+workflow {
+    Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/input/tests/cor_test_ill/*_{1,2}.fq.gz"). set {input_fq}
+    megahit_pe(input_fq)
+    megahit_pe.out.contigs_fa.view()
+}

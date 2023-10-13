@@ -3,6 +3,7 @@
 process split_bac {
     tag "${sample}"
     // cpus "${params.cpusMin}"
+    // errorStrategy 'ignore'
     publishDir "$params.outdir/fastq_split/bacteria/${sample}", mode: 'symlink'
 
     input: 
@@ -20,7 +21,8 @@ process split_bac {
     grep "U" ${kaiju_out} | cut -d\$'\t' -f2 > list_not-bacteria.txt
     seqkit grep -j ${task.cpus} -f list_bacteria.txt -i ${reads} > ${sample}.bacteria.fa
     seqkit grep -j ${task.cpus} -f list_not-bacteria.txt -i ${reads} > ${sample}.non-bacteria.fa
-    pigz -p ${task.cpus} *.fa
+    pigz -p ${task.cpus} ${sample}.non-bacteria.fa ${sample}.bacteria.fa
+    rm -rf list_bacteria.txt list_not-bacteria.txt
     """
     else
     """
@@ -28,7 +30,8 @@ process split_bac {
     grep -w "U" ${kaiju_out} | cut -d\$'\t' -f2 > list_not-bacteria.txt
     seqkit grep -j ${task.cpus} -f list_bacteria.txt -i ${reads} > ${sample}.bacteria.fq
     seqkit grep -j ${task.cpus} -f list_not-bacteria.txt -i ${reads} > ${sample}.non-bacteria.fq
-    pigz -p ${task.cpus} *.fq
+    pigz -p ${task.cpus} ${sample}.bacteria.fq ${sample}.non-bacteria.fq
+    rm -rf list_bacteria.txt list_not-bacteria.txt
     """
 }
 
