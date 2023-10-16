@@ -20,9 +20,9 @@ Processes:
 
 #### Flow chart
 <details>
-  <summary> Workflow diagram </summary> 
+  <summary> Temp - Workflow diagram </summary> 
   
-![Alt text](flowchart_v4.svg "Workflow diagram")
+![Alt text](graphviz_diagram.png "Temp - Workflow diagram")
 
 </details>
 <!-- More detailed workflow explanation coming soon. -->
