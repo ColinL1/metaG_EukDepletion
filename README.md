@@ -12,9 +12,9 @@ Processes:
 1. Run kaiju-multi on collection of samples (kaiju-multi has proven more efficient than individual kaiju parallelized do to permeance of kaiju database in RAM)
     - Split sequences in bacteria-matching and all the non-bacteria
 1. Map non-bacteria with minimap2 to host reference genome (S)
-    - Split sequences in scleractinia-matching and non-scleractinia
-1. Map non-scleractinia with minimap2 to symbiodinacea reference genome (main symbiont)
-    - Split sequences in symbiodinacea-matching and non-symbiodinacea
+    - Split sequences in Scleractinia-matching and non-scleractinia
+1. Map non-Scleractinia with minimap2 to symbiodinacea reference genome (main symbiont)
+    - Split sequences in Symbiodinacea-matching and non-Symbiodinacea
 1. Run all individual sequences file trough fastp to generate individual report.json files
 1. Parse all json report with custom python script collecting them in single csv report ready for downstream data analyses 
 
@@ -22,7 +22,7 @@ Processes:
 <details>
   <summary> Temp - Workflow diagram </summary> 
   
-![Alt text](graphviz_diagram.png "Temp - Workflow diagram")
+![Alt text](graphviz_diagram.svg "Temp - Workflow diagram")
 
 </details>
 <!-- More detailed workflow explanation coming soon. -->
