@@ -3,6 +3,11 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
   - - -
 ### Pre-final release!
 
+#### Flow chart (Temp)
+
+![Alt text](graphviz_diagram.svg "Temp - Workflow diagram")
+
+
 Detailed and further documentation coming soon with final script versions. 
 
 Processes:
@@ -18,13 +23,7 @@ Processes:
 1. Run all individual sequences file trough fastp to generate individual report.json files
 1. Parse all json report with custom python script collecting them in single csv report ready for downstream data analyses 
 
-#### Flow chart
-<details>
-  <summary> Temp - Workflow diagram </summary> 
-  
-![Alt text](graphviz_diagram.svg "Temp - Workflow diagram")
 
-</details>
 <!-- More detailed workflow explanation coming soon. -->
 
   - - -
