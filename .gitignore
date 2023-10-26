@@ -30,6 +30,9 @@ kaiju_tables/
 backup_previous_version_misc/
 references/
 tmp_json/
+mmseq2_quicktest/
+*timeline.html
+*.dot
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
