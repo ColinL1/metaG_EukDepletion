@@ -24,7 +24,9 @@ include { TRIM_PE } from './subworkflows/trim_illumina.nf'
 
 params.nodes = "/share/databases/kaiju/nodes.dmp"
 params.kaiju_db = "/share/databases/kaiju/refseq/kaiju_db_refseq.fmi"
-
+params.barplot_script = "/home/colinl/metaG/Git/metaG_EukDepletion/R-scripts/Bar_plot_kaiju.r"
+params.parse_script = "/home/colinl/metaG/Git/metaG_EukDepletion/parse_json_cl.py"
+params.sample_metadata_sheet = "/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv"
 
 params.ref_host = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_scleractina" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/aiptasiidae.mmi" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/corals.mmi"
 params.ref_sym = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_symbiodiniaceae"
@@ -58,6 +60,7 @@ params.read_length = "150"
 // import qc modules and workflow
 include { fastp_report } from './modules/fastp_stats.nf'
 include { fastp_parse } from './modules/fastp_parse.nf'
+include { fastp_plot } from './modules/fastp_parse.nf'
 include { fasta2fastq } from './modules/ONT_prep.nf'
 
 // TODO import module for assembly variant (currently unused.) 
@@ -95,13 +98,14 @@ workflow KRBR_PE_ILLUMINA{
 
 //TODO : WORKING AS IS. TO BE optimised. 
 workflow KAIJU_PE_ILLUMINA {
-    kaiju_nodes = file(params.nodes)
-    kaiju_db = file(params.kaiju_db)
+    // main:
+        kaiju_nodes = file(params.nodes)
+        kaiju_db = file(params.kaiju_db)
 // TODO check integration with fastqc + multiqc and optional make contigs assembly version. and fastp
     // seq_reads_pe_ch.view()
         TRIM_PE(seq_reads_pe_ch)
-            fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
-    // fastp_report(TRIM_PE.out.trimmed_reads)
+            // fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            fastp_report(TRIM_PE.out.trimmed_reads)
         EXTRACT_BACTERIA_PE(TRIM_PE.out.trimmed_reads)
             MAP2REF_SWF_CORAL_PE(EXTRACT_BACTERIA_PE.out.non_bacteria_reads, ref_host_ch)
                 MAP2REF_SWF_SYM_PE(MAP2REF_SWF_CORAL_PE.out.non_mapped_reads, ref_sym_ch)        
@@ -110,8 +114,19 @@ workflow KAIJU_PE_ILLUMINA {
                 EXTRACT_BACTERIA_PE.out.report_json,
                 MAP2REF_SWF_CORAL_PE.out.report_json,
                 MAP2REF_SWF_SYM_PE.out.report_json)
-                    fastp_parse_ch.collect{it[1]}.toList().view()
-                    fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
+                    // fastp_parse_ch.collect{it[1]}.toList().view()
+                names = fastp_parse_ch.collect{it[0]}.toList()   
+                paths = fastp_parse_ch.collect{it[1]}.toList()
+                names.merge(paths).set { fastp_parse_ch_2 }
+                    fastp_plot(fastp_parse_ch_2)
+    // emit:
+    //     EXTRACT_BACTERIA_PE.out.bacteria_reads
+    //     MAP2REF_SWF_CORAL_PE.out.mapped_reads
+    //     MAP2REF_SWF_SYM_PE.out.mapped_reads
+    //     EXTRACT_BACTERIA_PE.out.report_json
+    //     MAP2REF_SWF_CORAL_PE.out.report_json
+    //     MAP2REF_SWF_SYM_PE.out.report_json
+    //     fastp_parse.out.report_csv
 }
 
 //TODO : WORKING AS IS. TO BE optimised. 
@@ -121,18 +136,23 @@ workflow KAIJU_CONTIGS_PE {
         params.mode == 'contigs'
 
         TRIM_PE(seq_reads_pe_ch)
-            fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            // fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            fastp_report(TRIM_PE.out.trimmed_reads)
         megahit_pe(TRIM_PE.out.trimmed_reads)
         EXTRACT_BACTERIA_FA(megahit_pe.out.contigs_fa)
             MAP2REF_SWF_CORAL(EXTRACT_BACTERIA_FA.out.non_bacteria_reads, ref_host_ch)
                 MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
-
+                
                 fastp_parse_ch = fastp_report.out.report_json.concat(
                 EXTRACT_BACTERIA_FA.out.report_json,
                 MAP2REF_SWF_CORAL.out.report_json,
                 MAP2REF_SWF_SYM.out.report_json)
-                    fastp_parse_ch.collect{it[1]}.toList().view()
-                    fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
+                    // fastp_parse_ch.collect{it[1]}.toList().view()
+                    // fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
+                names = fastp_parse_ch.collect{it[0]}.toList()   
+                paths = fastp_parse_ch.collect{it[1]}.toList()
+                names.merge(paths).set { fastp_parse_ch_2 }
+                    fastp_plot(fastp_parse_ch_2)
 }
 
 workflow {

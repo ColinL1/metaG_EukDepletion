@@ -57,8 +57,22 @@ def process_dataframe(data):
     df['Kingdom'] = df['file_name_og'].replace({
         r'^(.*?)\.bacteria\.json$': 'Bacteria',
         r'^(.*?)\.non-bacteria\.corals\.mapped\.json$': 'Corals',
+        r'^(.*?)\.non-bacteria\.all_scleractina\.mapped\.json$': 'Corals',
+
         r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.mapped\.json$': 'Symbiodiniaceae',
-        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.unmapped\.json$': 'Other'
+        r'^(.*?)\.non-bacteria\.all_scleractina\.unmapped\.all_symbiodiniaceae\.mapped\.json$': 'Symbiodiniaceae',
+
+        r'^(.*?)\.non-bacteria\.corals\.unmapped\.symbiodiniaceae\.unmapped\.json$': 'Other',
+        r'^(.*?)\.non-bacteria\.all_scleractina\.unmapped\.all_symbiodiniaceae\.unmapped\.json$': 'Other',
+
+        r'^(.*?)\.non-bacteria\.aiptasiidae\.mapped\.json$': 'aiptasiidae',
+        r'^(.*?)\.non-bacteria\.all_aiptasiiadae\.mapped\.json$': 'aiptasiidae',
+
+        r'^(.*?)\.non-bacteria\.aiptasiidae\.unmapped\.symbiodiniaceae\.mapped\.json$': 'Symbiodiniaceae',
+        r'^(.*?)\.non-bacteria\.all_aiptasiiadae\.unmapped\.all_symbiodiniaceae\.mapped\.json$': 'Symbiodiniaceae',
+
+        r'^(.*?)\.non-bacteria\.aiptasiidae\.unmapped\.symbiodiniaceae\.unmapped\.json$': 'Other',
+        r'^(.*?)\.non-bacteria\.all_aiptasiiadae\.unmapped\.all_symbiodiniaceae\.unmapped\.json$': 'Other'
     }, regex=True)
 
     # Replace "Kingdom" with "TOTAL" where "file_name_og" is equal to "file_name" + ".json"
