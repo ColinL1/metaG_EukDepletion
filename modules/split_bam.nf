@@ -3,7 +3,7 @@
 process split_bam {
     tag "${sample_name}"
     // cpus "${params.cpusMin}"
-    publishDir "$params.outdir/fastq_split/${ref_name}/${sample_name}", mode: 'symlink'
+    publishDir "$params.outdir/reads/${ref_name}/${sample_name}", mode: 'symlink'
 
     input: 
     tuple val(sample_name), path(bam)

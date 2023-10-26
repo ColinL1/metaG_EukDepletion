@@ -54,6 +54,7 @@ process kaiju_pe {
     kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${sample}.out
     """
 }
+
 process kaiju_multi_pe {
     tag "${out_names}"
     label 'big_mem'

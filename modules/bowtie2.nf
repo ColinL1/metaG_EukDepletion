@@ -3,8 +3,8 @@
 process map2ref_pe {
     tag "${sample_name}"
     // cpus "${params.cpusHigh}"
-    publishDir "$params.outdir/bam/${ref_name}/*.bam", mode: 'symlink'
-    publishDir "$params.outdir/reads/${ref_name}/*fq.gz*", mode: 'symlink'
+    publishDir "$params.outdir/bam/${ref_name}/", mode: 'symlink'
+    publishDir "$params.outdir/reads/${ref_name}/", mode: 'symlink'
 
     input: 
     tuple val(sample_name), path(reads)
