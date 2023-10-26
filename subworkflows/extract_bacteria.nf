@@ -53,20 +53,19 @@ workflow EXTRACT_BACTERIA_PE {
     take: 
         file
     main:
-        names = file.collect{it[0]}.toList()
-        path1 = file.collect{it[1][0]}.toList()
-        path2 = file.collect{it[1][1]}.toList()
-        output = file.collect{it[0]+ "_out"}.toList()
+        // names = file.collect{it[0]}.toList()
+        // path1 = file.collect{it[1][0]}.toList()
+        // path2 = file.collect{it[1][1]}.toList()
+        // output = file.collect{it[0]+ "_out"}.toList()
 
-        names
-            .merge(path1)
-            .merge(path2)
-            .merge(output)
-            .set { kaiju_multi_input_ch }
-
-        kaiju_multi_pe(kaiju_multi_input_ch)
-            kaiju_multi_pe.out.kaiju_out.flatten().map{ tuple (it.name.replaceAll(/_out/, ""), it)}.set{ kaiju_multi_out_clean_ch }
-            split_bac_pe(kaiju_multi_out_clean_ch.join(file))
+        // names
+        //     .merge(path1)
+        //     .merge(path2)
+        //     .merge(output)
+        //     .set { kaiju_multi_input_ch }
+        kaiju_pe(file)
+            // kaiju_multi_pe.out.kaiju_out.flatten().map{ tuple (it.name.replaceAll(/_out/, ""), it)}.set{ kaiju_multi_out_clean_ch }
+            split_bac_pe(kaiju_pe.out.report_kaiju_out.join(file))
                 fastp_report(split_bac_pe.out.concat())
 
     emit:
@@ -122,4 +121,30 @@ workflow EXTRACT_BACTERIA_FA {
 //     // EXTRACT_BACTERIA_FA(input_fq)
 //     // EXTRACT_BACTERIA_FA.out.bacteria_reads.view()
 //     EXTRACT_BACTERIA_PE(input_fq)
+// }
+
+// workflow EXTRACT_BACTERIA_PE_MULTI {
+//     take: 
+//         file
+//     main:
+//         names = file.collect{it[0]}.toList()
+//         path1 = file.collect{it[1][0]}.toList()
+//         path2 = file.collect{it[1][1]}.toList()
+//         output = file.collect{it[0]+ "_out"}.toList()
+
+//         names
+//             .merge(path1)
+//             .merge(path2)
+//             .merge(output)
+//             .set { kaiju_multi_input_ch }
+
+//         kaiju_multi_pe(kaiju_multi_input_ch)
+//             kaiju_multi_pe.out.kaiju_out.flatten().map{ tuple (it.name.replaceAll(/_out/, ""), it)}.set{ kaiju_multi_out_clean_ch }
+//             split_bac_pe(kaiju_multi_out_clean_ch.join(file))
+//                 fastp_report(split_bac_pe.out.concat())
+
+//     emit:
+//         bacteria_reads = split_bac_pe.out.bacteria_reads
+//         non_bacteria_reads = split_bac_pe.out.non_bacteria_reads
+//         report_json = fastp_report.out.report_json
 // }
