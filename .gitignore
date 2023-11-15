@@ -33,6 +33,7 @@ tmp_json/
 mmseq2_quicktest/
 *timeline.html
 *.dot
+kraken2/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
