@@ -1,5 +1,6 @@
 #!/usr/bin/env nextflow
-
+//TODO: general cleanup and reestablishment workflows and subworkflows!!
+//TODO: add stub
 /*
 ========================================================================================
     Set params for reads input and output
@@ -10,6 +11,7 @@ params.outdir = "$baseDir/results/illumina"
 // input_pe = '/home/colinl/metaG/Git/metaG_EukDepletion/input/illumina/corals/*_{1,2}.fastq.gz'
 
 Channel.fromFilePairs(params.input).set { seq_reads_pe_ch }
+Channel.fromPath(params.input).map {tuple( it.name.split('.fastq.gz')[0], it )}.set { seq_reads_ch_ont }
 
 /*
 ========================================================================================
@@ -71,11 +73,16 @@ include { megahit_se; megahit_pe } from './modules/assembly_megahit.nf'
 // // Channel.fromPath(params.contigs).map {tuple( (it.name.split('.fasta')[0]), it )}.set { seq_contigs_ch }
 // Channel.fromPath(params.input+'/*.fasta').map {tuple( (it.name.split('.fasta')[0]).split('_')[0..3].join("_"), it )}.set { seq_contigs_ch } // version that cleans the names (specific to my use case)
 
+// include { MAP2REF_BWA_PE  } from './subworkflows/extract_bacteria.nf'
+include { MAP2REF_BWA_PE as MAP2REF_BWA_PE_CORAL; MAP2REF_BWA_PE as MAP2REF_BWA_PE_SYM } from './subworkflows/map2ref_extract.nf'
+include { MAP2REF_S_SWF_PE as MAP2REF_S_SWF_CORAL_PE; MAP2REF_S_SWF_PE as MAP2REF_S_SWF_SYM_PE } from './subworkflows/map2ref_extract.nf'
+
 workflow test_ch {
     // ref_sym_ch.view()
     // ref_host_ch.view()
     seq_reads_pe_ch.view()
 }
+
 // TODO: add switch for kaiju vs kraken bracken
 log.info """\
 
@@ -130,6 +137,56 @@ workflow KAIJU_PE_ILLUMINA {
 }
 
 //TODO : WORKING AS IS. TO BE optimised. 
+workflow EXTRACT_CORAL_SYMB {
+    // main:
+        kaiju_nodes = file(params.nodes)
+        kaiju_db = file(params.kaiju_db)
+// TODO check integration with fastqc + multiqc and optional make contigs assembly version. and fastp
+    // seq_reads_pe_ch.view()
+        TRIM_PE(seq_reads_pe_ch)
+            // fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            fastp_report(TRIM_PE.out.trimmed_reads)
+        // EXTRACT_BACTERIA_PE(TRIM_PE.out.trimmed_reads)
+            MAP2REF_S_SWF_CORAL_PE(TRIM_PE.out.trimmed_reads, ref_host_ch)
+                MAP2REF_S_SWF_SYM_PE(MAP2REF_S_SWF_CORAL_PE.out.non_mapped_reads, ref_sym_ch)        
+
+                fastp_parse_ch = fastp_report.out.report_json.concat(
+                // EXTRACT_BACTERIA_PE.out.report_json,
+                MAP2REF_S_SWF_CORAL_PE.out.report_json,
+                MAP2REF_S_SWF_SYM_PE.out.report_json)
+                    // fastp_parse_ch.collect{it[1]}.toList().view()
+                names = fastp_parse_ch.collect{it[0]}.toList()   
+                paths = fastp_parse_ch.collect{it[1]}.toList()
+                names.merge(paths).set { fastp_parse_ch_2 }
+                    fastp_plot(fastp_parse_ch_2)
+}
+
+//TODO : WORKING AS IS. TO BE optimised. 
+workflow EXTRACT_CORAL_SYMB_BWA {
+    // main:
+        kaiju_nodes = file(params.nodes)
+        kaiju_db = file(params.kaiju_db)
+// TODO check integration with fastqc + multiqc and optional make contigs assembly version. and fastp
+    // seq_reads_pe_ch.view()
+        TRIM_PE(seq_reads_pe_ch)
+            // fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            fastp_report(TRIM_PE.out.trimmed_reads)
+        // EXTRACT_BACTERIA_PE(TRIM_PE.out.trimmed_reads)
+            MAP2REF_BWA_PE_CORAL(TRIM_PE.out.trimmed_reads, ref_host_ch)
+                MAP2REF_BWA_PE_SYM(MAP2REF_BWA_PE_CORAL.out.non_mapped_reads, ref_sym_ch)        
+
+                fastp_parse_ch = fastp_report.out.report_json.concat(
+                // EXTRACT_BACTERIA_PE.out.report_json,
+                MAP2REF_BWA_PE_CORAL.out.report_json,
+                MAP2REF_BWA_PE_SYM.out.report_json)
+                    // fastp_parse_ch.collect{it[1]}.toList().view()
+                names = fastp_parse_ch.collect{it[0]}.toList()   
+                paths = fastp_parse_ch.collect{it[1]}.toList()
+                names.merge(paths).set { fastp_parse_ch_2 }
+                    fastp_plot(fastp_parse_ch_2)
+}
+
+//TODO : WORKING AS IS. TO BE optimised. 
 workflow KAIJU_CONTIGS_PE {
 // TODO check integration with fastqc + multiqc and optional make contigs assembly version. and fastp
     // seq_reads_pe_ch.view()
@@ -145,6 +202,30 @@ workflow KAIJU_CONTIGS_PE {
                 
                 fastp_parse_ch = fastp_report.out.report_json.concat(
                 EXTRACT_BACTERIA_FA.out.report_json,
+                MAP2REF_SWF_CORAL.out.report_json,
+                MAP2REF_SWF_SYM.out.report_json)
+                    // fastp_parse_ch.collect{it[1]}.toList().view()
+                    // fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
+                names = fastp_parse_ch.collect{it[0]}.toList() 
+                paths = fastp_parse_ch.collect{it[1]}.toList()
+                names.merge(paths).set { fastp_parse_ch_2 }
+                    fastp_plot(fastp_parse_ch_2)
+}
+
+workflow ONT_ANNA_SYM_CORAL {
+
+// TODO check integration with fastqc + multiqc and optional make contigs assembly version. and fastp
+    // seq_reads_pe_ch.view()
+        params.mode == 'ONT'
+        // TRIM_PE(seq_reads_pe_ch)
+            // fastp_report(seq_reads_pe_ch.concat(TRIM_PE.out.trimmed_reads))
+            fastp_report(seq_reads_ch_ont)
+        // megahit_pe(TRIM_PE.out.trimmed_reads)
+        // EXTRACT_BACTERIA_FA(seq_reads_ch)
+            MAP2REF_SWF_CORAL(seq_reads_ch, ref_host_ch)
+                MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
+                fastp_parse_ch = fastp_report.out.report_json.concat(
+                // EXTRACT_BACTERIA_FA.out.report_json,
                 MAP2REF_SWF_CORAL.out.report_json,
                 MAP2REF_SWF_SYM.out.report_json)
                     // fastp_parse_ch.collect{it[1]}.toList().view()
