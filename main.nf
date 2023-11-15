@@ -74,8 +74,8 @@ include { megahit_se; megahit_pe } from './modules/assembly_megahit.nf'
 // Channel.fromPath(params.input+'/*.fasta').map {tuple( (it.name.split('.fasta')[0]).split('_')[0..3].join("_"), it )}.set { seq_contigs_ch } // version that cleans the names (specific to my use case)
 
 // include { MAP2REF_BWA_PE  } from './subworkflows/extract_bacteria.nf'
-include { MAP2REF_BWA_PE as MAP2REF_BWA_PE_CORAL; MAP2REF_BWA_PE as MAP2REF_BWA_PE_SYM } from './subworkflows/map2ref_extract.nf'
-include { MAP2REF_S_SWF_PE as MAP2REF_S_SWF_CORAL_PE; MAP2REF_S_SWF_PE as MAP2REF_S_SWF_SYM_PE } from './subworkflows/map2ref_extract.nf'
+// include { MAP2REF_BWA_PE as MAP2REF_BWA_PE_CORAL; MAP2REF_BWA_PE as MAP2REF_BWA_PE_SYM } from './subworkflows/map2ref_extract.nf'
+// include { MAP2REF_S_SWF_PE as MAP2REF_S_SWF_CORAL_PE; MAP2REF_S_SWF_PE as MAP2REF_S_SWF_SYM_PE } from './subworkflows/map2ref_extract.nf'
 
 workflow test_ch {
     // ref_sym_ch.view()
@@ -222,7 +222,7 @@ workflow ONT_ANNA_SYM_CORAL {
             fastp_report(seq_reads_ch_ont)
         // megahit_pe(TRIM_PE.out.trimmed_reads)
         // EXTRACT_BACTERIA_FA(seq_reads_ch)
-            MAP2REF_SWF_CORAL(seq_reads_ch, ref_host_ch)
+            MAP2REF_SWF_CORAL(seq_reads_ch_ont, ref_host_ch)
                 MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
                 fastp_parse_ch = fastp_report.out.report_json.concat(
                 // EXTRACT_BACTERIA_FA.out.report_json,
