@@ -218,8 +218,6 @@ for (i in unique(data$species)) {
         filter(origin == "reads") %>%
         filter(species == i) %>%
         filter(mapping != "total") %>%
-        # filter(extraction != " ") %>%  # Exclude the last extraction value for group 2
-        # filter(!(extraction_groups == 2 & extraction == " ")) %>%  # Exclude the last extraction value for group 2
         ggplot(aes(x = extraction, y = num_seqs, colour = mapping, fill = mapping)) +
         geom_bar(stat = "identity", position = "fill", width = 0.85) +  # Adjust width based on extraction value
         facet_grid(extraction_groups ~ grouping, scales = "free_y", space = "free", labeller = as_labeller(custom_labeller, label_parsed)) +  # Adjust facet by extraction_groups and grouping
@@ -290,6 +288,39 @@ figure_2
 
 # Plot for figure 2 complete!
 
+## get number of bacteria 
+head(data)
+data %>%
+        filter(origin == "reads") %>%
+        filter(mapping != "total")
+
+#replace _D with _DESS in sample
+data$sample <- gsub("_P", "_PBS", data$sample)
+data$sample <- gsub("_D", "_DESS", data$sample)
+data$sample <- gsub("_DESSESS", "_DESS", data$sample)
+
+
+#get average number of bacteria reads per sample
+recap_journal_club <- data %>%
+    filter(origin == "reads") %>%
+    # filter(buffer == "PBS") %>%
+    filter(mapping %in% c("Bacteria", "total")) %>%
+    group_by(species,extraction, mapping) %>%
+    summarise(avg_num_seqs = mean(num_seqs)) %>%
+    spread(mapping, avg_num_seqs) %>%
+    mutate(avg_num_seqs = Bacteria / total)
+write.csv(recap_journal_club, "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/recap_journal_club.csv", row.names = FALSE)
+
+#get average number of host and symbiont reads per sample
+recap_journal_club <- data %>%
+    filter(origin == "reads") %>%
+    filter(buffer == "PBS") %>%
+    filter(mapping %in% c("Host", "Symbiodiniaceae", "total")) %>%
+    group_by(species, extraction, mapping) %>%
+    summarise(avg_num_seqs = mean(num_seqs)) %>%
+    spread(mapping, avg_num_seqs) %>%
+    mutate(avg_num_seqs = (Host + Symbiodiniaceae) / total)
+write.csv(recap_journal_club, "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/recap_journal_clu_hs.csv", row.names = FALSE)
 # %% plot replicate plots 
 # invert order of extractions form before
 data$extraction <- factor(data$extraction, levels = (c("Blood & Tissue", "Benzonase", "Microbiome",  "Microbiome & bead-beating", "Microbiome & spinning")))
@@ -853,7 +884,7 @@ ggarrange(
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-    library(reshape2)
+library(reshape2)
 library(egg)
 # install.packages("stringr")          # Install stringr package
 library("stringr")                   # Load stringr only to fit labels in two row 
