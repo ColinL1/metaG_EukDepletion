@@ -35,12 +35,14 @@ dependencies:
   - brotli=1.0.9=h166bdaf_9
   - brotli-bin=1.0.9=h166bdaf_9
   - brotli-python=1.0.9=py310hd8f1fbe_9
+  - bwa=0.7.17=he4a0461_11
   - bwidget=1.9.14=ha770c72_1
   - bzip2=1.0.8=h7f98852_4
   - c-ares=1.19.1=hd590300_0
-  - ca-certificates=2023.7.22=hbcca054_0
+  - ca-certificates=2023.11.17=hbcca054_0
   - cairo=1.16.0=hbbf8b49_1016
-  - certifi=2023.7.22=pyhd8ed1ab_0
+  - cat=5.3=hdfd78af_0
+  - certifi=2023.11.17=pyhd8ed1ab_0
   - cffi=1.15.1=py310h255011f_3
   - charset-normalizer=3.2.0=pyhd8ed1ab_0
   - click=8.1.7=unix_pyh707e725_0
@@ -54,6 +56,7 @@ dependencies:
   - dbus=1.13.6=h5008d03_3
   - debugpy=1.8.0=py310hc6cd4ac_1
   - decorator=5.1.1=pyhd8ed1ab_0
+  - diamond=2.1.8=h43eeafb_0
   - entrez-direct=16.2=he881be0_1
   - ete3=3.1.3=pyhd8ed1ab_0
   - exceptiongroup=1.1.3=pyhd8ed1ab_0
@@ -177,6 +180,7 @@ dependencies:
   - libunistring=0.9.10=h7f98852_0
   - libutf8proc=2.8.0=h166bdaf_0
   - libuuid=2.38.1=h0b41bf4_0
+  - libv8=8.9.83=h3f08ab5_3
   - libvorbis=1.3.7=h9c3ff4c_0
   - libwebp=1.3.1=hbf2b3c1_0
   - libwebp-base=1.3.1=hd590300_0
@@ -254,6 +258,7 @@ dependencies:
   - ply=3.11=py_1
   - pooch=1.7.0=pyha770c72_3
   - porechop=0.2.4=py310h0dbaff4_6
+  - prodigal=2.6.3=h031d066_6
   - prompt-toolkit=3.0.39=pyha770c72_0
   - prompt_toolkit=3.0.39=hd8ed1ab_0
   - psutil=5.9.5=py310h2372a71_1
@@ -299,6 +304,7 @@ dependencies:
   - r-cli=3.6.1=r43ha503ecb_1
   - r-clipr=0.8.0=r43hc72bb7e_2
   - r-clock=0.7.0=r43ha503ecb_1
+  - r-cluster=2.1.4=r43h61816a4_1
   - r-codetools=0.2_19=r43hc72bb7e_1
   - r-colorspace=2.1_0=r43h57805ef_1
   - r-conflicted=1.2.0=r43h785f33e_1
@@ -331,6 +337,7 @@ dependencies:
   - r-gargle=1.5.2=r43h785f33e_0
   - r-generics=0.1.3=r43hc72bb7e_2
   - r-getopt=1.20.4=r43ha770c72_0
+  - r-ggh4x=0.2.6=r43hc72bb7e_0
   - r-ggplot2=3.4.4=r43hc72bb7e_0
   - r-ggpubr=0.6.0=r43hc72bb7e_1
   - r-ggrepel=0.9.4=r43ha503ecb_0
@@ -388,6 +395,7 @@ dependencies:
   - r-pacman=0.5.1=r43hc72bb7e_2
   - r-parallelly=1.36.0=r43hc72bb7e_1
   - r-pbkrtest=0.5.2=r43hc72bb7e_1
+  - r-permute=0.9_7=r43hc72bb7e_2
   - r-pillar=1.9.0=r43hc72bb7e_1
   - r-pkgconfig=2.0.3=r43hc72bb7e_3
   - r-plyr=1.8.9=r43ha503ecb_0
@@ -407,6 +415,7 @@ dependencies:
   - r-r.utils=2.12.2=r43hc72bb7e_1
   - r-r6=2.5.1=r43hc72bb7e_2
   - r-ragg=1.2.5=r43h85cdef0_2
+  - r-randomcolor=1.1.0.1=r43hc72bb7e_3
   - r-rappdirs=0.3.3=r43h57805ef_2
   - r-rcolorbrewer=1.1_3=r43h785f33e_2
   - r-rcpp=1.0.11=r43h7df8631_0
@@ -426,6 +435,7 @@ dependencies:
   - r-rpart=4.1.21=r43h57805ef_0
   - r-rstatix=0.7.2=r43hc72bb7e_1
   - r-rstudioapi=0.15.0=r43hc72bb7e_0
+  - r-rtsne=0.16=r43h7ce84a7_2
   - r-rvest=1.0.3=r43hc72bb7e_2
   - r-sass=0.4.7=r43ha503ecb_0
   - r-scales=1.2.1=r43hc72bb7e_2
@@ -452,7 +462,9 @@ dependencies:
   - r-tzdb=0.4.0=r43ha503ecb_1
   - r-utf8=1.2.4=r43h57805ef_0
   - r-uuid=1.1_1=r43h57805ef_0
+  - r-v8=4.3.3=r43h8e9208c_0
   - r-vctrs=0.6.4=r43ha503ecb_0
+  - r-vegan=2.6_4=r43hd9ac46e_1
   - r-viridislite=0.4.2=r43hc72bb7e_1
   - r-vroom=1.6.4=r43ha503ecb_0
   - r-withr=2.5.1=r43hc72bb7e_0
@@ -465,6 +477,7 @@ dependencies:
   - rdma-core=28.9=h59595ed_1
   - re2=2023.03.02=h8c504da_0
   - readline=8.2=h8228510_1
+  - rename=1.601=hdfd78af_1
   - requests=2.31.0=pyhd8ed1ab_0
   - rich=13.6.0=pyhd8ed1ab_0
   - rich-click=1.6.1=pyhd8ed1ab_0
@@ -536,4 +549,3 @@ dependencies:
       - patsy==0.5.3
       - plotnine==0.12.3
       - statsmodels==0.14.0
-prefix: /home/colinl/miniconda3/envs/metaG_EukDepletion
