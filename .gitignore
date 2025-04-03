@@ -1,4 +1,5 @@
 fastq_raw
+manual_piplines/
 modules/mmseq2_diamond
 .nextflow.log*
 work/
@@ -34,6 +35,7 @@ mmseq2_quicktest/
 *timeline.html
 *.dot
 kraken2/
+optimisation/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
