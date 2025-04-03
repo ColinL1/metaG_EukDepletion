@@ -11,15 +11,15 @@
     Include Modules
 ========================================================================================
 */ 
-include { trimmomatic_pe } from '../modules/trimmomatic.nf' 
-include { fastqc } from '../modules/fastqc.nf' 
-include { multiqc } from '../modules/multiqc.nf' 
+include { TRIMMOMATIC } from '../modules/trimmomatic.nf' 
+include { FASTQC } from '../modules/fastqc.nf' 
+// include { MULTIQC } from '../modules/multiqc.nf' 
 
 // /home/colinl/metaG/Git/metaG_EukDepletion/modules/trimmomatic.nf 
 // /home/colinl/metaG/Git/metaG_EukDepletion/modules/multiqc.nf
-// /home/colinl/metaG/Git/metaG_EukDepletion/modules/fastqc.nf
+// /home/colinl/metaG/Git/metaG_EukDepletion/modules/FASTQC.nf
 
-include { fastp_report } from '../modules/fastp_stats.nf'
+include { FASTP_REPORT } from '../modules/fastp_stats.nf'
 /*
 ========================================================================================
     Workflow TRIM_PE
@@ -30,15 +30,15 @@ workflow TRIM_PE {
     take:
         reads
     main:
-        trimmomatic_pe(reads)
-            fastqc(trimmomatic_pe.out.trimmed_fq_out)
-            fastp_report(trimmomatic_pe.out.trimmed_fq_out)
+        TRIMMOMATIC(reads)
+            FASTQC(TRIMMOMATIC.out.trimmed_fq_out)
+            FASTP_REPORT(TRIMMOMATIC.out.trimmed_fq_out)
         
     emit:
-        trimmed_reads = trimmomatic_pe.out.trimmed_fq_out
-        report_json = fastp_report.out.report_json
-        fastqc = fastqc.out.zip
-        trim_log = trimmomatic_pe.out.log_trim
+        trimmed_reads = TRIMMOMATIC.out.trimmed_fq_out
+        report_json = FASTP_REPORT.out.report_json
+        FASTQC = FASTQC.out.zip
+        trim_log = TRIMMOMATIC.out.log_trim
 }
 
 // // individual tester #TODO:remove once complete

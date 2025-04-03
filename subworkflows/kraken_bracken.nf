@@ -2,7 +2,7 @@
 
 /*
 ========================================================================================
-    Run kraken and extract bracken
+    Run kraken and extract BRACKEN
 ========================================================================================
 */
 params.kraken_db = "/share/databases/k2_nt"
@@ -13,9 +13,10 @@ params.read_length = "150"
 ========================================================================================
 */
 
-include { kraken2_pe; kraken2 } from '../modules/kraken2.nf'
-include { bracken } from '../modules/bracken.nf'
-include { alpha_diversity; beta_diversity } from '../modules/div_metrics.nf'
+include { KRAKEN2_PE; KRAKEN2_SE } from '../modules/kraken2.nf'
+include { BRACKEN; BRACKEN_ONT } from '../modules/bracken.nf'
+include { ALPHA_DIVERSITY; BETA_DIVERSITY } from '../modules/div_metrics.nf'
+// include {FASTP_REPORT} from './modules/fastp_stats.nf'
 
 /*
 ========================================================================================
@@ -26,18 +27,19 @@ include { alpha_diversity; beta_diversity } from '../modules/div_metrics.nf'
 workflow KRAKEN_BRACKEN {
     take: 
         file
+        fastp_report_out
     main:
-        kraken2(file)
-            bracken(kraken2_pe.out.kraken_out)
-                alpha_diversity( bracken.out.bracken_out)  
-                beta_diversity(bracken.out.bracken_out.collect{it[1]})
+        KRAKEN2_SE(file)
+            BRACKEN_ONT(KRAKEN2_SE.out.kraken_out, fastp_report_out)
+                ALPHA_DIVERSITY(BRACKEN_ONT.out.bracken_out)  
+                BETA_DIVERSITY(BRACKEN_ONT.out.bracken_out.collect{it[2]})
     emit:
-        kraken2_report = kraken2.out.report_kraken_out
-        bracken_report = bracken.out.report_bracken_out 
-        kraken_log = kraken.out.log_kraken
-        braken_log = bracken.out.log_bracken
-        beta_diversity = beta_diversity.out.beta_diversity_report
-        alpha_diversity = alpha_diversity.out.alpha_diversity_report
+        kraken2_report = KRAKEN2_SE.out.report_kraken_out
+        bracken_report = BRACKEN_ONT.out.report_bracken_out 
+        kraken_log = KRAKEN2_SE.out.log_kraken
+        braken_log = BRACKEN_ONT.out.log_bracken
+        BETA_DIVERSITY = BETA_DIVERSITY.out.beta_diversity_report
+        ALPHA_DIVERSITY = ALPHA_DIVERSITY.out.alpha_diversity_report
 
 }
 
@@ -46,32 +48,25 @@ workflow KRAKEN_BRACKEN_PE {
         file
     main:
     // if (exists("/dev/shm/k2_nt") == true)
-    //         kraken2_pe(file)
-    //             bracken(kraken2_pe.out.kraken_out)
-    //                 alpha_diversity(bracken.out.bracken_out)  
-    //                 beta_diversity(bracken.out.bracken_out.collect{it[1]})
+    //         KRAKEN2_PE(file)
+    //             BRACKEN(KRAKEN2_PE.out.kraken_out)
+    //                 ALPHA_DIVERSITY(BRACKEN.out.bracken_out)  
+    //                 BETA_DIVERSITY(BRACKEN.out.bracken_out.collect{it[1]})
     //     shm_k2db = files("/dev/shm/*/*")
     //     result = shm_k2db.delete()
     //     println result ? "OK" : "Cannot delete: $myFile"
     // else
         // file("${params.kraken_db}/").copyTo("/dev/shm/") //, overwrit checkIfExists = false)
-            kraken2_pe(file)
-                bracken(kraken2_pe.out.kraken_out)
-                    alpha_diversity(bracken.out.bracken_out)  
-                    beta_diversity(bracken.out.bracken_out.collect{it[1]})
+            KRAKEN2_PE(file)
+                BRACKEN(KRAKEN2_PE.out.kraken_out)
+                    ALPHA_DIVERSITY(BRACKEN.out.bracken_out)  
+                    BETA_DIVERSITY(BRACKEN.out.bracken_out.collect{it[2]})
         // shm_k2db = files("/dev/shm/*/*")
         // result = shm_k2db.deleteDir()
         // println result ? "OK" : "Cannot delete: $myFile"
     emit:
-        kraken2_report = kraken2_pe.out.report_kraken_out
-        bracken_report = bracken.out.report_bracken_out
-        beta_diversity = beta_diversity.out.beta_diversity_report
-        alpha_diversity = alpha_diversity.out.alpha_diversity_report
+        kraken2_report = KRAKEN2_PE.out.report_kraken_out
+        bracken_report = BRACKEN.out.report_bracken_out
+        BETA_DIVERSITY = BETA_DIVERSITY.out.beta_diversity_report
+        ALPHA_DIVERSITY = ALPHA_DIVERSITY.out.alpha_diversity_report
 }
-
-// // individual tester #TODO:remove once complete
-// workflow {
-//     Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/input/test_illumina/*_{1,2}_subsample.fq.gz"). set {input_fq}
-//     // input_fq.view()
-//     KRAKEN_BRACKEN_PE(input_fq)
-// }
