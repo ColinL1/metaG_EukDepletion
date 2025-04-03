@@ -7,5 +7,6 @@ results*/
 references/*
 outdated_logic
 manual_piplines
-modules/
-!modules/*.nf
+modules/templates
+modules/mmseq2_diamond
+modules/adapters
