@@ -4,7 +4,7 @@ process SEQKIT_SPLIT_BAC {
     tag "${sample}"
     // cpus "${params.cpusMin}"
     // errorStrategy 'ignore'
-    publishDir "$params.outdir/${seq_type}/reads/bacteria/${sample}", mode: 'symlink'
+    publishDir "$params.outdir/results/${seq_type}/reads/bacteria/${sample}", mode: 'symlink'
 
     input: 
     tuple val(sample), val(base_name), path(kaiju_out), path(reads), val (seq_type)
@@ -51,7 +51,7 @@ process SEQKIT_SPLIT_BAC {
 process SEQKIT_SPLIT_BAC_PE {
     tag "${sample}"
     // cpus "${params.cpusMin}"
-    publishDir "$params.outdir/${seq_type}/reads/bacteria/${sample}", mode: 'symlink'
+    publishDir "$params.outdir/results/${meta.id}/reads/bacteria/${sample}", mode: 'symlink'
 
     input: 
     // tuple val(sample), path(kaiju_out), path(reads)
@@ -87,7 +87,7 @@ process SEQKIT_SPLIT_BAC_PE {
 process SEQKIT_SPLIT_KAIJU {
     tag "${meta.id}"
     label "min_mem"
-    publishDir "$baseDir/mapping/bacteria-kaiju/reads/${meta.id}/", mode: 'symlink'
+    publishDir "$baseDir/results/mapping/bacteria-kaiju/reads/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
