@@ -4,7 +4,7 @@ process MEGAHIT_PE {
     tag "${meta.id}"
     //label "process_high"
 
-    publishDir "$baseDir/assembly/${meta.id}", mode: 'symlink'
+    publishDir "$baseDir/results/assembly/${meta.id}", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -22,6 +22,7 @@ process MEGAHIT_PE {
     """
     mkdir ${meta.id}
     touch ${meta.id}/final.contigs.fa
+    touch ${meta.id}/log
     """
 }
 
