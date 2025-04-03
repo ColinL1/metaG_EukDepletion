@@ -8,8 +8,10 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 
 flowchart TD
   subgraph qPCR
-  Q@{ shape: procs, label: "qPCR Ct data"} 
+  Q@{ shape: procs, label: "qPCR Ct data"}
+
   Q --> R[Outlier detection]
+  
   end
   R -->  P
   
