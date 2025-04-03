@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-process ont_trim {
+process ONT_TRIM { //TODO: add support for csv and base_name + seq_type 
     tag "${sample}"
     // cpus "${params.cpusMin}"
     publishDir "$params.outdir/porechop/${sample}", mode: 'symlink'
@@ -15,6 +15,11 @@ process ont_trim {
     script:
     """
     porechop -i ${reads} -o ${sample}_trim.fastq.gz --threads ${task.cpus} --check_reads 200000 > ${sample}.log 
+    """
+    stub:
+    """
+    touch ${sample}_trim.fastq.gz
+    touch ${sample}.log
     """
 }
 
@@ -38,6 +43,10 @@ process clean_names {
     rm ${sample}_clean_name-temp.fastq ${sample}_new_keyfile.txt
     pigz -p ${task.cpus} ${sample}_clean_name.fastq
     """
+    stub:
+    """
+    touch ${sample}_clean_name.fastq.gz
+    """
 }
 
 process fasta2fastq {
@@ -55,5 +64,9 @@ process fasta2fastq {
     """
     seqtk seq -F '#' ${reads} > ${sample}.fq
     pigz *.fq
+    """
+    stub:
+    """
+    touch ${sample}.fq.gz
     """
 }

@@ -39,15 +39,11 @@ process MINIMAP2_MAP {
         touch ONT-${seq_type}
         """
     else if( "${seq_type}" == 'contigs_ont' )
-	"""
-	touch ${base_name}.${ref_name}.bam
-	touch contigs_ont-${seq_type}
-	"""
-    else if( "${seq_type}" == 'contigs_illumina' )
         """
         touch ${base_name}.${ref_name}.bam
-        touch contigs_illumina-${seq_type}
+        touch contigs_ont-${seq_type}
         """
+    else if("$$)
     else
     error "Invalid alignment mode: ${seq_type}"
 }

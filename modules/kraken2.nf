@@ -1,105 +1,121 @@
 #!/usr/bin/env nextflow
 
-process kraken2_pe {
-    tag "${sample}"
-    // cpus "${params.cpusHigh}"
-    // memory "${params.memMax}"
-    publishDir "$params.outdir/kraken2_reports/", mode: 'symlink'
+// TODO: check if worth adding SE option
+process KRAKEN2_PE {
+    tag "${meta.id}"
+    maxRetries 3
+    errorStrategy  { task.attempt <= maxRetries  ? 'retry' : 'ignore' } 
+    label 'med_mem'
+    publishDir "$baseDir/results/kraken2_reports/${meta.id}/", mode: 'symlink'
 
-    input: 
-    tuple val(sample), path(reads)
+    input:
+    tuple val(meta), path(reads)
 
     output:
-    tuple val(sample), path("${sample}.tsv"), emit: report_kraken_out
-    tuple val(sample), path("${sample}.k2report"), emit: kraken_out
-    tuple val(sample), path("${sample}.log"), emit: log_kraken
+    tuple val(meta), path ("*.tsv"), emit: report_kraken_out
+    tuple val(meta), path ("*.k2.report"), emit: kraken_out
+    tuple val(meta), path ("*.log"), emit: log_kraken
 
     script:
     """
-    kraken2 --db ${params.kraken_db} --threads ${task.cpus} --report ${sample}.k2report --report-minimizer-data --minimum-hit-groups 3 --output ${sample}.tsv --paired ${reads[0]} ${reads[1]} 2> ${sample}.log
+    kraken2 --db ${params.kraken_db} ${params.mem_mapping} --threads ${task.cpus} --report ${meta.id}.k2.report --report-minimizer-data --minimum-hit-groups 3 --output ${meta.id}.tsv --paired ${reads[0]} ${reads[1]} 2> ${meta.id}.log
+    """
+    stub:
+    """
+    touch ${meta.id}.tsv
+    touch ${meta.id}.k2.report
+    touch ${meta.id}.log
     """
 }
+params.kraken_db = '/dev/shm/k2_nt'
+params.mem_mapping = "--memory-mapping"
 
-process kraken2 {
-    tag "${sample}"
-    // cpus "${params.cpusHigh}"
-    // memory "${params.memMax}"
-    publishDir "$params.outdir/kraken2_reports/", mode: 'symlink'
-
-    input: 
-    tuple val(sample), path(reads)
-
-    output:
-    tuple val(sample), path("${sample}.tsv"), emit: report_kraken_out
-    tuple val(sample), path("${sample}.report"), emit: kraken_out
-    tuple val(sample), path("${sample}.log"), emit: log_kraken
-
-    script:
-    """
-    kraken2 --db ${params.kraken_db} --threads ${task.cpus} --report ${sample}.k2report --report-minimizer-data --minimum-hit-groups 3 --output ${sample}.tsv ${reads} 2> ${sample}.log
-    """
-}
-
-// process kaiju_multi {
-//     tag "${out_names}"
-//     label 'big_mem'
-//     // cpus "${params.cpusVHigh}"
-//     // memory "${params.memMax}"
-//     publishDir "$params.outdir/Kaiju/", mode: 'symlink'
-
-//     input: 
-//     tuple val(names), path(reads), val(out_names)
-
-//     output:
-//     path '*_out', emit: kaiju_out
-
-//     script:
-//     """
-//     kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
-//     """
-// }
-
-// process kaiju_pe {
+// process KRAKEN2_SE {
 //     tag "${sample}"
 //     // cpus "${params.cpusHigh}"
 //     // memory "${params.memMax}"
-//     publishDir "$params.outdir/Kaiju_reports/", mode: 'symlink'
+//     publishDir "$params.outdir/kraken2_reports/", mode: 'symlink'
 
 //     input: 
-//     tuple val(sample), path(reads)
+//     tuple val(sample), val(base_name), path(reads), val (seq_type)
 
 //     output:
-//     tuple val(sample), path("${sample}.out"), emit: report_kaiju_out
+//     tuple val(sample), val(base_name), path("${base_name}.tsv"), val (seq_type), emit: report_kraken_out
+//     tuple val(sample), val(base_name), path("${base_name}.k2report"), val (seq_type), emit: kraken_out
+//     tuple val(sample), val(base_name), path("${base_name}.log"), val (seq_type), emit: log_kraken
 
 //     script:
 //     """
-//     kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${sample}.out
+//     kraken2 --db ${params.kraken_db} --threads ${task.cpus} --report ${base_name}.k2report --report-minimizer-data --minimum-hit-groups 3 --output ${base_name}.tsv ${base_name} 2> ${base_name}.log
+//     """
+//     stub:
+//     """
+//     touch ${base_name}.tsv
+//     touch ${base_name}.k2report
+//     touch ${base_name}.log
 //     """
 // }
 
-    // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
+process TAXPASTA {
+    tag "${meta.id}"
+    maxRetries 3
+    errorStrategy  { task.attempt <= maxRetries  ? 'retry' : 'ignore' } 
+    label 'min_mem'
+    publishDir "$baseDir/reports/", mode: 'symlink'
 
-            // kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${reads} -a mem -z ${task.cpus} -o ${out_names}
+    input:
+    tuple val(meta), path(report)
 
-// process tax_mmseqs_nr {
-//     tag "${sample}"
-//     cpus "${params.cpusHigh}"
-//     memory "${params.memMax}"
-//     publishDir "$params.outdir/mmseqs2_reports/", mode: 'symlink'
+    output:
+    tuple val(meta), path ("*.tax_named.tsv"), emit: taxpasta_out
 
-//     input: 
-//     path(reads)
+    script:
+    """
+    taxpasta standardise -p kraken2 -o ${meta.id}.tax.tsv ${report}
+    python /home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/bacteria-kaiju/reads/kraken_exploration/add_taxa.py ${meta.id}.tax.tsv
+    """
+    stub:
+    """
+    touch ${meta.id}.tax_named.tsv
+    """
+}
 
-//     output:
-//     path("ONT_reads_NR_lca.tsv"), emit: report_lca_tsv
-//     path("ONT_reads_NR_report") , emit: report
-//     path("ONT_reads_NR_tophit_aln") , emit: report_tophit_aln
-//     path("ONT_reads_NR_tophit_report") , emit: report_tophit_report
-//     tuple file("run_setting.txt"), file("run_error.txt"), emit: logs
+params.input = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/bacteria-kaiju/reads/kraken_exploration/input/*_{1,2}.non-bacteria.fq.gz"
 
-
-//     script:
-//     """
-//     mmseqs easy-taxonomy ${reads} --lca-ranks species,genus,family,order,class,phylum,superkingdom --threads ${task.cpus} ${params.mmseqs2_db_nr} ONT_reads_NR ${params.tmp} > run_setting.txt 2> run_error.txt
-//     """
-// }
+Channel
+    .fromFilePairs(params.input)
+    .map { id, reads ->
+        (species, replicate, method, buffer, other, unspecified) = id.tokenize("_")
+        meta = [
+            id:id,
+            species:species,
+            replicate:replicate,
+            method:method,
+            buffer:buffer,
+            // other:other,
+            // unspecified:unspecified,
+        ]
+        [meta, reads]
+    }
+    .map { meta, reads ->
+        def newmap = [
+            species: meta.species == "Po" ? "Porites" :
+                    meta.species == "Por" ? "Porites" :
+                    meta.species == "Ac" ? "Acropora" :
+                    meta.species == "Acro" ? "Acropora" :
+                    meta.species == "F003" ? "F003" :
+                    meta.species == "F3" ? "F003" :
+                    meta.species == "H2" ? "H2" :
+                    meta.species == "Poci" ? "Pocillopora" :
+                    meta.species == "Pr" ? "Pocillopora" :
+                    "Unknown"
+        ]
+        [meta + newmap, reads]
+    }
+    .set { samples_coral }
+    
+workflow {
+    // samples_coral.view()
+    KRAKEN2_PE(samples_coral)
+        TAXPASTA(KRAKEN2_PE.out.kraken_out)
+}

@@ -1,30 +1,32 @@
 #!/usr/bin/env nextflow
 // Trimmomatic illumina reads trimming
 
-process alpha_diversity {
+process ALPHA_DIVERSITY {
     tag "${sample}"
-    // cpus "${params.cpusHigh}"
-    // memory "${params.memMax}"
     label "min_mem"
     publishDir "$params.outdir/diversity_reports/", mode: 'symlink'
 
     input: 
-    tuple val(sample), path(bracken_report)
+    tuple val(sample), val(base_name), path(bracken_report), val (seq_type)
 
     output:
-    tuple val(sample), path("${sample}_alpha_diversity.txt"), emit: alpha_diversity_report
+    tuple val(sample), val(base_name), path("${base_name}_alpha_diversity.txt"), val (seq_type), emit: alpha_diversity_report
 
     script:
     """
-    alpha_diversity.py -f ${bracken_report} -a Sh >> ${sample}_alpha_diversity.txt
-    alpha_diversity.py -f ${bracken_report} -a BP >> ${sample}_alpha_diversity.txt
-    alpha_diversity.py -f ${bracken_report} -a Si >> ${sample}_alpha_diversity.txt
-    alpha_diversity.py -f ${bracken_report} -a ISi >> ${sample}_alpha_diversity.txt
-    alpha_diversity.py -f ${bracken_report} -a F >> ${sample}_alpha_diversity.txt
+    alpha_diversity.py -f ${bracken_report} -a Sh >> ${base_name}_alpha_diversity.txt
+    alpha_diversity.py -f ${bracken_report} -a BP >> ${base_name}_alpha_diversity.txt
+    alpha_diversity.py -f ${bracken_report} -a Si >> ${base_name}_alpha_diversity.txt
+    alpha_diversity.py -f ${bracken_report} -a ISi >> ${base_name}_alpha_diversity.txt
+    alpha_diversity.py -f ${bracken_report} -a F >> ${base_name}_alpha_diversity.txt
+    """ //TODO: script so ${base_name}_alpha_diversity.txt becomes a single tsv table
+    stub:
+    """
+    touch ${base_name}_alpha_diversity.txt
     """
 }
 
-process beta_diversity {
+process BETA_DIVERSITY {
     // tag "${sample}"
     // cpus "${params.cpusHigh}"
     // memory "${params.memMax}"
@@ -32,7 +34,7 @@ process beta_diversity {
     publishDir "$params.outdir/diversity_reports/", mode: 'symlink'
 
     input: 
-    path(bracken_report)
+    path (bracken_report)
 
     output:
     path("beta_diversity.txt"), emit: beta_diversity_report
@@ -40,6 +42,10 @@ process beta_diversity {
     script:
     """
     beta_diversity.py -i ${(bracken_report as List).join(' ')} --type bracken > beta_diversity.txt
+    """
+    stub:
+    """
+    touch beta_diversity.txt
     """
 }
 
@@ -50,10 +56,10 @@ process beta_diversity {
 //         .set { input }
 //     // ("/home/colinl/metaG/Git/metaG_EukDepletion/input/test_illumina/*_{1,2}_subsample.fq.gz"). set {input_fq}
 //     // input.view()
-//     alpha_diversity(input)
+//     ALPHA_DIVERSITY(input)
 //     // input.collect{it[1]}.view()
-//     beta_diversity(input.collect{it[1]})
-//     alpha_diversity.out.alpha_diversity_report.view()
-//     beta_diversity.out.beta_diversity_report.view()
+//     BETA_DIVERSITY(input.collect{it[1]})
+//     ALPHA_DIVERSITY.out.alpha_diversity_report.view()
+//     BETA_DIVERSITY.out.beta_diversity_report.view()
 //     // .out.trimmed_fq_out.view()
 // }

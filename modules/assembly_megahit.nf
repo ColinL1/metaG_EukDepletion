@@ -1,38 +1,66 @@
-process megahit_pe {
-    tag "${sample}"
-    publishDir "$params.outdir/illumina_contigs", mode: 'symlink'
+#!/usr/bin/env nextflow
+
+process MEGAHIT_PE {
+    tag "${meta.id}"
+    publishDir "$baseDir/${meta.id}_contigs", mode: 'symlink'
 
     input:
-    tuple val(sample), path(reads)
+    tuple val(meta), path(reads)
 
     output:
-    tuple val(sample), path ("${sample}/final.contigs.fa"), emit: contigs_fa
+    tuple val(meta), path ("${meta.id}/final.contigs.fa"), val ("contigs_illumina"), emit: contigs_fa
+    tuple val(meta), path("${meta.id}/log"), emit: log
 
 
     script:
     """
-    megahit -1 ${reads[0]} -2 ${reads[1]} --out-dir ${sample} --k-min 27 --k-max 127 --k-step 10 --num-cpu-threads ${task.cpus}
+    megahit -1 ${reads[0]} -2 ${reads[1]} --out-dir ${meta.id} --k-min 27 --k-max 127 --k-step 10 --num-cpu-threads ${task.cpus}
+    """
+    stub:
+    """
+    mkdir ${meta.id}
+    touch ${meta.id}/final.contigs.fa
     """
 }
 
-process megahit_se {
-    tag "${sample}"
-    publishDir "$params.outdir/ONT_contigs", mode: 'symlink'
+process MEGAHIT_SE {
+    tag "${meta.id}"
+    publishDir "$baseDir/${other}_contigs", mode: 'symlink'
 
     input:
-    tuple val(sample), path(reads)
+    tuple val(sample), val(base_name), path(reads), val (seq_type)
 
     output:
-    tuple val(sample), path ("${sample}/final.contigs.fa"), emit: contigs_fa
+    tuple val(sample), val("${base_name}.contigs"), path ("${base_name}/final.contigs.fa"), val("contigs_ont"), emit: contigs_fa
 
     script:
     """
-    megahit -r ${reads}  --out-dir ${sample} --k-min 27 --k-max 127 --k-step 10 --num-cpu-threads ${task.cpus}
+    megahit -r ${reads}  --out-dir ${base_name} --k-min 27 --k-max 127 --k-step 10 --num-cpu-threads ${task.cpus}
+    """
+    stub:
+    """
+    mkdir ${base_name}
+    touch ${base_name}/final.contigs.fa
     """
 }
 
 workflow {
-    Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/input/tests/cor_test_ill/*_{1,2}.fq.gz"). set {input_fq}
-    megahit_pe(input_fq)
-    megahit_pe.out.contigs_fa.view()
+    Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/concat_fastqs/H2/*_{1,2}.fq.gz") //    Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/concat_fastqs/Host_zoox_free/*_{1,2}.fq.gz")
+        | map { id, reads ->
+            (species, replicate, method, buffer, other, unspecified) = id.tokenize("_")
+            meta = [
+                id:id,
+                // single_end:'PE',
+                species:species,
+                replicate:replicate,
+                method:method,
+                buffer:buffer,
+                other:other,
+                unspecified:unspecified,
+            ]
+            [meta, reads]
+    //    | view()
+    }
+        | MEGAHIT_PE
+    // MEGAHIT_PE(input_ch_pe)
 }

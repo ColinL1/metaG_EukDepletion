@@ -21,11 +21,7 @@ process MINIMAP2_MAP {
         """
         minimap2 -t ${task.cpus} -ax map-ont ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${base_name}.${ref_name}.bam
         """
-    else if( "${seq_type}" == 'contigs_ont' )
-	"""
-	minimap2 -t ${task.cpus} -ax asm5 ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${base_name}.${ref_name}.bam
-	"""
-    else if( "${seq_type}" == 'contigs_illumina' )
+    else if( "${seq_type}" == '{contigs_ont,contigs_illumina}' )
         """
         minimap2 -t ${task.cpus} -ax asm5 ${reference} ${reads} --split-prefix=tmp | samtools view -S -b > ${base_name}.${ref_name}.bam
         """
@@ -38,16 +34,16 @@ process MINIMAP2_MAP {
         touch ${base_name}.${ref_name}.bam
         touch ONT-${seq_type}
         """
-    else if( "${seq_type}" == 'contigs_ont' )
-	"""
-	touch ${base_name}.${ref_name}.bam
-	touch contigs_ont-${seq_type}
-	"""
-    else if( "${seq_type}" == 'contigs_illumina' )
+    else if( "${seq_type}" == '{contigs_ont' )
         """
         touch ${base_name}.${ref_name}.bam
-        touch contigs_illumina-${seq_type}
+        touch contigs_ont-${seq_type}
         """
+    else if( "${seq_type}" == 'contigs_illumina' )
+	"""
+	touch ${base_name}.${ref_name}.bam
+	touch contigs_illumina-${seq_type}
+	"""
     else
     error "Invalid alignment mode: ${seq_type}"
 }

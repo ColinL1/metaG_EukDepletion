@@ -1,24 +1,55 @@
 #!/usr/bin/env nextflow
 
-process kaiju {
+process KAIJU_SE {
+    tag "${sample}"
+    // cpus "${params.cpusHigh}"
+    // memory "${params.memMax}"
+    publishDir "$params.outdir/${seq_type}/Kaiju_reports/", mode: 'symlink'
+
+    input: 
+    tuple val(sample), val(base_name), path(reads), val(seq_type)
+
+
+    output:
+    tuple val(sample), val(base_name), path("${base_name}.out"), val(seq_type), emit: report_kaiju_out
+
+    script:
+    """
+    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads} -a mem -z ${task.cpus} -o ${base_name}.out
+    """
+    stub:
+    """
+    touch ${base_name}.out
+    """
+}
+
+process KAIJU_PE {
     tag "${sample}"
     // cpus "${params.cpusHigh}"
     // memory "${params.memMax}"
     publishDir "$params.outdir/Kaiju_reports/", mode: 'symlink'
 
     input: 
-    tuple val(sample), path(reads)
+    // tuple val(sample), path(reads)
+    tuple val(sample), val(base_name), path(reads), val(seq_type)
 
     output:
-    tuple val(sample), path("${sample}.out"), emit: report_kaiju_out
+    tuple val(sample), val(base_name), path("${base_name}.out"), val(seq_type), emit: report_kaiju_out
 
     script:
     """
-    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads} -a mem -z ${task.cpus} -o ${sample}.out
+    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${base_name}.out
+    """
+    stub:
+    """
+    touch ${base_name}.out
     """
 }
 
-process kaiju_multi {
+
+//all below is to fix and NOT USED currently 
+
+process kaiju_multi { //to fix NOT USED AS IS 
     tag "${out_names}"
     label 'big_mem'
     // cpus "${params.cpusVHigh}"
@@ -35,27 +66,17 @@ process kaiju_multi {
     """
     kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
     """
-}
-
-process kaiju_pe {
-    tag "${sample}"
-    // cpus "${params.cpusHigh}"
-    // memory "${params.memMax}"
-    publishDir "$params.outdir/Kaiju_reports/", mode: 'symlink'
-
-    input: 
-    tuple val(sample), path(reads)
-
-    output:
-    tuple val(sample), path("${sample}.out"), emit: report_kaiju_out
-
-    script:
+    stub:
     """
-    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${sample}.out
+    touch ${base_name}_1.out
+    touch ${base_name}_2.out
+    touch ${base_name}_3.out
+    touch ${base_name}_4.out
+    touch ${base_name}_5.out
     """
 }
 
-process kaiju_multi_pe {
+process kaiju_multi_pe { //to fix NOT USED AS IS 
     tag "${out_names}"
     label 'big_mem'
     // cpus 230
@@ -71,6 +92,14 @@ process kaiju_multi_pe {
     script:
     """
     kaiju-multi -t ${params.nodes} -f ${params.kaiju_db} -i ${(reads_1 as List).join(',')} -j ${(reads_2 as List).join(',')} -a mem -z ${task.cpus} -o ${(out_names as List).join(',')}
+    """
+    stub:
+    """
+    touch ${base_name}_1.out
+    touch ${base_name}_2.out
+    touch ${base_name}_3.out
+    touch ${base_name}_4.out
+    touch ${base_name}_5.out
     """
 }
 

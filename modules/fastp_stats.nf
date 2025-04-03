@@ -1,42 +1,52 @@
 #!/usr/bin/env nextflow
 
-process fastp_report {
-    tag "${sample_name}"
+process FASTP_REPORT {
+    tag "${sample}"
     // cpus "${params.cpusMin}"
     maxRetries 5
     errorStrategy  { task.attempt <= maxRetries  ? 'retry' : 'ignore' }
-    publishDir "$params.outdir/fastp/${sample_name}", mode: 'symlink'
+    publishDir "$params.outdir/${seq_type}/fastp/${base_name}", mode: 'symlink'
 
     input: 
-    tuple val(sample_name), path(reads)
-
+    tuple val(sample), val(base_name), path(reads), val (seq_type)
+    
     output:
-    tuple val(sample_name), path ("${sample_name}.json"), emit: report_json
-    tuple val(sample_name), path ("${sample_name}.html"), emit: report_html
+    tuple val(sample), val(base_name), path ("${base_name}_fastp.json"), val (seq_type), emit: report_json
+    tuple val(sample), val(base_name), path ("${base_name}_fastp.html"), val (seq_type), emit: report_html
 
     script:
     """
-    fastp -i ${reads} --json ${sample_name}.json --html ${sample_name}.html -w 16 -Q -L -A &> /dev/null
+    fastp -i ${reads} --json ${base_name}_fastp.json --html ${base_name}_fastp.html -w 16 -Q -L -A &> /dev/null
+    """
+    stub:
+    """
+    touch ${base_name}_fastp.json
+    touch ${base_name}_fastp.html
     """
 }
 
-process fastp_fasta_report {
+process fastp_fasta_report { //TODO: add ${seq_type}
     tag "${sample_name}"
     // cpus "${params.cpusMin}"
     maxRetries 5
     errorStrategy  { task.attempt <= maxRetries  ? 'retry' : 'ignore' }
-    publishDir "$params.outdir/fastp/${sample_name}", mode: 'symlink'
+    publishDir "$params.outdir/${seq_type}/fastp/${base_name}", mode: 'symlink'
 
     input: 
-    tuple val(sample_name), path(reads)
+    tuple val(base_name), path(reads)
 
     output:
-    tuple val(sample_name), path ("${sample_name}.json"), emit: report_json
-    tuple val(sample_name), path ("${sample_name}.html"), emit: report_html
+    tuple val(base_name), path ("${base_name}_fastp.json"), emit: report_json
+    tuple val(base_name), path ("${base_name}_fastp.html"), emit: report_html
 
     script:
     """
-    seqtk seq -F '#' ${reads} > ${sample_name}.fq
-    fastp -i ${sample_name}.fq --json ${sample_name}.json --html ${sample_name}.html -w 16 -Q -L -A &> /dev/null
+    seqtk seq -F '#' ${reads} > ${base_name}.fq
+    fastp -i ${base_name}.fq --json ${base_name}.json --html ${base_name}.html -w 16 -Q -L -A &> /dev/null
+    """
+    stub:
+    """
+    touch ${base_name}_fastp.json
+    touch ${base_name}_fastp.html
     """
 }
