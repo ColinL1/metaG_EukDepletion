@@ -9,7 +9,7 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 flowchart TD
 
   Q[qPCR] --> R[Outlier detection]
-  R -->  P[R plot]
+  R -->  P
 
   A[Input Reads] --> B[Trim Reads]
   B --> C[Bowtie2 filter host Reads]
@@ -22,14 +22,17 @@ flowchart TD
   H --> J[Run Kaiju on Samples]
 
   B --> K[Concatenate Reads]
-  K --> L[CAT]
-  K --> M[Binning] 
-  M --> N[nf-core/mags]
+  K --> L[Assemble Reads with Megahit]
+  L --> M[CAT]
+  M --> N[Binning] 
+  N --> O[nf-core/mags]
+  S --> P[R tidyr/ggplot]
 
-  N --> P[R plot]
-  L --> P[R plot]
-  E --> P[R plot]
-  J --> P[R plot]
+  M --> S[seqkit stats]
+  E --> S
+  J --> S
+
+  O --> P
 ```
 
  - - -
