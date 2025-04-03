@@ -1,7 +1,43 @@
 # metaG_EukDepletion
 Code used for analysis of kingdom taxonomy to assess the development of a cnidarian metagenomic protocol for efficient eukaryotic DNA removal
   - - -
-### Pre-final release!
+
+## Flowchart
+
+```mermaid
+
+flowchart TD
+
+  Q[qPCR] --> R[Outlier detection]
+  R -->  P[R plot]
+
+  A[Input Reads] --> B[Trim Reads]
+  B --> C[Bowtie2 filter host Reads]
+  C --> D[Bowtie2 filter symbiont Reads]
+  D --> E[Run Kaiju on Samples]
+
+  B --> F[Assemble Reads with Megahit]
+  F --> G[Minmap2 filter host Reads]
+  G --> H[Minimap2 filter symbiont Reads]
+  H --> J[Run Kaiju on Samples]
+
+  B --> K[Concatenate Reads]
+  K --> L[CAT]
+  K --> M[Binning] 
+  M --> N[nf-core/mags]
+
+  N --> P[R plot]
+  L --> P[R plot]
+  E --> P[R plot]
+  J --> P[R plot]
+```
+
+ - - -
+
+<details>
+  <summary>
+  Previous version logic. Discarded after project abandoned ONT data
+  </summary>
 
 #### Flow chart (Temp)
 
@@ -23,6 +59,7 @@ Processes:
 1. Parse all json report with custom python script collecting them in single csv report ready for downstream data analyses 
 
 <!-- More detailed workflow explanation coming soon. -->
+
   - - -
 
 ### Pre-requisites: 
@@ -115,9 +152,7 @@ Requirements:
 More detailed workflow explanation coming soon.
  -->
 
-
-
-DOSE list what 
+</details>
 
 <!-- ## Quick start:
 ```
