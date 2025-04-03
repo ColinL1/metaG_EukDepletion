@@ -1,5 +1,11 @@
-input/*
+.vscode
+.nextflow
 .nextflow.log*
 work/
+input/*
 results*/
+references/*
 outdated_logic
+manual_piplines
+modules/
+!modules/*.nf
