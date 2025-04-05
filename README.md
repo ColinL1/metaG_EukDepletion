@@ -11,37 +11,35 @@ flowchart TD
   Q@{ shape: procs, label: "qPCR Ct data"}
 
   Q --> R[Outlier detection]
-  
+
   end
   R -->  P
   
   A@{ shape: procs, label: "Input Reads"} 
-  A e1@==> B[Trim Reads]
-  e1@{ animate: true }
-  B e2@==> C[Bowtie2 filter host Reads]
+  A  ==> B['Trim Reads']
+  %% @{ animate: true }
+  B ==> C[Bowtie2 filter host Reads]
+  
   subgraph Reads based 
-  e2@{ animate: true }
 
   C --> D[Bowtie2 filter symbiont Reads]
   D --> E[Run Kaiju on Samples]
   end
-  B e3@==> F[Assemble Reads with Megahit]
-  e3@{ animate: true }
+  B ==> F[Assemble Reads with Megahit]
   subgraph Assembly based 
   F --> G[Minmap2 filter host Reads]
   G --> H[Minimap2 filter symbiont Reads]
   H --> J[Run Kaiju on Samples]
   end
-  B e4@==> K[Concatenate Reads]
-  e4@{ animate: true }
+  B ==> K[Concatenate Reads]
   subgraph CoAssembly based 
   K --> L[Assemble Reads with Megahit]
   L --> M[CAT]
   end
-  L e5@==> N[Binning] 
-  e5@{ animate: true }
-  B e6@==> N[Binning] 
-  e6@{ animate: true }
+  L ==> N[Binning] 
+
+  B ==> N[Binning] 
+  %% e6@{ animate: true }
   
   O@{ shape: paper-tape, label: "nf-core/mags"} 
   N --> O
