@@ -7,6 +7,7 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 ```mermaid
 
 flowchart TD
+
   subgraph qPCR
   Q@{ shape: procs, label: "qPCR Ct data"}
 
@@ -16,7 +17,7 @@ flowchart TD
   R -->  P
   
   A@{ shape: procs, label: "Input Reads"}
-   
+
   A  ==> B['Trim Reads']
   %% @{ animate: true }
   B ==> C[Bowtie2 filter host Reads]
@@ -43,7 +44,9 @@ flowchart TD
   %% e6@{ animate: true }
   
   O@{ shape: paper-tape, label: "nf-core/mags"} 
+
   N --> O
+  
   S --> P[R tidyr/ggplot]
 
   M --> S[seqkit stats]
