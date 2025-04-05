@@ -15,7 +15,8 @@ flowchart TD
   end
   R -->  P
   
-  A@{ shape: procs, label: "Input Reads"} 
+  A@{ shape: procs, label: "Input Reads"}
+   
   A  ==> B['Trim Reads']
   %% @{ animate: true }
   B ==> C[Bowtie2 filter host Reads]
