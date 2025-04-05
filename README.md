@@ -9,14 +9,13 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 flowchart TD
 
   subgraph qPCR
-  Q@{ shape: procs, label: "qPCR Ct data"}
-
+  %% Q@{ shape: procs, label: "qPCR Ct data"}
   Q --> R[Outlier detection]
 
   end
   R -->  P
   
-  A@{ shape: procs, label: "Input Reads"}
+  %% A@{ shape: procs, label: "Input Reads"}
 
   A  ==> B['Trim Reads']
   %% @{ animate: true }
@@ -43,7 +42,7 @@ flowchart TD
   B ==> N[Binning] 
   %% e6@{ animate: true }
   
-  O@{ shape: paper-tape, label: "nf-core/mags"} 
+  %% O@{ shape: paper-tape, label: "nf-core/mags"} 
 
   N --> O
   
@@ -54,6 +53,7 @@ flowchart TD
   J --> S
 
   O --> P
+
 ```
 
  - - -
