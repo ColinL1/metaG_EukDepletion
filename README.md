@@ -15,8 +15,8 @@ flowchart TD
   end
   R -->  P
   
-  %% A@{ shape: procs, label: "Input Reads"}
-  A["Input Reads"]
+  A@{ shape: procs, label: "Input Reads"}
+  A
   A  ==> B["Trim Reads"]
   %% @{ animate: true }
   B ==> C[Bowtie2 filter host Reads]
@@ -33,16 +33,18 @@ flowchart TD
   H --> J[Run Kaiju on Samples]
   end
   B ==> K[Concatenate Reads]
+
   subgraph CoAssembly based 
   K --> L[Assemble Reads with Megahit]
   L --> M[CAT]
   end
   L ==> N[Binning] 
+  F ==> N[Binning] 
 
   B ==> N[Binning] 
   %% e6@{ animate: true }
   
-  %% O@{ shape: paper-tape, label: "nf-core/mags"} 
+  O@{ shape: paper-tape, label: "nf-core/mags"} 
 
   N --> O
   
