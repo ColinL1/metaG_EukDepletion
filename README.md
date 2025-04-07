@@ -4,9 +4,76 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 
 ## Flowchart
 
+<!-- ![Diagram](mermaid-diagram.png) -->
 
-![Workflow Diagram](mermaid-diagram-2025-04-07-114320.svg "Workflow Diagram")
+```mermaid
+%% %%{
+%%   init: {
+%%     'theme': 'base',
+%%     'themeVariables': {
+%%       'primaryColor': '#BB2528',
+%%       'primaryTextColor': '#fff',
+%%       'primaryBorderColor': '#7C0000',
+%%       'lineColor': '#F8B229',
+%%       'secondaryColor': '#006100',
+%%       'tertiaryColor': '#fff'
+%%     }
+%%   }
+%% }%%
+flowchart LR
 
+  %% Reads based section
+    A@{ shape: procs, label: "Input Reads" }
+    A ==> B["Trim Reads"]
+    B ==> C["<div style='font-weight:bold'>Bowtie2</div> Filter Host Reads"]
+  subgraph "reads based"
+    C --> D["<div style='font-weight:bold'>Bowtie2</div> Filter Symbiodiniaceae Reads"]
+    D --> E["<div style='font-weight:bold'>Kaiju</div> Identify Bactieria Reads"]
+  end
+
+  %% Assembly based section
+  
+    B ==> F["<div style='font-weight:bold'>Megahit</div>Assemble Reads"]
+  subgraph "assembly based" 
+    F --> G["<div style='font-weight:bold'>Minimap2</div> Filter Host Sequences"]
+    G --> H["<div style='font-weight:bold'>Minimap2</div> Filter Symbiodiniaceae Sequences"]
+    H --> J["<div style='font-weight:bold'>Kaiju</div> Identify Bactieria Sequences"]
+  end
+
+  %% CoAssembly based section
+    B ==> K[Concatenate Reads]
+  subgraph "coassembly based"
+    K --> L["<div style='font-weight:bold'>Megahit</div>Assemble Reads"]
+    L --> M[CAT]
+  end
+
+  %% Binning
+  L -..-> N
+  F -..-> N
+  B -..-> N
+
+  %% Output and Analysis
+  N@{ shape: paper-tape, label: "nf-core/mags" }
+  N --> O["<div style='font-weight:bold'>METABAT2 / MAXBIN2 / CONCOCT</div> Binning modes (multi-sample, co-assembly)"]
+
+
+  M --> S[seqkit stats]
+  E --> S
+  J --> S
+
+  S --> P[R tidyr/ggplot]
+  O --> P
+  R --> P
+
+  %% Dummy connections to enforce layout
+
+%% qPCR section
+  subgraph qPCR
+    Q@{ shape: procs, label: "qPCR Ct data" }
+    Q --> R[Outlier detection]
+  end
+  
+  ```
  - - -
 
 <details>
