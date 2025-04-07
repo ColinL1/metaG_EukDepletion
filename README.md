@@ -4,59 +4,8 @@ Code used for analysis of kingdom taxonomy to assess the development of a cnidar
 
 ## Flowchart
 
-```mermaid
 
-flowchart TD
-
-  subgraph qPCR
-  %% Q@{ shape: procs, label: "qPCR Ct data"}
-  Q --> R[Outlier detection]
-
-  end
-  R -->  P
-  
-  A@{ shape: procs, label: "Input Reads"}
-  A
-  A  ==> B["Trim Reads"]
-  %% @{ animate: true }
-  B ==> C[Bowtie2 filter host Reads]
-  
-  subgraph Reads based 
-
-  C --> D[Bowtie2 filter symbiont Reads]
-  D --> E[Run Kaiju on Samples]
-  end
-  B ==> F[Assemble Reads with Megahit]
-  subgraph Assembly based 
-  F --> G[Minmap2 filter host Reads]
-  G --> H[Minimap2 filter symbiont Reads]
-  H --> J[Run Kaiju on Samples]
-  end
-  B ==> K[Concatenate Reads]
-
-  subgraph CoAssembly based 
-  K --> L[Assemble Reads with Megahit]
-  L --> M[CAT]
-  end
-  L ==> N[Binning] 
-  F ==> N[Binning] 
-
-  B ==> N[Binning] 
-  %% e6@{ animate: true }
-  
-  O@{ shape: paper-tape, label: "nf-core/mags"} 
-
-  N --> O
-  
-  S --> P[R tidyr/ggplot]
-
-  M --> S[seqkit stats]
-  E --> S
-  J --> S
-
-  O --> P
-
-```
+![Workflow Diagram](mermaid-diagram-2025-04-07-114320.svg "Workflow Diagram")
 
  - - -
 
