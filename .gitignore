@@ -10,3 +10,4 @@ manual_piplines
 modules/templates
 modules/mmseq2_diamond
 modules/adapters
+plots
