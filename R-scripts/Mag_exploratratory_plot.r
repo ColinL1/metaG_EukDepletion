@@ -69,7 +69,7 @@ combined_mags <- bind_rows(mags_parsed, mags_parsed_coass)
 # write_tsv(combined_summary, paste0(folder_path,"gunc_checkm_summary_combined_summary.tsv"))
 
 combined_mags_small <- combined_mags %>%
-  group_by(strain, treatment, buffer, bin_id, origin) %>%
+  group_by(strain, replicate, treatment, buffer, bin_id, origin) %>%
   summarize(
     completeness = checkM.completeness,
     contamination = checkM.contamination,
@@ -175,22 +175,11 @@ taxon_color_named <- setNames(combined_mags_small$lineage_color, combined_mags_s
 p_load("lemon")
 p_load("ggforce")
 
-combined_mags_small$grouping <- paste(combined_mags_small$buffer, combined_mags_small$strain, sep = " - ")
+combined_mags_small$grouping <- paste(combined_mags_small$strain, combined_mags_small$buffer, sep = " - ")
 
 unique(combined_mags_small$grouping)
 
 # set completeness value 
-completeness_value <- 50
-
-big_plot <- combined_mags_small %>%
-        filter(completeness >= completeness_value) %>%
-        filter(contamination <= 10) %>%
-        ggplot(aes(x = treatment, fill = lineage)) +
-        geom_bar(stat = "count") +
-        facet_grid( ~ grouping , scales = "free") +#, nrow = 1) +
-        theme_minimal(base_size = 12) +
-        scale_fill_manual(values = taxon_color_named) 
-big_plot + facet_wrap(origin ~ grouping, scales = "free_x", nrow = 1) 
 
 extract_legend <- function(plot) {
     g <- ggplotGrob(plot)
@@ -198,100 +187,145 @@ extract_legend <- function(plot) {
     return(legend)
 }
 
-legend <- extract_legend(big_plot)
-mainplot <- list()
-for (o in c("co-assembly", "co-binning")) {
-    # Filter the data for the current origin
-        plot_list <- list()
-        x <- 1
-        for (i in c("PBS - H2","DESS - H2", "PBS - F003","DESS - F003","DESS - Acropora", "DESS - Pocillopora", "DESS - Porites")){
-
-        data_plot <- combined_mags_small %>%
-            filter(completeness >= completeness_value) %>%
-            filter(origin == o) %>%
-            filter(contamination <= 10) %>%
-            filter(grouping == i)
-
-        if(unique(data_plot$group) == "Aiptasia") {
-            faceting_var <- " ~ grouping"
-            scale_limit <- if (completeness_value == 50) ylim(0, 52) else ylim(0, 30)
-            width_bar <- 0.8
-        }
-        else {
-            faceting_var <- " ~ strain"
-            scale_limit <- if (completeness_value == 50) ylim(0, 12) else ylim(0, 10)
-            width_bar <- 0.5
-        }
-        p <- data_plot %>%
-            ggplot(aes(x = treatment, fill = lineage)) +
-            geom_bar(stat = "count", width = width_bar) +
-            facet_wrap(faceting_var, scales = "free", nrow = 1) +
-            theme_minimal(base_size = 12) +
-            labs(
-                title = "",
-                x = "",
-                y = "",
-                fill = "Lineage",
-            ) +
-            scale_fill_manual(values = taxon_color_named) +
-            scale_limit +
-            scale_x_discrete(labels = ~ str_wrap(.x, width = 10)) +
-            theme(strip.text.y = element_blank(),
-            strip.text.x = element_text(size = 14, face = ifelse(i == "Aiptasia", "plain", "italic")),
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            strip.background = element_blank(),
-            line = element_line(linewidth = 1),
-            axis.line = element_line(colour = "black"),
-            axis.ticks.length = unit(0.2 , "cm"))
-
-        plot_list[[x]] <- p
-        x <- x + 1
-        }
-        # httpgd::hgd()
-
-        # p_load("ggpubr")
-        fplot <- annotate_figure(ggarrange(
-            ggarrange(plot_list[[1]] + theme(legend.position = "none"),
-                        plot_list[[2]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
-                        plot_list[[3]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
-                        plot_list[[4]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1),
-            ggarrange(plot_list[[5]] + theme(legend.position = "none") ,# + geom_bar(width = 0.02),
-                        plot_list[[6]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
-                        plot_list[[7]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), legend, nrow = 1), nrow = 2),
-            fig.lab = paste0("MAGs summary (", o, ")"), left = "Number of MAGs", bottom = "Treatment")
-
-    mainplot[[o]] <- fplot
-
+# Custom labeller function to italicise species names and leave buffer as is
+custom_labeller <- function(labels) {
+    if (is.atomic(labels)) {
+        # If the input is a vector, process it directly
+        labels <- sapply(labels, function(label) {
+            parts <- unlist(strsplit(as.character(label), " - ", fixed = TRUE))
+            if (parts[1] %in% c("H2", "F003")) {
+                label
+            } else {
+                bquote(italic(.(parts[1])) ~ "- " ~ .(parts[2]))
+            }
+        })
+    } else if (is.data.frame(labels)) {
+        # If the input is a data frame, modify the value column
+        labels$value <- sapply(labels$value, function(label) {
+            parts <- unlist(strsplit(as.character(label), " - ", fixed = TRUE))
+            if (parts[1] %in% c("H2", "F003")) {
+                label
+            } else {
+                bquote(italic(.(parts[1])) ~ "- " ~ .(parts[2]))
+            }
+        })
+    }
+    return(labels)
 }
 
-mainplot
-# Save to file 
-out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
-ggsave(mainplot[[1]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-assembly.pdf"), width = 24, height = 16) # A4 dimensions in inches
-ggsave(mainplot[[2]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-binning.pdf"), width = 24, height = 16)
+completeness_value <- 90
+for (completeness_value in c(50, 90)) {
+    big_plot <- combined_mags_small %>%
+            filter(completeness >= completeness_value) %>%
+            filter(contamination <= 10) %>%
+            ggplot(aes(x = treatment, fill = lineage)) +
+            geom_bar(stat = "count") +
+            facet_grid( ~ grouping, scales = "free") + #, nrow = 1) +
+            theme_minimal(base_size = 12) +
+            guides(fill = guide_legend(nrow = 4)) + # title = expression(paste(italic("ITS2"), " type profile")))) 
+            scale_fill_manual(values = taxon_color_named) +
+            theme(legend.position = "bottom", 
+                legend.spacing.x = unit(0.01, "cm"))
+    # big_plot + facet_wrap(origin ~ grouping, scales = "free_x", nrow = 4) 
 
+    legend <- extract_legend(big_plot)
+    mainplot <- list()
+    for (o in c("co-assembly", "co-binning")) {
+        # Filter the data for the current origin
+            plot_list <- list()
+            x <- 1
+            # for (i in c("PBS - H2", "DESS - H2", "PBS - F003", "DESS - F003", "DESS - Acropora", "DESS - Pocillopora", "DESS - Porites")){
+            for (i in c("H2 - PBS", "H2 - DESS", "F003 - PBS", "F003 - DESS", "Acropora - DESS", "Pocillopora - DESS", "Porites - DESS")){
+
+            data_plot <- combined_mags_small %>%
+                filter(completeness >= completeness_value) %>%
+                filter(origin == o) %>%
+                filter(contamination <= 10) %>%
+                filter(grouping == i)
+
+            if(unique(data_plot$group) == "Aiptasia") {
+                faceting_var <- " ~ grouping"
+                scale_limit <- if (completeness_value == 50) ylim(0, 52) else ylim(0, 30)
+                width_bar <- 0.8
+            }
+            else {
+                faceting_var <- " ~ grouping"
+                scale_limit <- if (completeness_value == 50) ylim(0, 12) else ylim(0, 10)
+                width_bar <- 0.5
+            }
+            p <- data_plot %>%
+                ggplot(aes(x = treatment, fill = lineage)) +
+                geom_bar(stat = "count", width = width_bar) +
+                facet_wrap(faceting_var, scales = "free", nrow = 1, labeller = as_labeller(custom_labeller, label_parsed)) +
+                theme_minimal(base_size = 12) +
+                labs(
+                    title = "",
+                    x = "",
+                    y = "",
+                    fill = "Lineage",
+                ) +
+                scale_fill_manual(values = taxon_color_named) +
+                scale_limit +
+                scale_x_discrete(labels = ~ str_wrap(.x, width = 10)) + #guide = guide_axis(n.dodge = 1)
+                theme(legend.position = "none",
+                strip.text.y = element_blank(),
+                strip.text.x = element_text(size = 14, face = ifelse(i == "Aiptasia", "plain", "italic")),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                strip.background = element_blank(),
+                line = element_line(linewidth = 1),
+                axis.line = element_line(colour = "black"),
+                axis.ticks.length = unit(0.2 , "cm"))
+
+            plot_list[[x]] <- p
+            x <- x + 1
+            }
+            # httpgd::hgd()
+
+            # p_load("ggpubr")
+            fplot <- annotate_figure(
+                ggarrange(
+                # ggarrange(
+                ggarrange(plot_list[[1]] + theme(legend.position = "none"),
+                            plot_list[[2]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[3]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[4]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1),
+                ggarrange(plot_list[[5]] + theme(legend.position = "none") ,# + geom_bar(width = 0.02),
+                            plot_list[[6]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[7]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1), legend, heights = c(1, 1, 0.3), widths = c(1,1,0.3), nrow = 3),
+                fig.lab = paste0("MAGs summary (", o, ")"), left = "Number of MAGs", bottom = "Treatment")
+
+        mainplot[[o]] <- fplot
+    }
+
+    print(mainplot)
+
+    # Save to file 
+    out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
+    ggsave(mainplot[[1]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-assembly.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11) # A4 dimensions in inches
+    ggsave(mainplot[[2]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11)
+}
 # origin <- c("co-assembly", "co-binning")
 # Plot with custom colors
-p <- combined_mags_small %>%
-    filter(completeness >= completeness_value) %>%
-    filter(contamination <= 10) %>%
-    # filter(strain != "F003") %>%
-    # filter(strain != "H2") %>%
-    ggplot(aes(x = treatment, fill = lineage)) +
-    geom_bar(stat = "count") +
-    facet_wrap(strain ~ buffer + origin, scales = "free_y", nrow = 6, ncol = 3) +
-    theme_minimal() +
-    labs(
-        title = "Number of MAGs",
-        x = "",
-        y = "Number of MAGs",
-        fill = "Lineage"
-    ) +
-    scale_fill_manual(values = taxon_color_named) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# p <- combined_mags_small %>%
+#     filter(completeness >= completeness_value) %>%
+#     filter(contamination <= 10) %>%
+#     # filter(strain != "F003") %>%
+#     # filter(strain != "H2") %>%
+#     ggplot(aes(x = treatment, fill = lineage)) +
+#     geom_bar(stat = "count") +
+#     facet_wrap(strain ~ buffer + origin, scales = "free_y", nrow = 6, ncol = 3) +
+#     theme_minimal() +
+#     labs(
+#         title = "Number of MAGs",
+#         x = "",
+#         y = "Number of MAGs",
+#         fill = "Lineage"
+#     ) +
+#     scale_fill_manual(values = taxon_color_named) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-shift_legend2(p+ coord_flip())
+# shift_legend2(p + coord_flip())
 # Custom function to shift legend into empty facet panels
 shift_legend2 <- function(p) {
     # check if p is a valid object
@@ -325,24 +359,61 @@ shift_legend2 <- function(p) {
     lemon::reposition_legend(p, 'center', panel=names)
 }
 
+completeness_value <- 90
 # Get number of bins per strain, treatment, and buffer with completeness above 50
 summary_mags <- combined_mags_small %>%
-        filter(completeness >= 90) %>%
+        filter(completeness >= completeness_value) %>%
         group_by(strain, treatment, buffer, lineage) %>%
         summarize(
                 bins_count = n(),
                 .groups = "drop"
         )
 
-ggplot(summary_mags, aes(x = treatment, y = bins_count, fill = treatment)) +
-    geom_boxplot() +
-    facet_wrap(~ buffer + strain, scales = "free_x", nrow = 1) +
-    theme_minimal() +
-    labs(
-        title = "Completeness of MAGs",
-        x = "",
-        y = "Number of Bins"
-    )
+# ggplot(summary_mags, aes(x = treatment, y = bins_count, fill = treatment)) +
+#     geom_boxplot() +
+#     facet_wrap(~ buffer + strain, scales = "free_x", nrow = 1) +
+#     theme_minimal() +
+#     labs(
+#         title = "Completeness of MAGs",
+#         x = "",
+#         y = "Number of Bins"
+#     )
+
+completeness_value <- 50
+for (i in c("F003", "H2")) {
+    # test_data$mapping[test_data$mapping == i] <- i
+
+    for (j in c("DESS", "PBS" )) {
+        plot_data <- combined_mags_small %>%
+            filter(completeness >= completeness_value) %>%
+            group_by(strain, treatment, buffer, lineage) %>%
+                summarize(
+                    bins_count = n(),
+                    .groups = "drop"
+                ) %>%
+            filter(strain == i) %>%
+            filter(buffer == j)
+        print(paste("Testing for ", i, " in ", j))    
+        print(compare_means(bins_count ~ treatment , plot_data, method = "wilcox.test", paired = FALSE))
+    }
+}
+
+for (i in c("Porites", "Pocillopora")) {
+    # test_data$mapping[test_data$mapping == i] <- i
+
+    for (j in c("DESS")) {
+        plot_data <- combined_mags_small %>%
+            filter(completeness >= 50) %>%
+            group_by(strain, treatment, buffer, lineage) %>%
+                summarize(
+                    bins_count = n(),
+                    .groups = "drop"
+                ) %>%
+            filter(strain == i) %>%
+            filter(buffer == j)
+        print(compare_means(bins_count ~ treatment, plot_data, method = "wilcox.test", paired = FALSE))
+    }
+}
 
 # test for significance and add it to the plot
 summary_mags <- combined_mags_small %>%
@@ -361,6 +432,114 @@ summary_mags <- combined_mags_small %>%
 # Perform statistical test for significance of treatment on bins_count
 anova_results <- aov(bins_count ~  treatment + buffer, data = summary_mags)
 summary(anova_results)
+
+combined_mags_small["grouping"] <- paste(combined_mags_small$strain, combined_mags_small$buffer, sep = " - ")
+treatment_colour <- c(
+                    "Benzonase" = "#1f77b4",
+                    "Blood & Tissue Kit" = "#ff7f0e",
+                    "Microbiome Kit" = "#2ca02c",
+                    "Microbiome Kit + Bead beating" = "#d62728",
+                    "Microbiome Kit + spinning" = "#9467bd")
+boxplots_list <- list()
+for (completeness_value in c(50, 90)) {
+    plot_list <- list()
+    # loop through each strain and buffer combination for better plotting
+    for (i in unique(combined_mags_small$grouping)) {
+        
+        # set variable plots y limits
+        if (i == "H2 - PBS" || i == "H2 - DESS") {
+          scale_limit <- if (completeness_value == 50) {
+            c(0, 32)
+          } else {
+            c(0, 22)
+          }
+        } else if (
+          i == "Acropora - DESS" || 
+          i == "Porites - DESS" || 
+          i == "Pocillopora - DESS"
+        ) {
+          scale_limit <- if (completeness_value == 50) {
+            c(0, 8)
+          } else {
+            c(0, 6)
+          }
+        }
+
+        plot_data <- combined_mags_small %>%
+                filter(completeness >= completeness_value) %>%
+                group_by(grouping, strain, treatment, buffer, lineage) %>%
+                summarize(
+                        bins_count = n(),
+                        .groups = "drop"
+                ) %>%
+            # filter(treatment == "Microbiome Kit + Bead beating" | treatment == "Microbiome Kit" | treatment == "Microbiome Kit + spinning") %>%
+            filter(grouping == i)
+
+        plot_temp <- ggplot(plot_data, aes(x = treatment, y = bins_count, fill = treatment)) +
+            geom_boxplot() + # data = plot_data_box, aes(x = treatment, y = bins_count, fill = treatment)) +
+            geom_jitter(aes(fill = treatment),
+                        shape = 21,              # Use a shape that supports border and fill
+                        colour = "black",      # Set border color to black
+                        width = 0.2,
+                        alpha = 0.9,
+                        size = 2,
+                        stroke = 1,
+                        height = if (nrow(plot_data) > 1) 0 else 0  # Adjust border thickness as needed
+                        ) +
+            facet_wrap(~ grouping, scales = "free_x", nrow = 1) +
+            theme_minimal() +
+            scale_x_discrete(labels = ~ str_wrap(.x, width = 10)) +
+            scale_colour_manual(
+                    values = treatment_colour) +
+            scale_fill_manual(
+                    values = treatment_colour) +
+            # stat_compare_means(method = "anova", label.y = max(plot_data$bins_count, na.rm = TRUE) * 1.2) + # Add global p-values. removed as nothing significant 
+            labs(
+                title = "",
+                x = "",
+                y = "") +
+            theme(legend.position = "none", line = element_line(size = 1),
+                axis.line = element_line(colour = "black"),
+                axis.ticks.length = unit(0.2, "cm"),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank(),
+                panel.background = element_blank(),
+                strip.background = element_blank(), 
+                strip.text.x = element_text(color = "black", size = 12, angle = 0, hjust = 0, vjust = 0.5, face = "plain"),
+                panel.spacing = unit(3, "lines")) + 
+                coord_cartesian(ylim = scale_limit)
+
+        print(paste("Plotting for ", i))
+        plot_list[[i]] <- plot_temp
+    }
+
+    legend <- extract_legend(plot_list[[5]] + theme(legend.position = "bottom"))
+    fplot <- ggarrange(
+            ggarrange(plot_list[[5]],
+                        plot_list[[4]],
+                        plot_list[[2]],
+                        plot_list[[3]],
+                nrow = 1, ncol = 4),
+            ggarrange(plot_list[[1]],
+                        plot_list[[6]],
+                        plot_list[[7]],
+                nrow = 1, ncol = 3),
+            legend, ncol = 1, nrow = 3, heights = c(1, 1, 0.2))
+    print(fplot)
+
+    if (completeness_value == 90) {
+        index <- "90_complete"
+    } else if (completeness_value == 50) {
+        index <- "50_complete"
+    } else {
+       stop("Invalid completeness value")
+    }
+    boxplots_list[[index]] <- fplot
+
+}
+
+####--- end of needed plots ---####
 
 # lineage as factor sorted alphabetically
 # summary_mags$lineage <- factor(summary_mags$lineage, levels = rev(sort(unique(summary_mags$lineage))))
