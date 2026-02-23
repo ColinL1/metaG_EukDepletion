@@ -11,3 +11,4 @@ modules/templates
 modules/mmseq2_diamond
 modules/adapters
 plots
+backup_temp
