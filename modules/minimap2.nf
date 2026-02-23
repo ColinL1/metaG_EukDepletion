@@ -1,18 +1,9 @@
 #!/usr/bin/env nextflow
 
-//TODO: check if possible to inherit conditional directly from queue channel  
 process MINIMAP2_MAP_HOST {
     tag "${meta.id}"
-    label "process_high"
-    publishDir "${
-        meta.species == 'H2' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/bam/" :
-        meta.species == 'F003' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/bam/" :
-        meta.species == 'Porites' ? "$baseDir/results/mapping/Corals/${meta.id}/bam/" :
-        meta.species == 'Acropora' ? "$baseDir/results/mapping/Corals/${meta.id}/bam/" :
-        meta.species == 'Pocillopora' ? "$baseDir/results/mapping/Corals/${meta.id}/bam/" :
-        meta.species == 'unknown' ? 'unknown_samples' :
-        'other_samples'}", mode: 'symlink'
-
+    label 'process_high'
+    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/bam/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -76,13 +67,10 @@ process MINIMAP2_MAP_HOST {
 
 }
 
-params.ref_file_aip = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_minimap2_contigs/all_aiptasiidae.mmi'
-params.ref_file_scl = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_minimap2_contigs/all_scleractinia.mmi'
-
 process MINIMAP2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
-    publishDir "$baseDir/results/mapping/Symbiodiniaceae/${meta.id}/bam/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/bam/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -96,10 +84,10 @@ process MINIMAP2_MAP_SYM {
 	"""
     stub:
     """
-    touch ${meta.id}.bam
+    touch ${meta.id}.symbiodiniaceae.bam
     touch ${meta.id}
     """
 }
 
-params.ref_file_2 = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_minimap2_contigs/all_symbiodiniaceae.mmi'
+
 

@@ -214,7 +214,8 @@ custom_labeller <- function(labels) {
 }
 
 completeness_value <- 90
-for (completeness_value in c(50, 90)) {
+# for (completeness_value in c(50, 90)) {
+for (completeness_value in c(90)) {
     big_plot <- combined_mags_small %>%
             filter(completeness >= completeness_value) %>%
             filter(contamination <= 10) %>%
@@ -222,7 +223,7 @@ for (completeness_value in c(50, 90)) {
             geom_bar(stat = "count") +
             facet_grid( ~ grouping, scales = "free") + #, nrow = 1) +
             theme_minimal(base_size = 12) +
-            guides(fill = guide_legend(nrow = 4)) + # title = expression(paste(italic("ITS2"), " type profile")))) 
+            guides(fill = guide_legend(nrow = 6)) + # title = expression(paste(italic("ITS2"), " type profile")))) 
             scale_fill_manual(values = taxon_color_named) +
             theme(legend.position = "bottom", 
                 legend.spacing.x = unit(0.01, "cm"))
@@ -292,7 +293,7 @@ for (completeness_value in c(50, 90)) {
                             plot_list[[4]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1),
                 ggarrange(plot_list[[5]] + theme(legend.position = "none") ,# + geom_bar(width = 0.02),
                             plot_list[[6]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
-                            plot_list[[7]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1), legend, heights = c(1, 1, 0.3), widths = c(1,1,0.3), nrow = 3),
+                            plot_list[[7]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1), legend, heights = c(0.7, 0.7, 0.3), widths = c(1,1,0.3), nrow = 3),
                 fig.lab = paste0("MAGs summary (", o, ")"), left = "Number of MAGs", bottom = "Treatment")
 
         mainplot[[o]] <- fplot
@@ -302,9 +303,24 @@ for (completeness_value in c(50, 90)) {
 
     # Save to file 
     out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
-    ggsave(mainplot[[1]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-assembly.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11) # A4 dimensions in inches
-    ggsave(mainplot[[2]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11)
+    # ggsave(mainplot[[1]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-assembly.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11) # A4 dimensions in inches
+    # ggsave(mainplot[[2]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11)
 }
+
+
+
+annotate_figure(
+                ggarrange(
+                # ggarrange(
+                ggarrange(plot_list[[1]] + theme(legend.position = "none"),
+                            plot_list[[2]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[3]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[4]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()), nrow = 1),
+                ggarrange(plot_list[[5]] + theme(legend.position = "none") ,# + geom_bar(width = 0.02),
+                            plot_list[[6]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            plot_list[[7]] + theme(legend.position = "none", axis.text.y = element_blank(), axis.line.y = element_blank()),
+                            legend, nrow = 1, widths = c(1,1,1,1)), heights = c(1, 1), widths = c(1,1), nrow = 2),
+                fig.lab = paste0("MAGs summary (", o, ")"), left = "Number of MAGs", bottom = "Treatment")
 # origin <- c("co-assembly", "co-binning")
 # Plot with custom colors
 # p <- combined_mags_small %>%
@@ -420,7 +436,7 @@ for (i in c("Porites", "Pocillopora")) {
 
 # test for significance and add it to the plot
 summary_mags <- combined_mags_small %>%
-    filter(completeness >= 50) %>%
+    filter(completeness >= 90) %>%
     filter(origin == "co-binning") %>%
 
     # filter(strain != "F003") %>%
@@ -446,6 +462,7 @@ treatment_colour <- c(
                     "Microbiome Kit + Bead beating" = "#d62728",
                     "Microbiome Kit + spinning" = "#9467bd")
 boxplots_list <- list()
+# for (completeness_value in c(90)) {
 for (completeness_value in c(50, 90)) {
     plot_list <- list()
     # loop through each strain and buffer combination for better plotting
@@ -453,27 +470,33 @@ for (completeness_value in c(50, 90)) {
         
         # set variable plots y limits
         if (i == "H2 - PBS" || i == "H2 - DESS") {
-          scale_limit <- if (completeness_value == 50) {
-            c(0, 32)
-          } else {
-            c(0, 22)
-          }
-        } else if (i == "F003 - PBS" || i == "F003 - DESS") {
-          scale_limit <- if (completeness_value == 50) {
-            c(0, 9)
-          } else {
-            c(0, 5)
-          }
-        } else if (
-          i == "Acropora - DESS" ||
-          i == "Porites - DESS" ||
-          i == "Pocillopora - DESS"
-        ) {
-          scale_limit <- if (completeness_value == 50) {
-            c(0, 8)
-          } else {
-            c(0, 6)
-          }
+            scale_limit <- if (completeness_value == 50) {
+                # text_hight <- 30
+                c(0, 22)
+            } else {
+                # text_hight <- 15
+                c(0, 16)
+            }
+            } else if (i == "F003 - PBS" || i == "F003 - DESS") {
+            scale_limit <- if (completeness_value == 50) {
+                # text_hight <- 8
+                c(0, 9)
+            } else {
+                # text_hight <- 4
+                c(0, 5)
+            }
+            } else if (
+            i == "Acropora - DESS" ||
+            i == "Porites - DESS" ||
+            i == "Pocillopora - DESS"
+            ) {
+            scale_limit <- if (completeness_value == 50) {
+            # text_hight <- 6
+                c(0, 8)
+            } else {
+            # text_hight <- 5
+                c(0, 6)
+            }
         }
 
         plot_data <- combined_mags_small %>%
@@ -486,10 +509,32 @@ for (completeness_value in c(50, 90)) {
                 ) %>%
             # filter(treatment == "Microbiome Kit + Bead beating" | treatment == "Microbiome Kit" | treatment == "Microbiome Kit + spinning") %>%
             filter(grouping == i)
+        plot_data["text_hight"] <- ifelse(plot_data$grouping == "H2 - PBS" | plot_data$grouping == "H2 - DESS", 15, 
+            ifelse(plot_data$grouping == "F003 - PBS" | plot_data$grouping == "F003 - DESS", 4,
+                ifelse(plot_data$grouping == "Acropora - DESS" | plot_data$grouping == "Porites - DESS" | plot_data$grouping == "Pocillopora - DESS", 5, 0)))
 
         if (nrow(plot_data) <= 1) {
         plot_temp <- ggplot(plot_data, aes(x = treatment, y = bins_count, fill = treatment)) +
             geom_boxplot() + # data = plot_data_box, aes(x = treatment, y = bins_count, fill = treatment)) +
+                        geom_label(
+                    data = plot_data %>%
+                        group_by(treatment) %>%
+                        reframe(
+                        bins_count_sum = sum(bins_count),
+                        bins_count_max = max(bins_count) + 1,
+                        text_hight = text_hight
+                        # .groups = "drop"
+                        ),
+                    aes(
+                        x = treatment,
+                        y = text_hight,
+                        label = bins_count_sum,
+                        fill = treatment
+                    ),
+                    color = "black",
+                    size = 6,
+                    show.legend = FALSE
+            ) +
             geom_jitter(aes(fill = treatment),
                         shape = 21,              # Use a shape that supports border and fill
                         colour = "black",      # Set border color to black
@@ -525,6 +570,25 @@ for (completeness_value in c(50, 90)) {
         } else {
         plot_temp <- ggplot(plot_data, aes(x = treatment, y = bins_count, fill = treatment)) +
             geom_boxplot() + # data = plot_data_box, aes(x = treatment, y = bins_count, fill = treatment)) +
+            geom_label(
+                    data = plot_data %>%
+                        group_by(treatment) %>%
+                        reframe(
+                        bins_count_sum = sum(bins_count),
+                        bins_count_max = max(bins_count) + 1,
+                        text_hight = text_hight
+                        # .groups = "drop"
+                        ),
+                    aes(
+                        x = treatment,
+                        y = text_hight,
+                        label = bins_count_sum,
+                        fill = treatment
+                    ),
+                    color = "black",
+                    size = 6,
+                    show.legend = FALSE
+            ) +
             geom_jitter(aes(fill = treatment),
                         shape = 21,              # Use a shape that supports border and fill
                         colour = "black",      # Set border color to black
@@ -544,7 +608,8 @@ for (completeness_value in c(50, 90)) {
             labs(
                 title = "",
                 x = "",
-                y = "") +
+                y = "",
+                fill = "Treatment") +
             theme(legend.position = "none", line = element_line(size = 1),
                 axis.line = element_line(colour = "black"),
                 axis.ticks.length = unit(0.2, "cm"),
@@ -585,7 +650,7 @@ for (completeness_value in c(50, 90)) {
        stop("Invalid completeness value")
     }
     boxplots_list[[index]] <- fplot
-    ggsave(fplot, filename = paste0(out_path, "MAGs_summary_boxplot",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 16, 15), height = 10)
+    # ggsave(fplot, filename = paste0(out_path, "MAGs_summary_boxplot",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 16, 15), height = 10)
 }
 
 

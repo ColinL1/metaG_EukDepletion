@@ -3,15 +3,8 @@
 process BOWTIE2_MAP_HOST {
     tag "${meta.id}"
     label "process_high"
-    publishDir "${
-            meta.species == 'H2' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/" :
-            meta.species == 'F003' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/" :
-            meta.species == 'Porites' ? "$baseDir/results/mapping/Corals/${meta.id}/" :
-            meta.species == 'Acropora' ? "$baseDir/results/mapping/Corals/${meta.id}/" :
-            meta.species == 'Pocillopora' ? "$baseDir/results/mapping/Corals/${meta.id}/" :
-            meta.species == 'unknown' ? 'unknown_species' :
-            'other_samples'}", mode: 'symlink'
-    publishDir "$baseDir/results/concatenated_fastq/${meta.id}/", mode: 'copy'
+    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
+    publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'copy'
 
     input:
     tuple val(meta), path(reads)
@@ -112,13 +105,10 @@ process BOWTIE2_MAP_HOST {
 
 }
 
-params.ref_file_aip = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_aiptasiidae*'
-params.ref_file_scl = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_scleractina*'
-
 process BOWTIE2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
-    publishDir "$baseDir/results/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -147,4 +137,3 @@ process BOWTIE2_MAP_SYM {
     """
 }
 
-params.ref_file_2 = '/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_symbiodiniaceae*'

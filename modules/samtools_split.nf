@@ -3,14 +3,7 @@
 process SPLIT_BAM_HOST {
     tag "${meta.id}"
     label "med_mem"
-    publishDir "${
-    meta.species == 'H2' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/reads/" :
-    meta.species == 'F003' ? "$baseDir/results/mapping/Aiptasia/${meta.id}/reads/" :
-    meta.species == 'Porites' ? "$baseDir/results/mapping/Corals/${meta.id}/reads/" :
-    meta.species == 'Acropora' ? "$baseDir/results/mapping/Corals/${meta.id}/reads/" :
-    meta.species == 'Pocillopora' ? "$baseDir/results/mapping/Corals/${meta.id}/reads/" :
-    meta.species == 'unknown' ? 'unknown_samples' :
-    'other_samples'}", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/reads/", mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
@@ -27,16 +20,15 @@ process SPLIT_BAM_HOST {
     """
     stub:
     """
-    touch ${meta.id}.unmapped.fa.gz
-    touch ${meta.id}.mapped.fa.gz
+    touch ${meta.id}.scleractina.unmapped.fa.gz
+    touch ${meta.id}.scleractina.mapped.fa.gz
     """
 }
-
 
 process SPLIT_BAM_SYM {
     tag "${meta.id}"
     label "med_mem"
-    publishDir "$baseDir/results/mapping/Symbiodiniaceae/${meta.id}/reads/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/reads/", mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
@@ -53,7 +45,7 @@ process SPLIT_BAM_SYM {
     """
     stub:
     """
-    touch ${meta.id}.unmapped.fa.gz
-    touch ${meta.id}.mapped.fa.gz
+    touch ${meta.id}.symbiodiniaceae.unmapped.fa.gz
+    touch ${meta.id}.symbiodiniaceae.mapped.fa.gz
     """
 }

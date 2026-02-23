@@ -1,97 +1,13 @@
 #! /usr/bin/env Rscript
 
-# =============================================================================
-# SETUP AND CONFIGURATION
-# =============================================================================
-
 cat("Loading libraries...\n")
 invisible(capture.output((library(pacman))))
-p_load("tidyr", "tidyfast", "dplyr", "ggplot2", "ggpubr", "tidyverse", 
-       "scales", "RColorBrewer", "optparse", "pacman", "httpgd", "grid", 
-       "stringr", "reshape2", "ggh4x")
+p_load("tidyr", "tidyfast", "dplyr", "ggplot2", "ggpubr", "tidyverse", "scales", "RColorBrewer", "optparse", "pacman","httpgd", "grid", "stringr" , "reshape2", "ggh4x") # nolint: line_length_linter, cSpell. install lemon? 
 
+# --- Clear workspace ---
 rm(list = ls())
 
-# Define base paths
-base_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines"
-output_path <- "/home/colinl/Proj/metaG_EukDepletion/plots"
-
-# Define color palettes
-col_palette_mapping <- c(
-    "Host" = "#D64933", 
-    "Symbiodiniaceae" = "#2A7F62", 
-    "Bacteria" = "#3498DB", 
-    "Other" = "#414288"
-)
-
-col_palette_treatment <- c(
-    "BT" = "#FFB94F", 
-    "BenzoBT" = "#D97474", 
-    "MB" = "#9AE0EC", 
-    "BBMB" = "#87ACE9", 
-    "SMB" = "#9C80BA"
-)
-
-col_palette_qpcr <- c(
-    "Blood & Tissue Kit" = "#FFB94F", 
-    "Microbiome Kit" = "#9AE0EC", 
-    "Benzonase + BT" = "#D97474", 
-    "Sonication + Benzonase + BT" = "#F2A7C5", 
-    "PMA + BT" = "#82A37A", 
-    "Sonication + PMA + BT" = "#AFDD84"
-)
-
-col_palette_mb_treatments <- c(
-    "Microbiome Kit" = "#9AE0EC", 
-    "Bead-beating + Microbiome Kit" = "#87ACE9", 
-    "Spinning + Microbiome Kit" = "#9C80BA"
-)
-
-# =============================================================================
-# CUSTOM FUNCTIONS
-# =============================================================================
-
-# Data cleaning helper functions
-clean_species_names <- function(species_col) {
-    species_col %>%
-        gsub("\\bF3\\b", "F003", .) %>%
-        gsub("\\bAcro\\b|\\bAc\\b", "Acropora", .) %>%
-        gsub("\\bPo\\b|\\bPoci\\b", "Pocillopora", .) %>%
-        gsub("\\bPor\\b|\\bPr\\b", "Porites", .)
-}
-
-clean_extraction_names <- function(extraction_col) {
-    extraction_col %>%
-        gsub("\\bB\\b", "BenzoBT", .) %>%
-        gsub("\\bBT\\b", "BT", .) %>%
-        gsub("\\bMB\\b", "MB", .) %>%
-        gsub("\\bMBX\\b", "BBMB", .) %>%
-        gsub("\\bMBS\\b", "SMB", .)
-}
-
-clean_buffer_names <- function(buffer_col) {
-    buffer_col %>%
-        gsub("\\bP\\b", "PBS", .) %>%
-        gsub("\\bD\\b", "DESS", .)
-}
-
-clean_mapping_names <- function(mapping_col) {
-    mapping_col %>%
-        gsub("\\bscleractina\\b|\\baiptasia\\b", "Host", .) %>%
-        gsub("\\bsymbiodiniaceae\\b", "Symbiodiniaceae", .) %>%
-        gsub("\\bbacteria\\b", "Bacteria", .) %>%
-        gsub("\\bother\\b", "Other", .)
-}
-
-expand_treatment_names <- function(treatment_col) {
-    treatment_col %>%
-        gsub("^MBS$", "Spinning + Microbiome Kit", .) %>%
-        gsub("^MBX$", "Bead-beating + Microbiome Kit", .) %>%
-        gsub("^MB$", "Microbiome Kit", .) %>%
-        gsub("^B$", "Benzonase + BT", .) %>%
-        gsub("^BT$", "Blood & Tissue Kit", .)
-}
-
+## %% load custom functions
 # Custom function to shift legend into empty facet panels
 shift_legend2 <- function(p) {
     # check if p is a valid object
@@ -165,22 +81,15 @@ read_table_many <- function(file_path, ...) {
     return(data)
 }
 
-# =============================================================================
-# DATA LOADING
-# =============================================================================
+# Start hgd  server
+# hgd()
 
-data_reads <- read.table(
-    file.path(base_path, "reads/mapping/stats_reads_sanitised.txt"), 
-    header = TRUE, sep = "\t"
-)
+# %% Read the file
+data_reads <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 # Read re-run of Kaiju annotation with updated database 20250730
 data_reads_kaiju <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 
-# =============================================================================
-# DATA PROCESSING AND CLEANING
-# =============================================================================
-
-# Replace values from data_reads with data_reads_kaiju if file matches
+# replace values from data_reads with data_reads_kaiju if file matches
 data_reads <- data_reads %>%
     left_join(data_reads_kaiju, by = "file", suffix = c("", ".kaiju")) %>%
     mutate(num_seqs = ifelse(is.na(num_seqs.kaiju), num_seqs, num_seqs.kaiju),
@@ -234,11 +143,34 @@ data_reads$temp <- NULL
 #sort columns in order sample species replicate extraction buffer mapping num_seqs sum_len min_len avg_len max_len file format type
 data_reads <- data_reads[, c("sample", "species", "replicate", "extraction", "buffer", "mapping", "num_seqs", "sum_len", "min_len", "avg_len", "max_len", "file", "format", "type")]
 
-# Clean up column names using helper functions
-data_reads$species <- clean_species_names(data_reads$species)
-data_reads$extraction <- clean_extraction_names(data_reads$extraction)
-data_reads$buffer <- clean_buffer_names(data_reads$buffer)
-data_reads$mapping <- clean_mapping_names(data_reads$mapping)
+# clean up species names if necessary
+#"F003" "F3"   "H2"   "Ac"   "Acro" "Po"   "Poci" "Por"  "Pr" to full names
+data_reads$species <- gsub("\\bF3\\b", "F003", data_reads$species)
+data_reads$species <- gsub("\\bAcro\\b", "Acropora", data_reads$species)
+data_reads$species <- gsub("\\bAc\\b", "Acropora", data_reads$species)
+data_reads$species <- gsub("\\bPo\\b", "Pocillopora", data_reads$species)
+data_reads$species <- gsub("\\bPoci\\b", "Pocillopora", data_reads$species)
+data_reads$species <- gsub("\\bPor\\b", "Porites", data_reads$species)
+data_reads$species <- gsub("\\bPr\\b", "Porites", data_reads$species)
+
+# extractions methods  B   BT  MB  MBX MBS to BenzoBT "BT" "MB" "MB & beadbeating" "SMB"
+data_reads$extraction <- gsub("\\bB\\b", "BenzoBT", data_reads$extraction)
+data_reads$extraction <- gsub("\\bBT\\b", "BT", data_reads$extraction)
+data_reads$extraction <- gsub("\\bMB\\b", "MB", data_reads$extraction)
+data_reads$extraction <- gsub("\\bMBX\\b", "BBMB", data_reads$extraction)
+data_reads$extraction <- gsub("\\bMBS\\b", "SMB", data_reads$extraction)
+
+
+#P to PBS and D to DESS
+data_reads$buffer <- gsub("\\bP\\b", "PBS", data_reads$buffer)
+data_reads$buffer <- gsub("\\bD\\b", "DESS", data_reads$buffer)
+
+# fix mapping name
+data_reads$mapping <- gsub("\\bscleractina\\b", "Host", data_reads$mapping)
+data_reads$mapping <- gsub("\\baiptasia\\b", "Host", data_reads$mapping)
+data_reads$mapping <- gsub("\\bsymbiodiniaceae\\b", "Symbiodiniaceae", data_reads$mapping)
+data_reads$mapping <- gsub("\\bbacteria\\b", "Bacteria", data_reads$mapping)
+data_reads$mapping <- gsub("\\bother\\b", "Other", data_reads$mapping)
 
 data_reads$mapping <- factor(data_reads$mapping, levels = (rev(c("Host", "Symbiodiniaceae","Bacteria", "Other","total"))))
 
@@ -289,26 +221,42 @@ data <- left_join(data, n_samples, by = c("grouping", "extraction"))
 
 
 
-# =============================================================================
-# FIGURE 2: BOXPLOTS OF READ MAPPING PERCENTAGES
-# =============================================================================
+## %% Plotting boxplots of percentage of reads mapping to each group per extraction method
 
 test_data <- data
 test_data$mapping <- factor(test_data$mapping, levels = rev(c("total", "Other", "Bacteria", "Symbiodiniaceae", "Host")))
 test_data$type <- ifelse(test_data$species %in% c("H2", "F003"), "aiptasia", "corals")
-test_data$type <- factor(test_data$type, levels = c("aiptasia", "corals")) 
+test_data$type <- factor(test_data$type, levels = c("aiptasia", "corals"))
+col_palette_2 <- c("Host" = "#D64933", "Symbiodiniaceae" = "#2A7F62", "Bacteria" = "#3498DB", "Other" = "#414288")# #EAC435 for host? 
 
+test_data <- test_data[,c("sample", "grouping", "type", "species", "replicate", "extraction", "buffer", "mapping", "num_seqs")]
+
+# # Step 1: Pivot wider so each mapping becomes a column
+# df_wide <- test_data %>%
+#   pivot_wider(names_from = mapping, values_from = num_seqs) # values_fill = 0
+
+# # Step 2: Compute "arch"
+# df_with_arch <- df_wide %>%
+#   mutate(Archaea = total - (Host + Symbiodiniaceae + Bacteria + Other))
+
+# # Step 3: Pivot back to long format (adding arch as new mapping)
+# df_final <- df_with_arch %>%
+#   pivot_longer(cols = c(total, Host, Symbiodiniaceae, Bacteria, Archaea, Other),
+#                names_to = "mapping",
+#                values_to = "num_seqs") %>%
+#   arrange(sample, mapping)  # Optional: sort by sample then mapping
+
+
+# test_data <- df_final %>%
 test_data <- test_data %>%
-    select(sample, grouping, type, species, replicate, extraction, buffer, mapping, num_seqs) %>%
     filter(mapping != "total")
 
-# Calculate percentage per sample
+
 test_data <- test_data %>%
     group_by(sample) %>%
     mutate(num_seq_percent = num_seqs / sum(num_seqs, na.rm = TRUE) * 100) %>%
     ungroup()
 
-# Statistical comparisons
 for (i in c("Host", "Symbiodiniaceae", "Bacteria", "Archaea", "Other")) {
   for (j in c("aiptasia", "corals")) {
     plot_data <- test_data %>%
@@ -326,6 +274,7 @@ for (i in c("Host", "Symbiodiniaceae", "Bacteria", "Archaea", "Other")) {
     })
   }
 }
+
 
 test_data$mapping <- factor(test_data$mapping, levels = rev(c("total", "Other", "Archaea", "Bacteria", "Symbiodiniaceae", "Host")))
 test_data$type <- ifelse(test_data$species %in% c("H2", "F003"), "aiptasia", "corals")
@@ -532,25 +481,18 @@ figure_2 <- ggpubr::ggarrange(
   heights = c(0.9, rep(.8, 3), 1.1)
 )
 
-figure_2
+figure_2 
 
-ggsave(figure_2, 
-       filename = file.path(output_path, "figure_2.png"), 
-       width = 16, height = 22, dpi = 600)
-ggsave(figure_2, 
-       filename = file.path(output_path, "figure_2.svg"), 
-       width = 16, height = 22, dpi = 600)
+ggsave(figure_2, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_2.png", width = 16, height = 22, dpi = 600)
+ggsave(figure_2, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_2.svg", width = 16, height = 22, dpi = 600)
 
 
 
-# =============================================================================
-# FIGURE 1: qPCR ANALYSIS
-# =============================================================================
+#%% qPCR -  figure 1
+### read the table
+# setwd("~/PhD/Meta_G_qPCR/R_paper")
 
-Aip_PBS <- read.table(
-    file.path(base_path, "qPCR/MetaG_qPCR_Aip_PBS.csv"), 
-    header = TRUE, sep = ","
-) 
+Aip_PBS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_Aip_PBS.csv" , header = T, sep =",") 
 
 PBSvsDESS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
 PBSvsDESS <- PBSvsDESS %>% 
@@ -561,70 +503,52 @@ Corals <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/q
 data <- rbind(Aip_PBS, PBSvsDESS, Corals)
 data$Ct <- as.numeric(data$Ct)
 
-data_summary <- dcast(
-    formula = Sample_name ~ Gene, 
-    fun.aggregate = mean, 
-    data = data
-) %>%
-    filter(complete.cases(.))
+data_summary <- dcast(formula = Sample_name~Gene, fun.aggregate = mean,data = data)
+
+data_summary <- data_summary[complete.cases(data_summary), ]
 
 data_summary$dCT_16S <- -1*(data_summary$`16S` - data_summary$`b-actin`)
-data_summary <- tidyr::separate(
-    data_summary, 
-    Sample_name, 
-    into = c("Strain", "replicate", "Buffer", "Treatment"), 
-    sep = "_", 
-    remove = FALSE, 
-    extra = "merge"
-)
+data_summary <- tidyr::separate(data_summary,Sample_name,into =c("Strain", "replicate", "Buffer", "Treatment"),sep = "_",remove = FALSE,extra = "merge")
 
-# Expand treatment abbreviations
-data_summary$Treatment <- data_summary$Treatment %>%
-    gsub("\\bMB_", "Microbiome Kit_1", .) %>%
-    gsub("\\bBT_", "Blood & Tissue Kit_", .) %>%
-    gsub("\\bSP_", "Sonication + PMA + BT_", .) %>%
-    gsub("\\bSB_", "Sonication + Benzonase + BT_", .) %>%
-    gsub("\\bP_", "PMA + BT_", .) %>%
-    gsub("\\bB_", "Benzonase + BT_", .)
+#change form abbreviation to full name extractions
+data_summary$Treatment <- gsub("\\bMB_", "Microbiome Kit_1", data_summary$Treatment)
+data_summary$Treatment <- gsub("\\bBT_", "Blood & Tissue Kit_", data_summary$Treatment)
+data_summary$Treatment <- gsub("\\bSP_", "Sonication + PMA + BT_", data_summary$Treatment)
+data_summary$Treatment <- gsub("\\bSB_", "Sonication + Benzonase + BT_", data_summary$Treatment)
+data_summary$Treatment <- gsub("\\bP_", "PMA + BT_", data_summary$Treatment)
+data_summary$Treatment <- gsub("\\bB_", "Benzonase + BT_", data_summary$Treatment)
 
-# Clean species names
-data_summary$Strain <- clean_species_names(data_summary$Strain)
+#fix strain names
+data_summary$Strain <- gsub("\\bPori\\b", "Porites", data_summary$Strain)
+data_summary$Strain <- gsub("\\bPoci\\b", "Pocillopora", data_summary$Strain)
+data_summary$Strain <- gsub("\\bAcro\\b", "Acropora", data_summary$Strain)
 
-data_summary <- tidyr::separate(
-    data_summary, 
-    Treatment, 
-    into = c("Treatment", "Run"), 
-    sep = "_", 
-    remove = FALSE, 
-    extra = "merge"
-)
+data_summary <- tidyr::separate(data_summary, Treatment, into =c("Treatment", "Run"),sep = "_", remove = FALSE, extra = "merge")
 
-# Set factor levels for treatments
-data_summary$Treatment <- factor(
-    data_summary$Treatment, 
-    levels = c("Blood & Tissue Kit", "Microbiome Kit", "Benzonase + BT", 
-               "Sonication + Benzonase + BT", "PMA + BT", "Sonication + PMA + BT")
-)
+#order treatmens in the way we want them on the plot (native first)
+data_summary$Treatment <- factor(data_summary$Treatment, levels=c("Blood & Tissue Kit", "Microbiome Kit", "Benzonase + BT", "Sonication + Benzonase + BT", "PMA + BT","Sonication + PMA + BT"))
+factor(data_summary$Treatment) #to check whether it worked          "Benzonase + BT", "Blood & Tissue Kit", "Microbiome Kit", "PMA + BT", "Sonication + Benzonase + BT", "Sonication + PMA + BT"
 
-# Calculate summary statistics per group
-summary_16S <- data_summary %>%
-    group_by(Strain, Buffer, Run, Treatment) %>% 
-    summarise(
-        ratio_mean = mean(dCT_16S), 
-        ratio_se = sd(dCT_16S)/sqrt(length(dCT_16S)),
-        .groups = "drop"
-    )
-
-summary_16S$Strain <- factor(
-    summary_16S$Strain, 
-    levels = c("H2", "F003", "Acropora", "Pocillopora", "Porites")
-)
-
-# Add grouping column
+#calculate ddCT mean and standard error per group (box plots in ggplot already calculate mean and sd, for bar plots we have to do it manually)
+summary_16S <- data_summary %>% group_by (Strain, Buffer, Run, Treatment) %>% 
+  summarise(ratio_mean = mean(dCT_16S), 
+            ratio_se = sd(dCT_16S)/sqrt(length(dCT_16S)))
+summary_16S$Strain <- factor(summary_16S$Strain, levels=c( "H2", "F003", "Acropora", "Pocillopora", "Porites" ))
+# backup_summary_16S <- summary_16S
+#add grouping column
 summary_16S["grouping"] <- paste(summary_16S$Strain, summary_16S$Buffer, sep = " - ")
-breaks <- c("Blood & Tissue Kit", "Benzonase + BT", "Sonication + Benzonase + BT", "PMA + BT", "Sonication + PMA + BT", "Microbiome Kit")
 
-# Generate qPCR plots
+# # compare differnces between summary_16S and backup_summary_16S
+# summary_16S %>% anti_join(backup_summary_16S)
+
+## %% plot figure 1
+# color_palette_1 <- c("Blood & Tissue Kit" = "#FF9000", "Microbiome Kit" = "#D05353", "Benzonase + BT" = "#3A6EA5", "Sonication + Benzonase + BT" = "#88B7B5", "PMA + BT" = "#8FAD88", "Sonication + PMA + BT" = "#5D4A66")
+color_palette_1 <- c("Blood & Tissue Kit" = "#FFB94F", "Microbiome Kit" = "#9AE0EC", "Benzonase + BT" = "#D97474", "Sonication + Benzonase + BT" = "#F2A7C5", "PMA + BT" = "#82A37A", "Sonication + PMA + BT" = "#AFDD84")
+breaks <- c("Blood & Tissue Kit", "Benzonase + BT", "Sonication + Benzonase + BT", "PMA + BT", "Sonication + PMA + BT", "Microbiome Kit")
+summary_16S$Treatment <- factor(summary_16S$Treatment, levels = breaks)
+
+labels_abbrev_all <- c("Blood & Tissue Kit" = "BT", "Benzonase + BT" = "BenzoBT", "Sonication + Benzonase + BT" = "SonBenzoBT", "PMA + BT" = "PMABT", "Sonication + PMA + BT" = "SonPMABT", "Microbiome Kit" = "MB", "Bead-beating + Microbiome Kit" = "BBMB", "Spinning + Microbiome Kit" = "SMB")
+labels_abbrev <- c("Blood & Tissue Kit" = "BT", "Benzonase + BT" = "BenzoBT", "Sonication + Benzonase + BT" = "SonBenzoBT", "PMA + BT" = "PMABT", "Sonication + PMA + BT" = "SonPMABT", "Microbiome Kit" = "MB")
 
 qPCR_plot_list <- list()
 n <- 1
@@ -642,7 +566,7 @@ for (i in unique(summary_16S$grouping)) {
                 color="black") +
             facet_wrap( ~ grouping, labeller = as_labeller(custom_labeller, label_parsed))+
             geom_hline(yintercept = 0,  linetype = "dashed", color = "black")+
-            scale_fill_manual(values = col_palette_qpcr) +
+            scale_fill_manual(values = color_palette_1) +
             scale_x_discrete(
                 labels = labels_abbrev,
                 breaks = breaks
@@ -742,31 +666,23 @@ figure_1_annotated <- annotate_figure(
 figure_1_annotated
 
 
-# =============================================================================
-# SAVE FIGURES
-# =============================================================================
+### --- save figures ---###
+out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
 
-ggsave(figure_1_annotated, 
-       filename = file.path(output_path, "figure_1.png"), 
-       width = 18, height = 22, dpi = 600)
-ggsave(figure_1_annotated, 
-       filename = file.path(output_path, "figure_1.svg"), 
-       width = 18, height = 22, dpi = 600)
-
-
+ggsave(figure_1_annotated, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_1.png", width = 18, height = 22, dpi = 600)
+ggsave(figure_1_annotated, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_1.svg", width = 18, height = 22, dpi = 600)
+# ggsave(filename = paste0(out_path, "/figure_1.pdf"), plot = figure_1, width = 12, height = 10)
+# ggsave(filename = paste0(out_path, "/figure_2.pdf"), plot = figure_2, width = 14, height = 10)
+# ggsave(filename = paste0(out_path, "/figure_3.pdf"), plot = figure_3, width = 14, height = 12)
+# ggsave(filename = paste0(out_path, "/figure_4.pdf"), plot = figure_4, width = 14, height = 12)
+# ggsave(filename = paste0(out_path, "/figure_4_dot.pdf"), plot = figure_3 , width = 14, height = 16)
 
 
-# Prepare plotting data
-CAT_data_family_curated$Strain <- factor(
-    CAT_data_family_curated$Strain, 
-    levels = c("F003", "H2", "Acropora", "Porites", "Pocillopora")
-)
 
-spacer <- ggplot() + theme_void()
 
-# Define labels for treatments (use previously defined labels_abbrev)
-
-# Generate family plots
+## %% load data figure 4 dots (increases the number of family kept) !! not FINAL!!
+# non filtered microbial only files
+files <- list.files(path = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
 
 # Create an empty data frame to store the results
 CAT_data_family <- data.frame()
@@ -842,12 +758,21 @@ CAT_data_family_curated <- CAT_data_family_curated %>%
 
 CAT_data_family_curated <- separate(CAT_data_family_curated, Sample, into = c("Strain", "Treatment", "Buffer"), sep = "_", remove = FALSE)
 
-# Rename Treatment using helper function
-CAT_data_family_curated$Treatment <- expand_treatment_names(CAT_data_family_curated$Treatment)
+#rename Treatment 
+CAT_data_family_curated$Treatment <- gsub("^MBS$", "Spinning + Microbiome Kit", CAT_data_family_curated$Treatment)
+CAT_data_family_curated$Treatment <- gsub("^MBX$", "Bead-beating + Microbiome Kit", CAT_data_family_curated$Treatment)
+CAT_data_family_curated$Treatment <- gsub("^MB$", "Microbiome Kit", CAT_data_family_curated$Treatment)
+CAT_data_family_curated$Treatment <- gsub("^B$", "Benzonase + BT", CAT_data_family_curated$Treatment)
+CAT_data_family_curated$Treatment <- gsub("^BT$", "Blood & Tissue Kit", CAT_data_family_curated$Treatment)
 
-# Clean column names using helper functions
-CAT_data_family_curated$Strain <- clean_species_names(CAT_data_family_curated$Strain)
-CAT_data_family_curated$Buffer <- clean_buffer_names(CAT_data_family_curated$Buffer)
+CAT_data_family_curated$Strain <- gsub("\\bPor\\b", "Porites", CAT_data_family_curated$Strain)
+CAT_data_family_curated$Strain <- gsub("\\bPoci\\b", "Pocillopora", CAT_data_family_curated$Strain)
+CAT_data_family_curated$Strain <- gsub("\\bAcro\\b", "Acropora", CAT_data_family_curated$Strain)
+CAT_data_family_curated$Strain <- gsub("\\bH2\\b", "H2", CAT_data_family_curated$Strain)
+CAT_data_family_curated$Strain <- gsub("\\bF003\\b", "F003", CAT_data_family_curated$Strain)
+
+CAT_data_family_curated$Buffer <- gsub("\\bD\\b", "DESS", CAT_data_family_curated$Buffer)
+CAT_data_family_curated$Buffer <- gsub("\\bP\\b", "PBS", CAT_data_family_curated$Buffer)
 
 # Sort Family by number of contigs, then put "Other" and "ambigous match" last
 family_order <- CAT_data_family_curated %>%
@@ -869,16 +794,15 @@ CAT_data_family_curated$Buffer <- factor(CAT_data_family_curated$Buffer, levels 
 # add plotting category called strain_treatment to plot by strain and treatment
 CAT_data_family_curated["grouping"] <- paste(CAT_data_family_curated$Strain, CAT_data_family_curated$Buffer, sep = " - ")
 
-# =============================================================================
-# FIGURE 3: CAT FAMILY CLASSIFICATION (DOT PLOTS)
-# =============================================================================
+## %% plot figure 4 dot version 
+CAT_data_family_curated$Strain <- factor(CAT_data_family_curated$Strain, levels = c("F003", "H2", "Acropora", "Porites", "Pocillopora"))
 
-# Load non-filtered microbial only files
-files <- list.files(
-    path = file.path(base_path, "CAT/results_download/NR/summary/bacteria_only_contig_class"),
-    pattern = "*.summary.txt", 
-    full.names = TRUE
-)
+spacer <- ggplot() + theme_void()
+
+
+# color_palette_x <- c("#20B2AA", "#BBBE64", "#2A2A72")
+color_palette_x <- c("Microbiome Kit"= "#9AE0EC", "Bead-beating + Microbiome Kit" = "#87ACE9" , "Spinning + Microbiome Kit" = "#9C80BA") 
+labels_abbrev <- c("Microbiome Kit" = "MB", "Bead-beating + Microbiome Kit" = "BBMB", "Spinning + Microbiome Kit" = "SMB")
 
 
 plot_family_list_dot <- list()
@@ -940,9 +864,5 @@ figure_3  <- ggarrange(
                 ncol = 5, nrow = 1, common.legend = TRUE, legend = "bottom") # heights = c(1,0.1)
 figure_3
 
-ggsave(figure_3, 
-       filename = file.path(output_path, "figure_3.png"), 
-       width = 18, height = 14, dpi = 600)
-ggsave(figure_3, 
-       filename = file.path(output_path, "figure_3.svg"), 
-       width = 18, height = 14, dpi = 600)
+ggsave(figure_3 , filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_3.png", width = 18, height = 14, dpi = 600)
+ggsave(figure_3 , filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_3.svg", width = 18, height = 14, dpi = 600)
