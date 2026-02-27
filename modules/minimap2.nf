@@ -80,7 +80,7 @@ process MINIMAP2_MAP_SYM {
 
     script:
 	"""
-	minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_2} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
+	minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_sym} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
 	"""
     stub:
     """
