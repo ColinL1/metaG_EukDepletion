@@ -6,7 +6,7 @@ include { MAP_CONSE_ASSEMBLY } from './subworkflows/map_conse_assembly.nf'
 include { CAT_WORKFLOW } from './subworkflows/CAT.nf'
 
 workflow {
-Channel
+channel
     .fromFilePairs(params.input_fq)
     .map { id, reads ->
         def (species, replicate, method, buffer) = id.tokenize("_") //, other, unspecified
