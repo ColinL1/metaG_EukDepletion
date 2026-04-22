@@ -30,8 +30,7 @@ process CAT {
 
 process CAT_ADD_NAMES {
     tag "${meta.id}"
-    maxRetries 3
-    errorStrategy  { task.attempt <= maxRetries  ? 'retry' : 'ignore' }
+    errorStrategy  { task.attempt <= 3 ? 'retry' : 'ignore' }
     label 'min_mem'
     publishDir "${params.outdir}/CAT/${meta.species}/${meta.id}/", mode: 'symlink'
 
