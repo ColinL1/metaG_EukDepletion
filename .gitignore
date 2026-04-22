@@ -13,3 +13,4 @@ plots
 backup_temp
 
 nextflow.config
+processes_resources.config
