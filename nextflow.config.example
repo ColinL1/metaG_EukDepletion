@@ -1,0 +1,64 @@
+// nextflow.config
+nextflow.enable.dsl=2
+notification.enabled = true
+
+includeConfig 'labels.config'
+
+executor {
+  cpus = 250
+}
+
+profiles {
+  conda {
+  conda.enable = true
+  process.conda = "$baseDir/environment.yaml"
+  conda.useMamba = true
+  }  
+}
+
+// Global default params
+params {
+
+  // Input/Output
+  input = "${projectDir}/input"
+  outdir = "${projectDir}/results"
+  input_fq = "${params.input}/*_{1,2}.fq.gz"
+
+  // trim adapter
+  adapters = "modules/adapters/Truseq_V.3_edited.fa"
+  illuminaclip = "2:30:10:8:TRUE"
+  headcrop = 5
+  leading = 3
+  trailing = 3
+  slidingwindow = "4:20"
+  minlen = 50
+
+  // bowtie2 references index
+  ref_file_aip = '/path/to/references/ref_genomes_bowtie2/all_aiptasiidae*'
+  ref_file_scl = '/path/to/references/ref_genomes_bowtie2/all_scleractina*'
+  ref_file_sym = '/path/to/references/ref_genomes_bowtie2/all_symbiodiniaceae*'
+
+  //minimap2 references index
+  ref_file_aip = '/path/to/references/ref_genomes_minimap2_contigs/all_aiptasiidae.mmi'
+  ref_file_scl = '/path/to/references/ref_genomes_minimap2_contigs/all_scleractinia.mmi'
+  ref_file_sym = '/path/to/references/ref_genomes_minimap2_contigs/all_symbiodiniaceae.mmi'
+
+  //megahit setting
+  k_min = 27
+  k_max = 127
+
+  //kaiju nodes, names and db 
+  nodes = '/path/to/kaiju/nodes.dmp'
+  names = '/path/to/kaiju/names.dmp'
+  kaiju_db = '/path/to/kaiju/kaiju_db_refseq.fmi'
+
+  // CAT db and executable
+  cat_db = "/path/to/databases/CAT/CAT_gtdb"
+  cat_ex = "/path/to/databases/CAT/CAT_pack/CAT"
+  
+}
+
+manifest {
+  description = "Pipeline for Metagenome sequencing data classification"
+  author = "Luigi Colin"
+}
