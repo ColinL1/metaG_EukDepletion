@@ -3,9 +3,8 @@
 .nextflow.log*
 work/
 input/*
-results*/
+results/*
 references/*
-outdated_logic
 manual_piplines
 modules/templates
 modules/mmseq2_diamond
