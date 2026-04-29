@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 include {CAT; CAT_ADD_NAMES} from '../modules/cat.nf'
-include {CONCAT_FASTQ} from '../modules/cat_fastq.nf'
+include {CONCAT_FASTQ} from '../modules/concat_fastq.nf'
 
 workflow CAT_WORKFLOW {
     take:
