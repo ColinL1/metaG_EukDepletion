@@ -81,24 +81,18 @@ flowchart LR
   Previous version logic. Discarded after project abandoned ONT data
   </summary>
 
-#### Flow chart (Temp)
-
-![Alt text](graphviz_diagram.svg "Temp - Workflow diagram")
-
-Detailed and further documentation coming soon with final script versions. 
-
 Processes:
 1. Optional:
     - trim ONT reads
     - Assemble reads with megahit
-1. Run kaiju-multi on collection of samples (kaiju-multi has proven more efficient than individual kaiju parallelized do to persistance of kaiju database in RAM across projects.)
+2. Run kaiju-multi on collection of samples (kaiju-multi has proven more efficient than individual kaiju parallelized do to persistance of kaiju database in RAM across projects.)
     - Split sequences in bacteria-matching and all the non-bacteria
-1. Map non-bacteria with minimap2 to host reference genome (S)
+3. Map non-bacteria with minimap2 to host reference genome (S)
     - Split sequences in Scleractinia-matching and non-scleractinia
-1. Map non-Scleractinia with minimap2 to Symbiodinacea reference genome (main symbiont)
+4. Map non-Scleractinia with minimap2 to Symbiodinacea reference genome (main symbiont)
     - Split sequences in Symbiodinacea-matching and non-Symbiodinacea
-1. Run all individual sequences file trough fastp to generate individual report.json files
-1. Parse all json report with custom python script collecting them in single csv report ready for downstream data analyses 
+5. Run all individual sequences file trough fastp to generate individual report.json files
+6. Parse all json report with custom python script collecting them in single csv report ready for downstream data analyses 
 
 <!-- More detailed workflow explanation coming soon. -->
 
