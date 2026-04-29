@@ -1,6 +1,6 @@
 # Folder with precomputed reference indexes
 
-This folder holds the precomputed indexes required by the pipeline: **Bowtie2** indexes (reads-based branch), **Minimap2** indexes (assembly-based branch), and the **Kaiju** database (taxonomic classification).
+This folder holds the precomputed indexes required by the pipeline: **Bowtie2** indexes (reads-based branch), **Minimap2** indexes (assembly-based branch), the **Kaiju** database (taxonomic classification), and the **CAT** database (contig taxonomic annotation).
 
 > All paths to these files must be set as `params` in `nextflow.config`. See `nextflow.config.example` for the expected parameter names.
 
@@ -46,4 +46,36 @@ Or build from scratch with:
 
 ```bash
 kaiju-makedb -s refseq
-``` 
+```
+
+---
+
+## CAT database (GTDB)
+
+The [CAT pack](https://github.com/MGXlab/CAT_pack) (Contig Annotation Tool) is used for taxonomic classification of assembled contigs. The pipeline uses a GTDB-based database, which must expose two subdirectories: `db/` and `tax/`.
+
+Set `params.cat_db` to the database root directory in `nextflow.config`.
+
+### Option 1 — Download prebuilt GTDB database
+
+```bash
+wget tbb.bio.uu.nl/tina/CAT_pack_prepare/20231120_CAT_gtdb.tar.gz   # GTDB release 214
+tar -xvzf 20231120_CAT_gtdb.tar.gz
+```
+
+### Option 2 — Build from scratch
+
+```bash
+# Download and process GTDB source files
+CAT_pack download --db gtdb -o path/to/gtdb_data_dir
+
+# Build the CAT pack database
+CAT_pack prepare \
+  --db_fasta path/to/gtdb_data_dir/gtdb_proteins_aa_reps.faa \
+  --names path/to/gtdb_data_dir/names.dmp \
+  --nodes path/to/gtdb_data_dir/nodes.dmp \
+  --acc2tax path/to/gtdb_data_dir/acc2taxid.txt.gz \
+  --db_dir 20231120_CAT_gtdb
+```
+
+The resulting directory will contain `db/` and `tax/` subdirectories required by the pipeline.

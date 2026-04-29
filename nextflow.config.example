@@ -65,8 +65,12 @@ profiles {
     }
 }
 
-
 manifest {
-  description = "Pipeline for Metagenome sequencing data classification"
-  author = "Luigi Colin"
+  name        = 'ColinL1/metaG_EukDepletion'
+  description = 'Nextflow pipeline for kingdom-level taxonomic classification to assess eukaryotic DNA depletion in cnidarian metagenomics'
+  author      = 'Luigi Colin'
+  version     = '1.0.0'
+  homePage    = 'https://github.com/ColinL1/metaG_EukDepletion'
+  mainScript  = 'main.nf'
+  nextflowVersion = '>=23.0'
 }
