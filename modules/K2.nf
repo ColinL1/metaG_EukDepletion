@@ -3,7 +3,8 @@
 process K2_SE {
     tag "${meta.id}"
     label "med_mem"
-publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
+    conda "bioconda::kraken2"
+    publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -33,6 +34,7 @@ publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
 process K2_PE {
     tag "${meta.id}"
     label "med_mem"
+    conda "bioconda::kraken2"
     publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
 
     input:

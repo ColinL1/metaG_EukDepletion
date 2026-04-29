@@ -3,6 +3,7 @@
 process BOWTIE2_MAP_HOST {
     tag "${meta.id}"
     label "process_high"
+    conda "bioconda::bowtie2"
     publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
     publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'copy'
 
@@ -121,6 +122,7 @@ process BOWTIE2_MAP_HOST {
 process BOWTIE2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
+    conda "bioconda::bowtie2"
     publishDir "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:

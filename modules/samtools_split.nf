@@ -3,6 +3,7 @@
 process SPLIT_BAM_HOST {
     tag "${meta.id}"
     label "med_mem"
+    conda "bioconda::samtools" 
     publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
 
     input:
@@ -16,7 +17,7 @@ process SPLIT_BAM_HOST {
     """
     samtools view -F 0x900 -F 0x4 ${bam} --threads ${task.cpus} -o ${meta.id}.scleractina.mapped.fa
     samtools view -f 0x4 -F 0x900 ${bam} --threads ${task.cpus} -o ${meta.id}.scleractina.unmapped.fa
-    pigz -p ${task.cpus} ${meta.id}.scleractina.mapped.fa ${meta.id}.scleractina.unmapped.fa
+    gzip ${meta.id}.scleractina.mapped.fa ${meta.id}.scleractina.unmapped.fa
     """
     stub:
     """
@@ -28,6 +29,7 @@ process SPLIT_BAM_HOST {
 process SPLIT_BAM_SYM {
     tag "${meta.id}"
     label "med_mem"
+    conda "bioconda::samtools"
     publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
@@ -41,7 +43,7 @@ process SPLIT_BAM_SYM {
     """
     samtools view -F 0x900 -F 0x4 ${bam} --threads ${task.cpus} -o ${meta.id}.symbiodiniaceae.mapped.fa
     samtools view -f 0x4 -F 0x900 ${bam} --threads ${task.cpus} -o ${meta.id}.symbiodiniaceae.unmapped.fa
-    pigz -p ${task.cpus} ${meta.id}.symbiodiniaceae.mapped.fa ${meta.id}.symbiodiniaceae.unmapped.fa
+    gzip ${meta.id}.symbiodiniaceae.mapped.fa ${meta.id}.symbiodiniaceae.unmapped.fa
     """
     stub:
     """

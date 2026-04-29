@@ -3,7 +3,7 @@
 process MEGAHIT_PE {
     tag "${meta.id}"
     label "big_mem"
-
+    conda "bioconda::megahit"
     publishDir "${params.outdir}/assembly/${meta.id}", mode: 'symlink'
 
     input:

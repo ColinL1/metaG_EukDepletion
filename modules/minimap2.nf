@@ -3,6 +3,7 @@
 process MINIMAP2_MAP_HOST {
     tag "${meta.id}"
     label 'process_high'
+    conda "bioconda::minimap2"
     publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
 
     input:
@@ -77,6 +78,7 @@ process MINIMAP2_MAP_HOST {
 process MINIMAP2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
+    conda "bioconda::minimap2"
     publishDir "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
