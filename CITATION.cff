@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "metaG_EukDepletion"
+abstract: "Nextflow pipeline to assess eukaryotic DNA depletion efficiency in cnidarian metagenomics."
+authors:
+  - family-names: "Colin"
+    given-names: "Luigi"
+    orcid: https://orcid.org/0000-0002-6966-2817
+repository-code: "https://github.com/ColinL1/metaG_EukDepletion"
+license: MIT
+version: "1.0.0"
+date-released: "2026-04-29"
+keywords:
+  - metagenomics
+  - nextflow
+  - eukaryotic depletion
+  - cnidarian
+  - taxonomic classification
