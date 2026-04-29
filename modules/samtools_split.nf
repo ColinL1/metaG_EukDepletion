@@ -3,7 +3,7 @@
 process SPLIT_BAM_HOST {
     tag "${meta.id}"
     label "med_mem"
-    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/reads/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
@@ -28,7 +28,7 @@ process SPLIT_BAM_HOST {
 process SPLIT_BAM_SYM {
     tag "${meta.id}"
     label "med_mem"
-    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/reads/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)

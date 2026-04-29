@@ -3,173 +3,62 @@
 /*
 ========================================================================================
     Set params for reads input and output
+    This subworkflow is designed to run Kraken2 and Bracken on with a shared DB loaded in RAM.
+    This is very fast and efficient in a high memory workstation local environment, but not advised for a HPC with a queue manager. 
 ========================================================================================
 */
 
-params.input = "$baseDir/input/illumina/*_{1,2}.fastq.gz"
-// params.contigs = "$baseDir/input/coral"
-params.outdir = "$baseDir/results/illumina"
-input_pe = "/home/colinl/metaG/Git/metaG_EukDepletion/input/illumina/*_{1,2}.fastq.gz"
+//K2 db and db name # Included in nextflow.config normally, but can be overridden here if needed.
+params.kraken_db = '/share/databases/k2_nt'
+params.kraken_dbName = 'k2_nt'
 
-/*
-========================================================================================
-    Set params for kaiju database and minimap2 index references files
-========================================================================================
-*/
-// params.nodes = "/home/colinl/database/kaiju/nodes.dmp"
-// params.kaiju_db = "/home/colinl/database/kaiju/refseq/kaiju_db_refseq.fmi"
-
-params.kraken_db = "/share/databases/k2_nt"
-params.read_length = "150"
-
-// params.ref_host = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_scleractina" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/aiptasiidae.mmi" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/corals.mmi"
-// params.ref_sym = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_symbiodiniaceae"
-
-//temporary fix to multiply the reference channel to match the number of samples
-// params.n_samples = 120
-
-log.info """\
-
-    metaG kingdom taxonomy - NF  PIPELINE
-    ======================================
-    kraken_db  : ${params.kraken_db}
-    reads      : ${params.input}
-    outdir     : ${params.outdir}
-
-    """
-
-// Channel.fromPath(params.input+'/*.fastq.gz').map {tuple( it.name.split('.fastq.gz')[0], it )}.set { seq_reads_ch }
-// Channel.fromPath(params.contigs).map {tuple( (it.name.split('.fasta')[0]), it )}.set { seq_contigs_ch }
-// Channel.fromPath(params.input+'/*.fasta').map {tuple( (it.name.split('.fasta')[0]).split('_')[0..3].join("_"), it )}.set { seq_contigs_ch } // version that cleans the names (specific to my use case)
-
-Channel.fromFilePairs(input_pe).set { seq_reads_pe_ch }
-
-// include {MAP2REF_SWF as MAP2REF_SWF_CORAL; MAP2REF_SWF as MAP2REF_SWF_SYM} from './subworkflows/map2ref_extract.nf'
-// include {MAP2REF_SWF_PE as MAP2REF_SWF_CORAL_PE; MAP2REF_SWF_PE as MAP2REF_SWF_SYM_PE} from './subworkflows/map2ref_extract.nf'
-// include {EXTRACT_BACTERIA; EXTRACT_BACTERIA_FA; EXTRACT_BACTERIA_PE } from './subworkflows/extract_bacteria.nf'
-// include {TRIM_NANOPORE } from './subworkflows/trim_nanopore.nf'
-
-include {KRAKEN_BRACKEN; KRAKEN_BRACKEN_PE} from './subworkflows/kraken_bracken.nf'
-
-// include { megahit_se } from './modules/assembly_megahit.nf'
-// include { fastp_report } from './modules/fastp_stats.nf'
-// include { fastp_parse } from './modules/fastp_parse.nf'
-// include { fasta2fastq } from './modules/ONT_prep.nf'
-
-// Channel.fromPath(params.ref_host) 
-//             .map {tuple( it.name.split('.mmi')[0], it )}
-//             .flatMap {it * 120 }
-//             .collate(2)
-//             .set { ref_host_ch }
-
-// Channel.fromPath(params.ref_sym) 
-//             .map {tuple( it.name.split('.mmi')[0], it )}
-//             .flatMap {it * 120 }
-//             .collate(2)
-//             .set { ref_sym_ch }
-
-// workflow ONT_VF {
-//         params.mode = 'ONT'
-
-//     TRIM_NANOPORE(seq_reads_ch)
-//         EXTRACT_BACTERIA(TRIM_NANOPORE.out.trimmed_reads)
-//             MAP2REF_SWF_CORAL(EXTRACT_BACTERIA.out.non_bacteria_reads, ref_host_ch)
-//                 MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
-
-//             fastp_parse_ch = TRIM_NANOPORE.out.report_json.concat(
-//             EXTRACT_BACTERIA.out.report_json,
-//             MAP2REF_SWF_CORAL.out.report_json,
-//             MAP2REF_SWF_SYM.out.report_json)
-//                 // fastp_parse_ch.collect{it[1]}.toList().view()
-//                 fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
-// }
-
-// workflow CONTIGS {
-//         params.mode = 'contigs'
-
-//     fastp_fasta_report(seq_contigs_ch)
-//     EXTRACT_BACTERIA_FA(seq_contigs_ch)
-//         MAP2REF_SWF_CORAL(EXTRACT_BACTERIA_FA.out.non_bacteria_reads, ref_host_ch)
-//             MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
-
-//             fastp_parse_ch = fastp_fasta_report.out.report_json.concat(
-//             EXTRACT_BACTERIA_FA.out.report_json,
-//             MAP2REF_SWF_CORAL.out.report_json,
-//             MAP2REF_SWF_SYM.out.report_json)
-//                 // fastp_parse_ch.collect{it[1]}.toList().view()
-//                 fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
-// }
-
-workflow  {
-    KRAKEN_BRACKEN_PE(seq_reads_pe_ch)
-}
-
-workflow TEST {
-    seq_reads_pe_ch.view()
-    // KRAKEN_BRACKEN(seq_reads_pe_ch)
-}
-
-// workflow NON_TRIMMED_assembly  {
-    
-//     megahit_se(seq_reads_ch)
-//     fasta2fastq(seq_contigs_ch.concat(megahit_se.out.contigs_fa))
-//         fastp_report(fasta2fastq.out.converted_fasta)
-
-//         EXTRACT_BACTERIA(fasta2fastq.out.converted_fasta)
-//             MAP2REF_SWF_CORAL(EXTRACT_BACTERIA.out.non_bacteria_reads, ref_host_ch)
-//                 MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
-
-//             fastp_parse_ch = fastp_report.out.report_json.concat(
-//             EXTRACT_BACTERIA.out.report_json,
-//             MAP2REF_SWF_CORAL.out.report_json,
-//             MAP2REF_SWF_SYM.out.report_json)
-//                 // fastp_parse_ch.collect{it[1]}.toList().view()
-//                 fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
-// }
-
-// workflow NON_TRIMMED  {
-    
-//     fasta2fastq(seq_contigs_ch)
-//         fastp_report(fasta2fastq.out.converted_fasta.concat(seq_reads_ch))
-
-//         EXTRACT_BACTERIA(fasta2fastq.out.converted_fasta.concat(seq_reads_ch))
-//             MAP2REF_SWF_CORAL(EXTRACT_BACTERIA.out.non_bacteria_reads, ref_host_ch)
-//                 MAP2REF_SWF_SYM(MAP2REF_SWF_CORAL.out.non_mapped_reads, ref_sym_ch)        
-
-//             fastp_parse_ch = fastp_report.out.report_json.concat(
-//             EXTRACT_BACTERIA.out.report_json,
-//             MAP2REF_SWF_CORAL.out.report_json,
-//             MAP2REF_SWF_SYM.out.report_json)
-//                 // fastp_parse_ch.collect{it[1]}.toList().view()
-//                 fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
-// }
+// Bracken (uses same DB directory as K2; bracken adds .kmer_distrib files there)
+// read_len should match the value used when building the bracken DB (e.g. 150 for Illumina)
+params.bracken_read_len_pe  = 150   // Illumina PE read length
+params.bracken_read_len_ont = 300   // ONT: bracken is short-read oriented; adjust if DB was built differently
+params.bracken_tax_level    = 'F'   // S=Species, G=Genus, F=Family, etc.
+params.bracken_threshold    = 10  // Threshold for Bracken classification
 
 
-// workflow PE_ILLUMINA  {
-//     // seq_reads_pe_ch.view()
-//     fastp_report(seq_reads_pe_ch)
-//     EXTRACT_BACTERIA_PE(seq_reads_pe_ch)
-//         MAP2REF_SWF_CORAL_PE(EXTRACT_BACTERIA_PE.out.non_bacteria_reads, ref_host_ch)
-//             MAP2REF_SWF_SYM_PE(MAP2REF_SWF_CORAL_PE.out.non_mapped_reads, ref_sym_ch)        
+include { load_in_shm; clean_shm } from '../modules/load_k2_db_shm.nf'
+include { K2_SE ; K2_PE } from '../modules/K2.nf'
+include { BRACKEN_PE ; BRACKEN_ONT } from '../modules/bracken.nf'
 
-//             fastp_parse_ch = fastp_report.out.report_json.concat(
-//             EXTRACT_BACTERIA_PE.out.report_json,
-//             MAP2REF_SWF_CORAL_PE.out.report_json,
-//             MAP2REF_SWF_SYM_PE.out.report_json)
-//                 fastp_parse_ch.collect{it[1]}.toList().view()
-//                 // fastp_parse(fastp_parse_ch.collect{it[1]}.toList())
-// }
-workflow.onComplete {    
-    log.info """\
-        Pipeline execution summary
-        ---------------------------
-        Completed at: ${workflow.complete}
-        Duration    : ${workflow.duration}
-        Success     : ${workflow.success}
-        workDir     : ${workflow.workDir}
-        exit status : ${workflow.exitStatus}
-        """
-        .stripIndent()
 
-	log.info ( workflow.success ? "\nDone! --> $params.outdir\n" : "Oops .. something went wrong" )
+workflow K2_BRACKEN {
+    take:
+        reads_ch
+        reads_ont_ch
+
+    main:
+    // ── Phase 1: Load DB ────────────────────────────────────────────────────
+    // This can be change to a collect step to make the trigger be the end of all other processes
+    // This way there is no conflict between loading the DB and other processes that may need RAM. 
+    load_in_shm(Channel.value(true))
+    db_signal = load_in_shm.out.db_loaded
+
+    // ── Phase 2: Classification (K2 + Bracken) ─────────────────────────────
+    // .combine(db_signal) ensures each K2 job only starts once the DB is loaded.
+    K2_PE(
+        reads_ch 
+        .combine(db_signal)
+        .map { meta, reads, _loaded -> [meta, reads] }
+    )
+    BRACKEN_PE(K2_PE.out.report_k2_out)
+
+    K2_SE(
+        reads_ont_ch
+        .combine(db_signal)
+        .map { meta, reads, _loaded -> [meta, reads] }
+    )
+    BRACKEN_ONT(K2_SE.out.report_k2_out)
+
+    // ── Phase 3: Cleanup ────────────────────────────────────────────────────
+    // Wait for ALL Bracken jobs (PE + ONT) before removing the DB from /dev/shm.
+    // Gating on Bracken (not K2) is safer if Bracken is ever pointed at the shm path.
+    all_k2_done = BRACKEN_PE.out.bracken
+        .mix(BRACKEN_ONT.out.bracken)
+        .collect()
+    clean_shm(all_k2_done)
+
 }

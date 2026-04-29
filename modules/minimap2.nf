@@ -3,7 +3,7 @@
 process MINIMAP2_MAP_HOST {
     tag "${meta.id}"
     label 'process_high'
-    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/bam/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -36,6 +36,7 @@ process MINIMAP2_MAP_HOST {
     else
     error "Invalid alignment mode: ${meta.species}"
 
+
     stub:
     if( "${meta.species}" == 'H2' )
         """
@@ -64,13 +65,12 @@ process MINIMAP2_MAP_HOST {
         """
     else
     error "Invalid alignment mode: ${meta.species}"
-
 }
 
 process MINIMAP2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
-    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/bam/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -80,7 +80,7 @@ process MINIMAP2_MAP_SYM {
 
     script:
 	"""
-	minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_sym} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
+	minimap2 -t ${task.cpus} -ax map-ont ${params.ref_file_sym_ont} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
 	"""
     stub:
     """

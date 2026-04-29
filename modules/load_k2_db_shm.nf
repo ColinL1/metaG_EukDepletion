@@ -1,40 +1,51 @@
 #!/usr/bin/env nextflow
-// load the kr2 db into shared memory, then remove it after running k2. NOT WORKING 
+// Load the Kraken2 db into shared memory before K2 runs, then clean up after.
 
 process load_in_shm {
-    tag ""
+    tag "load_k2_db"
     label "min_mem"
 
-    input: 
-    path(params.kraken_db)
+    // val trigger: collected signal from all mapping steps; gates this process
+    // so the DB is only loaded once all bowtie2/minimap2 work is done.
+    input:
+    val trigger
 
     output:
-    path(""), emit: alpha_diversity_report
+    val true, emit: db_loaded
 
     script:
     """
-        FILE=/dev/shm/*.k2d
-    if [ -f "$FILE" ]; then
-        echo "db in memory"
-    else 
-        cp ${params.kraken_db}/* /dev/shm/.
+    if [ -f /dev/shm/${params.kraken_dbName}/hash.k2d ]; then
+        echo "DB already in shared memory"
+    else
+        cp -rv ${params.kraken_db} /dev/shm/${params.kraken_dbName}
+        echo "DB copied to /dev/shm/${params.kraken_dbName}"
     fi
+    """
+    stub:
+    """
+    sleep 3 # Simulate time taken to copy DB; adjust as needed
+    echo "[stub] Skipping DB copy to /dev/shm/${params.kraken_dbName}"
     """
 }
 
-
 process clean_shm {
-    tag ""
+    tag "clean_k2_db"
     label "min_mem"
 
-    input: 
-    tuple val(sample), path(bracken_report)
-
-    output:
-    path(""), emit: alpha_diversity_report
+    // Receives a collected list of all K2 outputs so this only runs after
+    // every K2 job (across both sub-workflows) has completed.
+    input:
+    val(all_k2_done)
 
     script:
     """
-    rm -rf /dev/shm/* 
+    rm -rf /dev/shm/${params.kraken_dbName}
+    echo "Shared memory cleaned"
+    """
+    stub:
+    """
+    sleep 3 # Simulate time taken to clean up; adjust as needed
+    echo "[stub] Skipping /dev/shm/${params.kraken_dbName} removal"
     """
 }
