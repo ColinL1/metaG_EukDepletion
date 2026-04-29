@@ -3,7 +3,7 @@
 /*
 ========================================================================================
     Set params for reads input and output
-    This subworkflow is designed to run Kraken2 and Bracken on with a shared DB loaded in RAM.
+    This subworkflow is designed to run Kraken2 and Bracken with a shared DB loaded in RAM.
     This is very fast and efficient in a high memory workstation local environment, but not advised for a HPC with a queue manager. 
 ========================================================================================
 */

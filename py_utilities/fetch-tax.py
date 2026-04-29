@@ -72,23 +72,32 @@ def fetch_assembly_taxonomy(accessions):
         record = Entrez.read(handle)
         handle.close()
 
+        if not record["IdList"]:
+            print(f"{acc}\tNA\tNA", file=sys.stderr)
+            continue
         uid = record["IdList"][0]
-
         # Fetch assembly summary (returns JSON-like XML)
         handle = Entrez.esummary(db="assembly", id=uid, report="full")
         summary = Entrez.read(handle, validate=False)
         handle.close()
 
-        organism = summary["DocumentSummarySet"]["DocumentSummary"][0]["SpeciesName"]
-        parts = organism.split()
-        genus = parts[0] if len(parts) >= 1 else "NA"
-        species = parts[1] if len(parts) >= 2 else "NA"
+        try:
+            organism = summary["DocumentSummarySet"]["DocumentSummary"][0]["SpeciesName"]
+            parts = organism.split()
+            genus = parts[0] if len(parts) >= 1 else "NA"
+            species = parts[1] if len(parts) >= 2 else "NA"
+        except (KeyError, IndexError) as e:
+            print(f"Warning: Could not parse taxonomy for {acc}: {e}", file=sys.stderr)
+            genus, species = "NA", "NA"
         print(f"{acc}\t{genus}\t{species}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        with open(sys.argv[1]) as f:
-            accs = [line.strip() for line in f if line.strip()]
+        try:
+            with open(sys.argv[1], encoding="utf-8") as f:
+                accs = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            sys.exit(f"Error: File not found: {sys.argv[1]}")
     else:
         accs = ACCESSIONS
     fetch_assembly_taxonomy(accs)

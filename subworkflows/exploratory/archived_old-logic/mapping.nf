@@ -2,7 +2,6 @@
 //TODO: general cleanup and reestablishment workflows and subworkflows!!
 //TODO: add stub
 /*
-/*
 ========================================================================================
     Set params for kaiju database and mapping (bowtie2 minimap2) index references files
 ========================================================================================
@@ -36,7 +35,7 @@ include { FASTP_PLOT as FASTP_PLOT_PE; FASTP_PLOT_CONTIGS as FASTP_PLOT_ONT } fr
 
         Channel.fromPath(params.input)
             .splitCsv(header:true, quote: '\"')
-            .map {row -> tuple(row.Sample_name, row.Sample_name, tuple((row.R1), (row.R2)), (row.Seqencing_type), (row.Entry))}
+            .map {row -> tuple(row.Sample_name, row.Sample_name, tuple((row.R1), (row.R2)), (row.Sequencing_type), (row.Entry))}
             .filter { it[3] == 'Illumina' }
             .filter { it[4] == 'TEST_MAPPING_1' }
             .map { tuple(it[0], it[1], it[2], it[3]) }

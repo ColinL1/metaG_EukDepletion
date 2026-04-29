@@ -31,9 +31,12 @@ def extract_info_from_json(json_file):
     with open(json_file, 'r') as file:
         data = json.load(file)
 
-    summary = data['summary']['after_filtering']
-    total_reads = summary['total_reads']
-    total_bases = summary['total_bases']
+    try:
+        summary = data['summary']['after_filtering']
+        total_reads = summary['total_reads']
+        total_bases = summary['total_bases']
+    except KeyError as e:
+        raise ValueError(f"Missing expected key {e} in {json_file}") from e
 
     return {
         'file_name': os.path.basename(json_file),

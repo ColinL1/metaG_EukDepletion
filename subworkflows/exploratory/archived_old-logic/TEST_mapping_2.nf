@@ -2,7 +2,6 @@
 //TODO: general cleanup and reestablishment workflows and subworkflows!!
 //TODO: add stub
 /*
-/*
 ========================================================================================
     Set params for kaiju database and mapping (bowtie2 minimap2) index references files
 ========================================================================================

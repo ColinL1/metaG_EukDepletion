@@ -11,7 +11,7 @@ process NCBI_DOWNLOAD {
 
 	script:
 	"""
-	datasets download genome accession ${accession} \
-		--filename ${accession}.zip
+	datasets download genome accession '${accession}' \
+		--filename '${accession}.zip'
 	"""
 }

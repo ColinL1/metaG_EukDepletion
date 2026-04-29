@@ -15,6 +15,7 @@ process load_in_shm {
 
     script:
     """
+    set -euo pipefail
     if [ -f /dev/shm/${params.kraken_dbName}/hash.k2d ]; then
         echo "DB already in shared memory"
     else
@@ -40,6 +41,11 @@ process clean_shm {
 
     script:
     """
+    set -euo pipefail
+    if [ -z "${params.kraken_dbName}" ]; then
+        echo "Error: kraken_dbName is not set" >&2
+        exit 1
+    fi
     rm -rf /dev/shm/${params.kraken_dbName}
     echo "Shared memory cleaned"
     """

@@ -20,7 +20,7 @@ include { MINIMAP2_INDEX } from '../../modules/minimap2_index.nf'
 
 /*
 ========================================================================================
-    Workflow EXTRACT_BACTERIA
+    Workflow BUILD_REF_INDEX
 ========================================================================================
 */
 
@@ -34,5 +34,5 @@ workflow BUILD_REF_INDEX {
             MINIMAP2_INDEX(NCBI_DOWNLOAD.out.reference_genomes)
 
     emit:
-        indexed_reference = MINIMAP2_INDEX.indexed_reference
+        indexed_reference = MINIMAP2_INDEX.out.indexed_reference
 }

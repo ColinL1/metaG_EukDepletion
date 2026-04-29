@@ -26,15 +26,17 @@ if args.json is None or \
     parser.print_help(sys.stderr)
     sys.exit(1)
 
-## start actuall script 
+## start actual script 
 def extract_info_from_json(json_file):
     with open(json_file, 'r') as file:
         data = json.load(file)
 
-    summary = data['summary']['after_filtering']
-    total_reads = summary['total_reads']
-    total_bases = summary['total_bases']
-
+    try:
+        summary = data['summary']['after_filtering']
+        total_reads = summary['total_reads']
+        total_bases = summary['total_bases']
+    except KeyError as e:
+        raise ValueError(f"Missing expected key {e} in {json_file}") from e
     return {
         'file_name': os.path.basename(json_file),
         'total_reads': total_reads,
@@ -107,11 +109,11 @@ def process_dataframe(data):
 
     # df_pivoted_split_2 = df_filtered.loc[:,"total_reads"]
     # df_pivoted_split_2['Type'] = 'total_reads'
-    df_filtered_split_1 = df_filtered[["file_name","Kingdom", "total_bases"]]
+    df_filtered_split_1 = df_filtered[["file_name","Kingdom", "total_bases"]].copy()
     df_filtered_split_1['Type'] = 'total_bases'
     df_filtered_split_1 = df_filtered_split_1.rename(columns={'total_bases': 'total'})
     
-    df_filtered_split_2 = df_filtered[["file_name","Kingdom", "total_reads"]]
+    df_filtered_split_2 = df_filtered[["file_name","Kingdom", "total_reads"]].copy()
     df_filtered_split_2['Type'] = 'total_reads'
     df_filtered_split_2 = df_filtered_split_2.rename(columns={'total_reads': 'total'})
     

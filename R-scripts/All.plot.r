@@ -13,8 +13,8 @@ p_load("tidyr", "tidyfast", "dplyr", "ggplot2", "ggpubr", "tidyverse",
 rm(list = ls())
 
 # Define base paths
-base_path <- "<PROJECT_ROOT>/"
-output_path <- "<PROJECT_ROOT>/plots"
+base_path <- Sys.getenv("PROJECT_ROOT", unset = stop("PROJECT_ROOT environment variable not set"))
+output_path <- file.path(base_path, "plots")
 
 # Define color palettes
 col_palette_mapping <- c(
@@ -174,7 +174,10 @@ data_reads <- read.table(
     header = TRUE, sep = "\t"
 )
 # Read re-run of Kaiju annotation with updated database 20250730
-data_reads_kaiju <- read.table("<PROJECT_ROOT>/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads_kaiju <- read.table(
+    file.path(base_path, "202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt"),
+    header = TRUE, sep = "\t"
+)
 
 # =============================================================================
 # DATA PROCESSING AND CLEANING
@@ -552,11 +555,17 @@ Aip_PBS <- read.table(
     header = TRUE, sep = ","
 ) 
 
-PBSvsDESS <-read.table("<PROJECT_ROOT>/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
+PBSvsDESS <- read.table(
+    file.path(base_path, "qPCR/MetaG_qPCR_PBSvsDESS.csv"),
+    header = TRUE, sep = ","
+)
 PBSvsDESS <- PBSvsDESS %>% 
     filter(Buffer == "DESS")
 
-Corals <-read.table("<PROJECT_ROOT>/qPCR/MetaG_qPCR_corals.csv" , header = T, sep =",") 
+Corals <- read.table(
+    file.path(base_path, "qPCR/MetaG_qPCR_corals.csv"),
+    header = TRUE, sep = ","
+)
 
 data <- rbind(Aip_PBS, PBSvsDESS, Corals)
 data$Ct <- as.numeric(data$Ct)

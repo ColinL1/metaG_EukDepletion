@@ -2,11 +2,11 @@
 
 ## Prerequisites
 
-Run Seqkit stats on mapped / unmapped reads to extract the stats used for the plots.
+Run SeqKit stats on mapped / unmapped reads to extract the stats used for the plots.
 
 ```bash
 seqkit stats results/mapping/*/*/*_R1*.gz > stats.txt
-# awk 'BEGIN{OFS="\t"} {$1=$1; print}' stats.txt > stats.clean.txt # sanitise to have clear tsv format
+awk 'BEGIN{OFS="\t"} {$1=$1; print}' stats.txt > stats.clean.txt # sanitise to have clear tsv format
 ```
 
 ### Folder content

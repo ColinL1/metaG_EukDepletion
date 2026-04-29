@@ -67,7 +67,7 @@ process BOWTIE2_MAP_HOST {
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
     else
-    // error "Invalid alignment mode: ${meta.species}"
+        log.warn "Unknown species '${meta.species}' - using default ref_file_scl"
         """
         INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
@@ -121,7 +121,7 @@ process BOWTIE2_MAP_HOST {
 process BOWTIE2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
-    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/", mode: 'symlink'
+    publishDir "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
