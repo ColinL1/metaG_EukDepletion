@@ -1,16 +1,19 @@
 .vscode
-.nextflow
-.nextflow.log*
+.nextflow*
 work/
 input/*
 results/*
+!results/README.md
 references/*
+!references/README.md
 manual_piplines
 modules/templates
 modules/mmseq2_diamond
 modules/adapters
-plots
+plots/*
+!plots/README.md
 backup_temp
+qPCR/*.csv
 
 nextflow.config
 processes_resources.config
