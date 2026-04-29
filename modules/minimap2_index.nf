@@ -3,6 +3,7 @@
 //TODO: check if possible to inherit conditional directly from queue channel  
 process MINIMAP2_INDEX {
     tag "${sample}"
+    label 'process_high'
     publishDir "$params.outdir/mapping_indexes/${taxon}/", mode: 'symlink'
 
     input: 

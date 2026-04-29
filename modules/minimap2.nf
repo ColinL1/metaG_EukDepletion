@@ -34,8 +34,10 @@ process MINIMAP2_MAP_HOST {
 	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
         """
     else
-    error "Invalid alignment mode: ${meta.species}"
-
+    // error "Invalid alignment mode: ${meta.species}"
+        """
+        minimap2 -t ${task.cpus} -ax map-ont ${params.ref_file_scl_ont} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+        """
 
     stub:
     if( "${meta.species}" == 'H2' )
@@ -64,7 +66,11 @@ process MINIMAP2_MAP_HOST {
         touch ${meta.id}
         """
     else
-    error "Invalid alignment mode: ${meta.species}"
+    // error "Invalid alignment mode: ${meta.species}"
+        """
+        touch ${meta.id}.${meta.species}-map-ONT.bam
+        touch ${meta.id}
+        """
 }
 
 process MINIMAP2_MAP_SYM {

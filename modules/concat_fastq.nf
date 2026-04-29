@@ -2,6 +2,7 @@
 // Process to concatenate the fastq files
 process CONCAT_FASTQ {
     tag "${meta.id}"
+    label 'min_mem'
     publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'symlink'
 
     input:

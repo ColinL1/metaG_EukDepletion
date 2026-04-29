@@ -2,6 +2,7 @@
 
 process BWA_PE {
     tag "${sample_name}"
+    label 'process_high'
     // cpus "${params.cpusHigh}"
     publishDir "$params.outdir/bam/${ref_name}/", mode: 'symlink'
     // publishDir "$params.outdir/reads/${ref_name}/", mode: 'symlink'
@@ -28,6 +29,7 @@ process BWA_PE {
 
 process BWA_ONT {
     tag "${sample_name}"
+    label 'process_high'
     // cpus "${params.cpusHigh}"
     publishDir "$params.outdir/bam/${ref_name}/", mode: 'symlink'
     // publishDir "$params.outdir/reads/${ref_name}/", mode: 'symlink'

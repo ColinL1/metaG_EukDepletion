@@ -67,8 +67,16 @@ process BOWTIE2_MAP_HOST {
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
     else
-    error "Invalid alignment mode: ${meta.species}"
+    // error "Invalid alignment mode: ${meta.species}"
+        """
+        INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
+        ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
+        """
     stub:
     if( "${meta.species}" == 'H2' )
         """
@@ -101,7 +109,12 @@ process BOWTIE2_MAP_HOST {
         touch ${meta.id}-map-Pocillopora.mapped_1.fq.gz ${meta.id}-map-Pocillopora.mapped_2.fq.gz
         """
     else
-    error "Invalid alignment mode: ${meta.species}"
+        """
+        touch ${meta.id}-map-pe.bam
+        touch ${meta.id}-map-pe.unmapped_1.fq.gz ${meta.id}-map-pe.unmapped_2.fq.gz
+        touch ${meta.id}-map-pe.mapped_1.fq.gz ${meta.id}-map-pe.mapped_2.fq.gz
+        """
+    // error "Invalid alignment mode: ${meta.species}"
 
 }
 

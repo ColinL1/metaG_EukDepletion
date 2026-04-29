@@ -1,6 +1,6 @@
 process BRACKEN_PE {
 	tag "$meta.id"
-	label 'process_single'
+	label 'min_mem'
 	publishDir "${params.outdir}/bracken/${meta.id}/", mode: 'symlink'
 	// conda "bioconda::bracken=2.9"
 	maxRetries params.bracken_threshold
@@ -35,7 +35,7 @@ process BRACKEN_PE {
 
 process BRACKEN_ONT {
 	tag "$meta.id"
-	label 'process_single'
+	label 'min_mem'
 	publishDir "${params.outdir}/bracken/${meta.id}/", mode: 'symlink'
 	// conda "bioconda::bracken=2.9"
 	// Retry up to 3 times (attempt 1 = threshold 5, 2 = threshold 3, 3 = threshold 0)

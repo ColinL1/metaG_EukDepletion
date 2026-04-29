@@ -15,8 +15,8 @@ params.kaiju_db = "/share/databases/kaiju/refseq/kaiju_db_refseq.fmi"
 ========================================================================================
 */
 
-include { NCBI_DOWNLOAD } from '../modules/NCBI_Datasets.nf' 
-include { MINIMAP2_INDEX } from '../modules/minimap2_index.nf' 
+include { NCBI_DOWNLOAD } from '../../modules/exploratory/NCBI_Datasets.nf' 
+include { MINIMAP2_INDEX } from '../../modules/minimap2_index.nf' 
 
 /*
 ========================================================================================
@@ -34,5 +34,5 @@ workflow BUILD_REF_INDEX {
             MINIMAP2_INDEX(NCBI_DOWNLOAD.out.reference_genomes)
 
     emit:
-        
+        indexed_reference = MINIMAP2_INDEX.indexed_reference
 }

@@ -2,7 +2,7 @@
 
 process MEGAHIT_PE {
     tag "${meta.id}"
-    //label "process_high"
+    label "big_mem"
 
     publishDir "${params.outdir}/assembly/${meta.id}", mode: 'symlink'
 

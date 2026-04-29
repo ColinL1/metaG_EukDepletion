@@ -5,6 +5,7 @@ params.cat_ex = "/home/colinl/databases/CAT/CAT_pack-5.3/CAT_pack/CAT"
 
 process CAT {
     tag "${meta.id}"
+    label 'process_high'
     publishDir "${params.outdir}/CAT/${meta.species}/${meta.id}/", mode: 'symlink'
     publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'copy'
 

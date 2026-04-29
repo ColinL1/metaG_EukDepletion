@@ -2,7 +2,7 @@
 
 process KAIJU_SE {
     tag "${meta.id}"
-    label "process_high"
+    label "big_mem"
     publishDir "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/", mode: 'symlink'
 
     input:
@@ -23,7 +23,7 @@ process KAIJU_SE {
 
 process KAIJU_PE {
     tag "${meta.id}"
-    label "process_high"
+    label "big_mem"
     publishDir "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/", mode: 'symlink'
 
     input:
