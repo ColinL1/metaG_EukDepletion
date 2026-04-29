@@ -18,18 +18,18 @@ lapply(lib_list, require, quietly = TRUE, character.only = TRUE)
 # # Run "webplot" server (only necessary for live use)
 hgd() #  http://127.0.0.1:42575/live?token=Lk3qx1NO
 
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_report.csv")
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/contigs_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/ONT_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/contigs_report.csv")
 
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_non_trim_report.csv")
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_contigs_non_trim_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/ONT_non_trim_report.csv")
+# data <- read_csv("<PROJECT_ROOT>/results/ONT_contigs_non_trim_report.csv")
 
 # data <- data[,c(2:5)]
 
 # data %>%
 #         filter(file_name == "F003_00_MB_pass")
-# # sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-# metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# # sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+# metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 # # data$file_name <- gsub("ID_BST_Por_06","Por_BST-6_MBX", data$file_name)
 # # data$file_name <- gsub("ID_GT_Por_06","Por_GT-6_MBX", data$file_name)
@@ -492,15 +492,15 @@ hgd() #  http://127.0.0.1:42575/live?token=Lk3qx1NO
 #         scale_x_discrete(labels = function(x) str_wrap(x, width = 1, whitespace_only = FALSE))
 
 
-data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_non_trim_report_2.csv")  #### nanopore data not assembled
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_contigs_non_trim_report.csv")
+data <- read_csv("<PROJECT_ROOT>/results/ONT_non_trim_report_2.csv")  #### nanopore data not assembled
+# data <- read_csv("<PROJECT_ROOT>/results/ONT_contigs_non_trim_report.csv")
 
 data <- data[,c(2:5)]
 data %>%
         filter(file_name == "F003_00_MB_pass")
 
-# sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 sample_data <- merge(data, metadata, by.y = "matching_index", all = TRUE)
 

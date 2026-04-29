@@ -3,9 +3,9 @@ library(tidyverse)
 
 # Read the TSV file (adjust file path as needed)
 #path 
-folder_path_coass <- "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/binning/nf_core_MAG/results/GenomeBinning/QC/"
-folder_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/binning/nf_core_MAG/results_no_coass/GenomeBinning/QC/"
-# mags <- read_tsv("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/binning/nf_core_MAG/results/GenomeBinning/QC/gunc_checkm_summary.tsv")
+folder_path_coass <- "<PROJECT_ROOT>/manual_piplines/binning/nf_core_MAG/results/GenomeBinning/QC/"
+folder_path <- "<PROJECT_ROOT>/manual_piplines/binning/nf_core_MAG/results_no_coass/GenomeBinning/QC/"
+# mags <- read_tsv("<PROJECT_ROOT>/manual_piplines/binning/nf_core_MAG/results/GenomeBinning/QC/gunc_checkm_summary.tsv")
 mags_coass <- read_tsv(paste0(folder_path_coass,"gunc_checkm_summary.tsv"))
 mags <- read_tsv(paste0(folder_path,"gunc_checkm_summary.tsv"))
 
@@ -302,7 +302,7 @@ for (completeness_value in c(90)) {
     print(mainplot)
 
     # Save to file 
-    out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
+    out_path <- "<PROJECT_ROOT>/plots/"
     # ggsave(mainplot[[1]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-assembly.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11) # A4 dimensions in inches
     # ggsave(mainplot[[2]], filename = paste0(out_path, "MAGs_summary_",completeness_value,"_co-binning.pdf"), width = ifelse(completeness_value == 50, 20, 17), height = 11)
 }
@@ -704,7 +704,7 @@ ggplot(aes(x = treatment, fill = lineage)) +
 
 
 ###---- check virus summary ----###
-path_pattern <- "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/binning/nf_core_MAG/results/VirusIdentification/geNomad/*"
+path_pattern <- "<PROJECT_ROOT>/manual_piplines/binning/nf_core_MAG/results/VirusIdentification/geNomad/*"
 
 
 # Read the TSV file 
@@ -727,7 +727,7 @@ read_and_combine_virus_summaries <- function(path_pattern) {
 
 # Use the function to read and combine virus summaries
 viruses <- read_and_combine_virus_summaries(path_pattern)
-# viruses <- read_tsv("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/binning/nf_core_MAG/results/VirusIdentification/geNomad/group-Acro_B_DESS/Acro_concat_B_D_summary/Acro_concat_B_D_virus_summary.tsv")
+# viruses <- read_tsv("<PROJECT_ROOT>/manual_piplines/binning/nf_core_MAG/results/VirusIdentification/geNomad/group-Acro_B_DESS/Acro_concat_B_D_summary/Acro_concat_B_D_virus_summary.tsv")
 head(viruses)
 
 min(viruses$n_hallmarks)

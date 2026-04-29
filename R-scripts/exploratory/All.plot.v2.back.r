@@ -85,9 +85,9 @@ read_table_many <- function(file_path, ...) {
 # hgd()
 
 # %% Read the file
-data_reads <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads <- read.table("<PROJECT_ROOT>/manual_piplines/reads/mapping/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 # Read re-run of Kaiju annotation with updated database 20250730
-data_reads_kaiju <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads_kaiju <- read.table("<PROJECT_ROOT>/manual_piplines/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 
 # replace values from data_reads with data_reads_kaiju if file matches
 data_reads <- data_reads %>%
@@ -483,8 +483,8 @@ figure_2 <- ggpubr::ggarrange(
 
 figure_2 
 
-ggsave(figure_2, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_2.png", width = 16, height = 22, dpi = 600)
-ggsave(figure_2, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_2.svg", width = 16, height = 22, dpi = 600)
+ggsave(figure_2, filename = "<PROJECT_ROOT>/plots/figure_2.png", width = 16, height = 22, dpi = 600)
+ggsave(figure_2, filename = "<PROJECT_ROOT>/plots/figure_2.svg", width = 16, height = 22, dpi = 600)
 
 
 
@@ -492,13 +492,13 @@ ggsave(figure_2, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_2
 ### read the table
 # setwd("~/PhD/Meta_G_qPCR/R_paper")
 
-Aip_PBS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_Aip_PBS.csv" , header = T, sep =",") 
+Aip_PBS <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_Aip_PBS.csv" , header = T, sep =",") 
 
-PBSvsDESS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
+PBSvsDESS <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
 PBSvsDESS <- PBSvsDESS %>% 
     filter(Buffer == "DESS")
 
-Corals <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_corals.csv" , header = T, sep =",") 
+Corals <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_corals.csv" , header = T, sep =",") 
 
 data <- rbind(Aip_PBS, PBSvsDESS, Corals)
 data$Ct <- as.numeric(data$Ct)
@@ -667,10 +667,10 @@ figure_1_annotated
 
 
 ### --- save figures ---###
-out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/"
+out_path <- "<PROJECT_ROOT>/plots/"
 
-ggsave(figure_1_annotated, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_1.png", width = 18, height = 22, dpi = 600)
-ggsave(figure_1_annotated, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_1.svg", width = 18, height = 22, dpi = 600)
+ggsave(figure_1_annotated, filename = "<PROJECT_ROOT>/plots/figure_1.png", width = 18, height = 22, dpi = 600)
+ggsave(figure_1_annotated, filename = "<PROJECT_ROOT>/plots/figure_1.svg", width = 18, height = 22, dpi = 600)
 # ggsave(filename = paste0(out_path, "/figure_1.pdf"), plot = figure_1, width = 12, height = 10)
 # ggsave(filename = paste0(out_path, "/figure_2.pdf"), plot = figure_2, width = 14, height = 10)
 # ggsave(filename = paste0(out_path, "/figure_3.pdf"), plot = figure_3, width = 14, height = 12)
@@ -682,7 +682,7 @@ ggsave(figure_1_annotated, filename = "/home/colinl/Proj/metaG_EukDepletion/plot
 
 ## %% load data figure 4 dots (increases the number of family kept) !! not FINAL!!
 # non filtered microbial only files
-files <- list.files(path = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
+files <- list.files(path = "<PROJECT_ROOT>/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
 
 # Create an empty data frame to store the results
 CAT_data_family <- data.frame()
@@ -864,5 +864,5 @@ figure_3  <- ggarrange(
                 ncol = 5, nrow = 1, common.legend = TRUE, legend = "bottom") # heights = c(1,0.1)
 figure_3
 
-ggsave(figure_3 , filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_3.png", width = 18, height = 14, dpi = 600)
-ggsave(figure_3 , filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_3.svg", width = 18, height = 14, dpi = 600)
+ggsave(figure_3 , filename = "<PROJECT_ROOT>/plots/figure_3.png", width = 18, height = 14, dpi = 600)
+ggsave(figure_3 , filename = "<PROJECT_ROOT>/plots/figure_3.svg", width = 18, height = 14, dpi = 600)

@@ -18,24 +18,24 @@ lapply(lib_list, require, quietly = TRUE, character.only = TRUE)
 hgd() #http://127.0.0.1:36571/live?token=XPsbjBwv   http://127.0.0.1:36525/live?token=DGweDG5f
 
 
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/tmp_json/report_with_legths_ONT_no_trim.csv")
+# data <- read_csv("<PROJECT_ROOT>/tmp_json/report_with_legths_ONT_no_trim.csv")
 
 # data <- data[,c(2:5)]
-# # sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-# metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# # sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+# metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 customized_read_tsv <- function(file){
   read_tsv(file, show_col_types = FALSE) %>% # , col_names = c("read_count", "taxid", "species", "genus", "family", "order", "class", "phylum", "superkingdom")
     mutate(filePath = file)
 }
 
-# sample <- list.files(path = "/home/colinl/databases/kaiju/input_contigs/tsv", full.names = TRUE) %>% # list all the files
+# sample <- list.files(path = "<DATABASES_DIR>/kaiju/input_contigs/tsv", full.names = TRUE) %>% # list all the files
 #   lapply(customized_read_tsv) %>% # read them all in with our custom function
 #   reduce(bind_rows) %>% # stack them all on top of each other
 #   select(filePath, read_count, taxid, species, genus, family, order, class, phylum, clade, superkingdom )# %>% # select the correct columns
 
-sample1 <- customized_read_tsv("/home/colinl/metaG/Git/metaG_EukDepletion/results/host_raw_reads_taxid.tsv")
-sample2 <- customized_read_tsv("/home/colinl/metaG/Git/metaG_EukDepletion/results/zoox_raw_reads_taxid.tsv")
+sample1 <- customized_read_tsv("<PROJECT_ROOT>/results/host_raw_reads_taxid.tsv")
+sample2 <- customized_read_tsv("<PROJECT_ROOT>/results/zoox_raw_reads_taxid.tsv")
 
 sample1$Treatment <- "Blood & Tissue supernatant"
 sample2$Treatment <- "Blood & Tissue - zoox pellet"
@@ -47,7 +47,7 @@ sample$Strain <- "Porites"
 sample$replicate <- "00"
 sample$Buffer <- "NA"
 
-sample["file"] <-  gsub("/home/colinl/metaG/Git/metaG_EukDepletion/results/", "", sample$filePath)
+sample["file"] <-  gsub("<PROJECT_ROOT>/results/", "", sample$filePath)
 
 sample$file <- gsub(".tsv", "", sample$file)
 
@@ -292,7 +292,7 @@ col <- distinctColorPalette(14)
 #  [7] "Other"                  "Mucoromycota"           "Cyanobacteriota"        "Basidiomycota"          "Bacteroidota"           "Bacillota"                                     |
 # [13] "Ascomycota"             "Actinomycetota"                            
 # col <- c("cellular organisms" = "#E88A61", "Unclassified Bacteria" =  "#7EE4CE", "Thermodesulfobacteriota" = "#DDA6C7", "Root" =  "#82DE8D", "Pseudomonadota" =  "#D27BD7", "Planctomycetota" = "#DA538E", "Other" =  "#DAD9DD", "Myxococcota" = "#A7A161", "Euryarchaeota" =  "#DAE2B2", "Cyanobacteriota" =  "#7656E1" , "Campylobacterota" = "#88E857", "Bacteroidota" = "#D63FDC", "Bacillota" =  "#7AC3E1", "Actinomycetota" =  "#8C8FDA", "Verrucomicrobiota" =  "#82848B")
-# pdf(file = "/home/colinl/metaG/Git/metaG_EukDepletion/Top_phylum.pdf", onefile = TRUE, paper = "a4r")
+# pdf(file = "<PROJECT_ROOT>/Top_phylum.pdf", onefile = TRUE, paper = "a4r")
 for (i in c("Porites")) { #, "Pocillopora", "Acropora", "F003", "H2"
     print(paste("Plotting:", i, sep = " "))
       top_spp <- sample %>%
@@ -470,7 +470,7 @@ for (i in c("superkingdom", "clade", "phylum", "class", "order", "family", "genu
       )
 }
 
-# pdf(file = "/home/colinl/metaG/Git/metaG_EukDepletion/rarefaction_curve.pdf", onefile = TRUE, paper = "a4r")
+# pdf(file = "<PROJECT_ROOT>/rarefaction_curve.pdf", onefile = TRUE, paper = "a4r")
 for (i in (1)) {
     print(paste("Plotting:", i, sep = " "))
       vegan_df <- sample #%>%
@@ -532,7 +532,7 @@ for (i in c("species","superkingdom", "clade", "phylum", "class", "order", "fami
     )
 }
 
-# pdf(file = "/home/colinl/metaG/Git/metaG_EukDepletion/shannon_index.pdf", onefile = TRUE, paper = "a4r")
+# pdf(file = "<PROJECT_ROOT>/shannon_index.pdf", onefile = TRUE, paper = "a4r")
 for (i in unique(sample$Strain)) {
     print(paste("Plotting:", i, sep = " "))
       vegan_df <- sample %>%
@@ -893,8 +893,8 @@ BiocManager::install(version = "3.16")
 biocLite("ComplexHeatmap")
 library(ComplexHeatmap)
 
-beta <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/diversity_reports/beta_diversity.txt", row.names=1, col.names =c(";","H2_02_MBX_D" ,"F3_01_MBX_P" ,"H2_03_BT_PBS" ,"F003_03_B_PBS" ,"H2_02_MB_DESS" ,"F003_02_B_PBS" ,"F003_01_MB_PBS" ,"F003_01_BT_DESS" ,"H2_03_MB_PBS" ,"H2_03_BT_DESS" ,"F003_02_BT_PBS" ,"F003_03_MB_PBS" ,"H2_02_BT_DESS" ,"H2_03_MBX_D" ,"H2_03_B_DESS" ,"F3_03_MBX_D" ,"H2_03_MBX_P" ,"H2_01_MB_PBS" ,"H2_01_MBX_D" ,"F003_03_BT_PBS" ,"F003_03_BT_DESS" ,"H2_02_BT_PBS" ,"H2_01_MBX_P" ,"F003_01_BT_PBS" ,"H2_03_MBX_D" ,"H2_02_MB_PBS" ,"H2_01_B_PBS" ,"F003_02_BT_DESS" ,"F003_02_MB_PBS" ,"F3_02_MBX_P" ,"F003_01_B_PBS" ,"H2_02_MBX_P" ,"H2_01_BT_DESS" ,"H2_01_BT_PBS" ,"F3_01_MBX_D" ,"H2_01_MB_DESS" ,"F3_02_MBX_D" ,"H2_02_B_DESS" ,"H2_01_B_DESS" ,"F3_03_MBX_P")  )
-beta <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/kraken2/corals/diversity_reports/beta_diversity.txt", row.names=1, col.names =c(";","H2_02_MBX_D" ,"F3_01_MBX_P" ,"H2_03_BT_PBS" ,"F003_03_B_PBS" ,"H2_02_MB_DESS" ,"F003_02_B_PBS" ,"F003_01_MB_PBS" ,"F003_01_BT_DESS" ,"H2_03_MB_PBS" ,"H2_03_BT_DESS" ,"F003_02_BT_PBS" ,"F003_03_MB_PBS" ,"H2_02_BT_DESS" ,"H2_03_MBX_D" ,"H2_03_B_DESS" ,"F3_03_MBX_D" ,"H2_03_MBX_P" ,"H2_01_MB_PBS" ,"H2_01_MBX_D" ,"F003_03_BT_PBS" ,"F003_03_BT_DESS" ,"H2_02_BT_PBS" ,"H2_01_MBX_P" ,"F003_01_BT_PBS" ,"H2_03_MBX_D" ,"H2_02_MB_PBS" ,"H2_01_B_PBS" ,"F003_02_BT_DESS" ,"F003_02_MB_PBS" ,"F3_02_MBX_P" ,"F003_01_B_PBS" ,"H2_02_MBX_P" ,"H2_01_BT_DESS" ,"H2_01_BT_PBS" ,"F3_01_MBX_D" ,"H2_01_MB_DESS" ,"F3_02_MBX_D" ,"H2_02_B_DESS" ,"H2_01_B_DESS" ,"F3_03_MBX_P")  )
+beta <- read.table("<PROJECT_ROOT>/results/illumina/diversity_reports/beta_diversity.txt", row.names=1, col.names =c(";","H2_02_MBX_D" ,"F3_01_MBX_P" ,"H2_03_BT_PBS" ,"F003_03_B_PBS" ,"H2_02_MB_DESS" ,"F003_02_B_PBS" ,"F003_01_MB_PBS" ,"F003_01_BT_DESS" ,"H2_03_MB_PBS" ,"H2_03_BT_DESS" ,"F003_02_BT_PBS" ,"F003_03_MB_PBS" ,"H2_02_BT_DESS" ,"H2_03_MBX_D" ,"H2_03_B_DESS" ,"F3_03_MBX_D" ,"H2_03_MBX_P" ,"H2_01_MB_PBS" ,"H2_01_MBX_D" ,"F003_03_BT_PBS" ,"F003_03_BT_DESS" ,"H2_02_BT_PBS" ,"H2_01_MBX_P" ,"F003_01_BT_PBS" ,"H2_03_MBX_D" ,"H2_02_MB_PBS" ,"H2_01_B_PBS" ,"F003_02_BT_DESS" ,"F003_02_MB_PBS" ,"F3_02_MBX_P" ,"F003_01_B_PBS" ,"H2_02_MBX_P" ,"H2_01_BT_DESS" ,"H2_01_BT_PBS" ,"F3_01_MBX_D" ,"H2_01_MB_DESS" ,"F3_02_MBX_D" ,"H2_02_B_DESS" ,"H2_01_B_DESS" ,"F3_03_MBX_P")  )
+beta <- read.table("<PROJECT_ROOT>/results/illumina/kraken2/corals/diversity_reports/beta_diversity.txt", row.names=1, col.names =c(";","H2_02_MBX_D" ,"F3_01_MBX_P" ,"H2_03_BT_PBS" ,"F003_03_B_PBS" ,"H2_02_MB_DESS" ,"F003_02_B_PBS" ,"F003_01_MB_PBS" ,"F003_01_BT_DESS" ,"H2_03_MB_PBS" ,"H2_03_BT_DESS" ,"F003_02_BT_PBS" ,"F003_03_MB_PBS" ,"H2_02_BT_DESS" ,"H2_03_MBX_D" ,"H2_03_B_DESS" ,"F3_03_MBX_D" ,"H2_03_MBX_P" ,"H2_01_MB_PBS" ,"H2_01_MBX_D" ,"F003_03_BT_PBS" ,"F003_03_BT_DESS" ,"H2_02_BT_PBS" ,"H2_01_MBX_P" ,"F003_01_BT_PBS" ,"H2_03_MBX_D" ,"H2_02_MB_PBS" ,"H2_01_B_PBS" ,"F003_02_BT_DESS" ,"F003_02_MB_PBS" ,"F3_02_MBX_P" ,"F003_01_B_PBS" ,"H2_02_MBX_P" ,"H2_01_BT_DESS" ,"H2_01_BT_PBS" ,"F3_01_MBX_D" ,"H2_01_MB_DESS" ,"F3_02_MBX_D" ,"H2_02_B_DESS" ,"H2_01_B_DESS" ,"F3_03_MBX_P")  )
 # c("H2_02_MBX_D" ,"F3_01_MBX_P" ,"H2_03_BT_PBS" ,"F003_03_B_PBS" ,"H2_02_MB_DESS" ,"F003_02_B_PBS" ,"F003_01_MB_PBS" ,"F003_01_BT_DESS" ,"H2_03_MB_PBS" ,"H2_03_BT_DESS" ,"F003_02_BT_PBS" ,"F003_03_MB_PBS" ,"H2_02_BT_DESS" ,"H2_03_MBX_D" ,"H2_03_B_DESS" ,"F3_03_MBX_D" ,"H2_03_MBX_P" ,"H2_01_MB_PBS" ,"H2_01_MBX_D" ,"F003_03_BT_PBS" ,"F003_03_BT_DESS" ,"H2_02_BT_PBS" ,"H2_01_MBX_P" ,"F003_01_BT_PBS" ,"H2_03_MBX_D" ,"H2_02_MB_PBS" ,"H2_01_B_PBS" ,"F003_02_BT_DESS" ,"F003_02_MB_PBS" ,"F3_02_MBX_P" ,"F003_01_B_PBS" ,"H2_02_MBX_P" ,"H2_01_BT_DESS" ,"H2_01_BT_PBS" ,"F3_01_MBX_D" ,"H2_01_MB_DESS" ,"F3_02_MBX_D" ,"H2_02_B_DESS" ,"H2_01_B_DESS" ,"F3_03_MBX_P")
 beta
 length(beta$H2_02_MBX_D)
@@ -914,8 +914,8 @@ customized_read_tsv <- function(file){
 }
 
 
-sample_c <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/kraken2/corals/diversity_reports/all_alphadiv.txt", header = TRUE )
-sample_a <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/kraken2/aip/diversity_reports/all_alphadiv.txt", header = TRUE )
+sample_c <- read.table("<PROJECT_ROOT>/results/illumina/kraken2/corals/diversity_reports/all_alphadiv.txt", header = TRUE )
+sample_a <- read.table("<PROJECT_ROOT>/results/illumina/kraken2/aip/diversity_reports/all_alphadiv.txt", header = TRUE )
 sample <- rbind(sample_c, sample_a)
 
 sample <- sample %>% separate(Sample, , into = c("Strain","replicate","Treatment","Buffer"), sep = "_", remove = FALSE)

@@ -16,16 +16,16 @@ invisible(capture.output(
 # # Run "webplot" server (only necessary for live use)
 hgd() # http://127.0.0.1:43617/live?token=GdpJ8LuW
 
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_non_trim_report_2.csv")  #### nanopore data not assembled
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/contigs_repots_kaiju.csv")
-data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina_V3/Kaiju_reads_corals/fastp/report.csv")
+# data <- read_csv("<PROJECT_ROOT>/results/ONT_non_trim_report_2.csv")  #### nanopore data not assembled
+# data <- read_csv("<PROJECT_ROOT>/contigs_repots_kaiju.csv")
+data <- read_csv("<PROJECT_ROOT>/results/illumina_V3/Kaiju_reads_corals/fastp/report.csv")
 
 data <- data[,c(2:5)]
 # data %>%ù
 #         filter(file_name == "F003_00_MB_pass")
 
-# sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 sample_data <- merge(data, metadata, by.x = "file_name", by.y = "Index", all.x = TRUE)
 
@@ -592,18 +592,18 @@ dev.off()
 
 
 
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_report.csv")
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/contigs_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/ONT_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/contigs_report.csv")
 
-# # data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_non_trim_report.csv")
-# data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/results/ONT_contigs_non_trim_report.csv")
+# # data <- read_csv("<PROJECT_ROOT>/results/ONT_non_trim_report.csv")
+# data <- read_csv("<PROJECT_ROOT>/results/ONT_contigs_non_trim_report.csv")
 
 # data <- data[,c(2:5)]
 
 # data %>%
 #         filter(file_name == "F003_00_MB_pass")
-# # sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-# metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# # sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+# metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 # # data$file_name <- gsub("ID_BST_Por_06","Por_BST-6_MBX", data$file_name)
 # # data$file_name <- gsub("ID_GT_Por_06","Por_GT-6_MBX", data$file_name)
@@ -1066,4 +1066,4 @@ dev.off()
 #         scale_x_discrete(labels = function(x) str_wrap(x, width = 1, whitespace_only = FALSE))
 
 
-read.table("/home/colinl/NCCT/work/d7/3af6be92dec8ccbf4713e6333cf61e/metadata_ampliseq_2.txt", sep="\t", header=TRUE, row.names=1)
+read.table("<WORK_DIR>/d7/3af6be92dec8ccbf4713e6333cf61e/metadata_ampliseq_2.txt", sep="\t", header=TRUE, row.names=1)

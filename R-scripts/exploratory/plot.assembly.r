@@ -9,7 +9,7 @@ invisible(capture.output(
 
 
 # Read the file
-data <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/assembly/mapping/assembly_stats_sanitised.txt", header = TRUE, sep = "\t")
+data <- read.table("<PROJECT_ROOT>/manual_piplines/assembly/mapping/assembly_stats_sanitised.txt", header = TRUE, sep = "\t")
 
 # Print the first few rows of the data
 head(data)

@@ -10,7 +10,7 @@ p_load(rempsyc, flextable, officer, broom, report, effectsize, tidyverse)
 # rm(list = ls())
 
 # %% Read the file
-data_reads <- read.table("/Users/luigicolin/PhD/work_local/VSC_local/metaG_EukDepletion/input/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads <- read.table("<PROJECT_ROOT>/input/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 
 #check that all file *_1.fq.gz are identical to *_2.fq.gz redo later down too
 data_reads %>%

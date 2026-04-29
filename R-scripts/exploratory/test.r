@@ -1,8 +1,8 @@
 #! /usr/bin/env Rscript
-## start from read data of script "/home/colinl/metaG/Git/metaG_EukDepletion/R-scripts/All.plot.r"
+## start from read data of script "<PROJECT_ROOT>/R-scripts/All.plot.r"
 library(dplyr)
 
-out_path_test <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/tests/"
+out_path_test <- "<PROJECT_ROOT>/plots/tests/"
 
 test_data <- data
 head(test_data)

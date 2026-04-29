@@ -33,14 +33,14 @@ if (is.null(opt$metadata)){
 }
 
 # hgd() #http://127.0.0.1:48805/live?token=HMuXZuDC
-# opt$file <- "/home/colinl/metaG/Git/metaG_EukDepletion/work/e2/38d9a233feb95b408a332028b26824/report_2.csv"
-# opt$metadata <- "/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv"
+# opt$file <- "<PROJECT_ROOT>/work/e2/38d9a233feb95b408a332028b26824/report_2.csv"
+# opt$metadata <- "<PROJECT_ROOT>/sample_metadata_sheet.csv"
 invisible(capture.output(suppressMessages(data <- read_csv(opt$file))))
-invisible(capture.output(suppressMessages(data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/work/21/733dac022ca9fc301fe429c5d6c400/report.csv"))))
+invisible(capture.output(suppressMessages(data <- read_csv("<PROJECT_ROOT>/work/21/733dac022ca9fc301fe429c5d6c400/report.csv"))))
 data <- data[,c(2:5)]
 
 invisible(capture.output(suppressMessages(metadata <- read_csv(opt$metadata))))
-invisible(capture.output(suppressMessages(metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv"))))
+invisible(capture.output(suppressMessages(metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv"))))
 
 sample_data <- merge(data, metadata, by.x = "file_name", by.y = "Index", all.x = TRUE)
 

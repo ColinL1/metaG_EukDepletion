@@ -85,9 +85,9 @@ read_table_many <- function(file_path, ...) {
 # hgd()
 
 # %% Read the file
-data_reads <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads <- read.table("<PROJECT_ROOT>/manual_piplines/reads/mapping/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 # Read re-run of Kaiju annotation with updated database 20250730
-data_reads_kaiju <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
+data_reads_kaiju <- read.table("<PROJECT_ROOT>/manual_piplines/202505_kaiju_re-check/split_fq/fq/stats_reads_sanitised.txt", header = TRUE, sep = "\t")
 
 # replace values from data_reads with data_reads_kaiju if file matches
 data_reads <- data_reads %>%
@@ -298,8 +298,8 @@ figure_2 <- ggarrange(
     ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom", heights = c(0.9,0.1,1))
 figure_2 # no longer included. 
 
-# ggsave(figure_2, filename = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/figure_2.png", width = 25, height = 15, units = "cm", dpi = 300)
-# ggsave(figure_2, filename = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/figure_2.pdf", width = 25, height = 15, units = "cm", dpi = 300)
+# ggsave(figure_2, filename = "<PROJECT_ROOT>/manual_piplines/plot_final/figure_2.png", width = 25, height = 15, units = "cm", dpi = 300)
+# ggsave(figure_2, filename = "<PROJECT_ROOT>/manual_piplines/plot_final/figure_2.pdf", width = 25, height = 15, units = "cm", dpi = 300)
 
 # Plot for figure 2 complete!
 
@@ -324,7 +324,7 @@ data$sample <- gsub("_DESSESS", "_DESS", data$sample)
 #     summarise(avg_num_seqs = mean(num_seqs)) %>%
 #     spread(mapping, avg_num_seqs) %>%
 #     mutate(avg_num_seqs = Bacteria / total)
-# write.csv(recap_journal_club, "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/recap_journal_club.csv", row.names = FALSE)
+# write.csv(recap_journal_club, "<PROJECT_ROOT>/manual_piplines/plot_final/recap_journal_club.csv", row.names = FALSE)
 
 # #get average number of host and symbiont reads per sample
 # recap_journal_club <- data %>%
@@ -335,7 +335,7 @@ data$sample <- gsub("_DESSESS", "_DESS", data$sample)
 #     summarise(avg_num_seqs = mean(num_seqs)) %>%
 #     spread(mapping, avg_num_seqs) %>%
 #     mutate(avg_num_seqs = (Host + Symbiodiniaceae) / total)
-# write.csv(recap_journal_club, "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/recap_journal_clu_hs.csv", row.names = FALSE)
+# write.csv(recap_journal_club, "<PROJECT_ROOT>/manual_piplines/plot_final/recap_journal_clu_hs.csv", row.names = FALSE)
 # %% plot replicate plots 
 # invert order of extractions form before
 data$extraction <- factor(data$extraction, levels = (c("Blood & Tissue", "Benzonase", "Microbiome",  "Microbiome & bead-beating", "Microbiome & spinning")))
@@ -385,7 +385,7 @@ annotate_figure(
 ###---- figure 3 ----###
 # %% load data figure 3 # co-assembly plot 
 #read co-assembly data ! not filtered by mapping
-data_co_assembly <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/CAT/results_download/NR/summary/superkingdom.csv", header = TRUE, sep = ",")
+data_co_assembly <- read.table("<PROJECT_ROOT>/manual_piplines/CAT/results_download/NR/summary/superkingdom.csv", header = TRUE, sep = ",")
 
 #cleanup data_co_assembly file column removing concat
 data_co_assembly$File.Name <- gsub("_concat_", "_", data_co_assembly$File.Name)
@@ -532,14 +532,14 @@ figure_3 <- ggarrange(
             legend,
             ncol = 1, nrow = 3, heights = c(1, 0.7, 0.2))
 figure_3 # no longer included.
-# ggsave(figure_3, filename = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/figure_3.png", width = 25, height = 15, units = "cm", dpi = 300)
-# ggsave(figure_3, filename = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/plot_final/figure_3.pdf", width = 25, height = 15, units = "cm", dpi = 300)
+# ggsave(figure_3, filename = "<PROJECT_ROOT>/manual_piplines/plot_final/figure_3.png", width = 25, height = 15, units = "cm", dpi = 300)
+# ggsave(figure_3, filename = "<PROJECT_ROOT>/manual_piplines/plot_final/figure_3.pdf", width = 25, height = 15, units = "cm", dpi = 300)
 # Plot for figure 3 complete!
 #TODO: Make figure 3 corals less wide. fix heights proportion
 
 # %% load data figure 4
 # non filtered microbial only files
-files <- list.files(path = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
+files <- list.files(path = "<PROJECT_ROOT>/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
 
 # Create an empty data frame to store the results
 CAT_data_family <- data.frame()
@@ -724,7 +724,7 @@ figure_4 # no longer included.
 
 # %% load data figure 4 dots (increases the number of family kept) !! not FINAL!!
 # non filtered microbial only files
-files <- list.files(path = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
+files <- list.files(path = "<PROJECT_ROOT>/manual_piplines/CAT/results_download/NR/summary/bacteria_only_contig_class", pattern = "*.summary.txt", full.names = TRUE)
 
 # Create an empty data frame to store the results
 CAT_data_family <- data.frame()
@@ -959,8 +959,8 @@ figure_4_dot <- ggarrange(
                 ncol = 5, nrow = 1, common.legend = TRUE, legend = "bottom") # heights = c(1,0.1)
 figure_4_dot 
 
-ggsave(figure_4_dot, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_4_dot.png", width = 18, height = 14, dpi = 600)
-ggsave(figure_4_dot, filename = "/home/colinl/Proj/metaG_EukDepletion/plots/figure_4_dot.svg", width = 18, height = 14, dpi = 600)
+ggsave(figure_4_dot, filename = "<PROJECT_ROOT>/plots/figure_4_dot.png", width = 18, height = 14, dpi = 600)
+ggsave(figure_4_dot, filename = "<PROJECT_ROOT>/plots/figure_4_dot.svg", width = 18, height = 14, dpi = 600)
 
 plot_family_list_dot_aip <- list()
 for (i in c("H2", "F003")) {
@@ -1039,13 +1039,13 @@ library("stringr")                   # Load stringr only to fit labels in two ro
 ### read the table
 # setwd("~/PhD/Meta_G_qPCR/R_paper")
 
-Aip_PBS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_Aip_PBS.csv" , header = T, sep =",") 
+Aip_PBS <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_Aip_PBS.csv" , header = T, sep =",") 
 
-PBSvsDESS <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
+PBSvsDESS <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_PBSvsDESS.csv" , header = T, sep =",") 
 PBSvsDESS <- PBSvsDESS %>% 
     filter(Buffer == "DESS")
 
-Corals <-read.table("/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/qPCR/MetaG_qPCR_corals.csv" , header = T, sep =",") 
+Corals <-read.table("<PROJECT_ROOT>/manual_piplines/qPCR/MetaG_qPCR_corals.csv" , header = T, sep =",") 
 
 data <- rbind(Aip_PBS, PBSvsDESS, Corals)
 data$Ct <- as.numeric(data$Ct)
@@ -1258,7 +1258,7 @@ annotate_figure(
                                    hjust = 1, x = 1, face = "italic", size = 10))
 
 ### --- save figures ---###
-out_path <- "/home/colinl/metaG/Git/metaG_EukDepletion/plots/pre-final/"
+out_path <- "<PROJECT_ROOT>/plots/pre-final/"
 
 ggsave(filename = paste0(out_path, "/figure_1.pdf"), plot = figure_1, width = 12, height = 10)
 ggsave(filename = paste0(out_path, "/figure_2.pdf"), plot = figure_2, width = 14, height = 10)

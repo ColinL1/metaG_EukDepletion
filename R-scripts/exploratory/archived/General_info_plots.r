@@ -18,11 +18,11 @@ lapply(lib_list, require, quietly = TRUE, character.only = TRUE)
 # # Run "webplot" server (only necessary for live use)
 hgd() #  http://127.0.0.1:38653/live?token=HraEkCgA
 
-data <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/tmp_json/report_with_legths_ONT_no_trim.csv")
+data <- read_csv("<PROJECT_ROOT>/tmp_json/report_with_legths_ONT_no_trim.csv")
 
 data <- data[,c(2:5)]
-# sequencing_stats <- read.table("/home/colinl/metaG/Git/metaG_methods/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
-metadata <- read_csv("/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv")
+# sequencing_stats <- read.table("<METHODS_ROOT>/results/metaG_indonesia/mmseqs2_reports/ONT_reads_NR_lca.tsv", header = TRUE) # nolint: line_length_linter.
+metadata <- read_csv("<PROJECT_ROOT>/sample_metadata_sheet.csv")
 
 sample_data <- merge(data, metadata, by.y = "matching_index", by.x = "file_name")
 names(sample_data)[names(sample_data) == 'Origin.y'] <- 'Location'
@@ -514,7 +514,7 @@ ggarrange(F003_ont_percentage, F003_ont_count,F003_ont_count_reads, F003_ont_len
 
 
 sample_data <- merge(data, metadata, by.y = "matching_index", by.x = "file_name")
-data <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/beta_div_matrix.txt", header = TRUE)
+data <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/beta_div_matrix.txt", header = TRUE)
 data <- data[,-1]
 
 data
@@ -770,11 +770,11 @@ ggplot(aes(type, origin)) +    # Create default ggplot2 heatmap
   geom_tile(aes(fill = ratio))
 
 
-data_alphadiv_Sh <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/alpha_diversity_Sh.txt", sep = "\t", col.names = c("Sample", "Shannon_div"))
-data_alphadiv_Si <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/alpha_diversity_Si.txt", sep = "\t", col.names = c("Sample", "Simpson_div"))
-data_alphadiv_ISi <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/alpha_diversity_ISi.txt", sep = "\t", col.names = c("Sample", "Simpson_reciprocal_div"))
-data_alphadiv_F <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/alpha_diversity_F.txt", sep = "\t", col.names = c("Sample", "Fisher_div"))
-data_alphadiv_BP <- read.table("/home/colinl/metaG/Git/metaG_EukDepletion/results/illumina/bracken_reports/alpha_diversity_BP.txt", sep = "\t", col.names = c("Sample", "Berger_parker_div"))
+data_alphadiv_Sh <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/alpha_diversity_Sh.txt", sep = "\t", col.names = c("Sample", "Shannon_div"))
+data_alphadiv_Si <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/alpha_diversity_Si.txt", sep = "\t", col.names = c("Sample", "Simpson_div"))
+data_alphadiv_ISi <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/alpha_diversity_ISi.txt", sep = "\t", col.names = c("Sample", "Simpson_reciprocal_div"))
+data_alphadiv_F <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/alpha_diversity_F.txt", sep = "\t", col.names = c("Sample", "Fisher_div"))
+data_alphadiv_BP <- read.table("<PROJECT_ROOT>/results/illumina/bracken_reports/alpha_diversity_BP.txt", sep = "\t", col.names = c("Sample", "Berger_parker_div"))
 
 plot_df_test <- cbind(data_alphadiv_Sh,data_alphadiv_Si, data_alphadiv_ISi, data_alphadiv_F, data_alphadiv_BP)
 # dt_separate(data_alphadiv, Sample, into = )

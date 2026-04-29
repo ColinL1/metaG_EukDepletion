@@ -8,8 +8,8 @@ p_load(rempsyc, flextable, officer, broom, report, effectsize, tidyverse)
 
 # %% Read the TSV files
 cat("Reading MAG summary files...")
-folder_path_coass <- "/Users/luigicolin/PhD/work_local/VSC_local/metaG_EukDepletion/input/gunc_checkm_summary_co.tsv"
-folder_path <- "/Users/luigicolin/PhD/work_local/VSC_local/metaG_EukDepletion/input/gunc_checkm_summary_non_co.tsv"
+folder_path_coass <- "<PROJECT_ROOT>/input/gunc_checkm_summary_co.tsv"
+folder_path <- "<PROJECT_ROOT>/input/gunc_checkm_summary_non_co.tsv"
 
 mags_coass <- read_tsv(folder_path_coass)
 mags <- read_tsv(folder_path)
