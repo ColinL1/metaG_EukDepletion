@@ -1,6 +1,6 @@
 # R scripts used in downstream processing and visualizations
 
-## prerequisite
+## Prerequisites
 
 Run Seqkit stats on mapped / unmapped reads to extract the stats used for the plots.
 
@@ -9,7 +9,7 @@ seqkit stats results/mapping/*/*/*_R1*.gz > stats.txt
 # awk 'BEGIN{OFS="\t"} {$1=$1; print}' stats.txt > stats.clean.txt # sanitise to have clear tsv format
 ```
 
-Folder content:
+### Folder content
 
 ```text
 R-scripts
