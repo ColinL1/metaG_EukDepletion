@@ -1,4 +1,7 @@
 # metaG_EukDepletion
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19912537.svg)](https://doi.org/10.5281/zenodo.19912537)
+
 Code used for analysis of kingdom taxonomy to assess the development of a cnidarian metagenomic protocol for efficient eukaryotic DNA removal
 
 ---
