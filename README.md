@@ -83,8 +83,8 @@ flowchart LR
   - `nodes.dmp`
   - `kaiju_db_refseq.fmi`
 - Pre-built reference genome indexes (Bowtie2 for reads-based; Minimap2 for assembly-based):
-  - Host — Aiptasiidae or Scleractinia
-  - Symbiont — Symbiodiniaceae
+  - Host - Aiptasiidae or Scleractinia
+  - Symbiont - Symbiodiniaceae
 
 > Taxon IDs used in the manuscript: `42823` (Aiptasiidae), `6127` (Acropora), `46730` (Pocillopora), `46719` (Porites), `252141` (Symbiodiniaceae)
 
@@ -130,7 +130,7 @@ git clone https://github.com/ColinL1/metaG_EukDepletion.git
 cd metaG_EukDepletion
 ```
 
-### 2. Build the Kaiju database — [GitHub](https://github.com/bioinformatics-centre/kaiju)
+### 2. Build the Kaiju database - [GitHub](https://github.com/bioinformatics-centre/kaiju)
 
 Pre-built indexes can be downloaded directly from the Kaiju [downloads page](https://bioinformatics-centre.github.io/kaiju/downloads.html):
 
@@ -145,7 +145,7 @@ Or build from scratch with:
 kaiju-makedb -s refseq
 ```
 
-### 3. Download reference genomes — [NCBI Datasets](https://github.com/ncbi/datasets)
+### 3. Download reference genomes - [NCBI Datasets](https://github.com/ncbi/datasets)
 
 ```bash
 # Example for Acropora (taxon 6127)
