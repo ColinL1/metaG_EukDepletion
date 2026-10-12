@@ -3,8 +3,9 @@
 process SPLIT_BAM_HOST {
     tag "${meta.id}"
     label "med_mem"
-    conda "bioconda::samtools" 
-    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
+    conda "bioconda::samtools"
+    container 'quay.io/biocontainers/samtools:1.23--h96c455f_0'
+    publishDir path: { "${params.outdir}/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
@@ -30,7 +31,8 @@ process SPLIT_BAM_SYM {
     tag "${meta.id}"
     label "med_mem"
     conda "bioconda::samtools"
-    publishDir "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/", mode: 'symlink'
+    container 'quay.io/biocontainers/samtools:1.23--h96c455f_0'
+    publishDir path: { "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)

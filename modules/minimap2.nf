@@ -3,8 +3,9 @@
 process MINIMAP2_MAP_HOST {
     tag "${meta.id}"
     label 'process_high'
-    conda "bioconda::minimap2"
-    publishDir "${params.outdir}/mapping/${meta.species}/${meta.id}/", mode: 'symlink'
+    conda "bioconda::minimap2 bioconda::samtools"
+    container 'quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:b411340b52d82a9c276d87c7a3dcffc880be762f-0'
+    publishDir path: { "${params.outdir}/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -35,11 +36,7 @@ process MINIMAP2_MAP_HOST {
 	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
         """
     else
-        log.warn "Unknown species '${meta.species}' using ONT fallback alignment"
-        """
-        echo "WARNING: Unknown species '${meta.species}', using ONT fallback alignment" >&2
-        minimap2 -t ${task.cpus} -ax map-ont ${params.ref_file_scl_ont} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
-        """
+        error "Invalid alignment mode: ${meta.species}"
 
     stub:
     if( "${meta.species}" == 'H2' )
@@ -68,18 +65,15 @@ process MINIMAP2_MAP_HOST {
         touch ${meta.id}
         """
     else
-        log.warn "Unknown species '${meta.species}' using ONT fallback alignment"
-        """
-        touch ${meta.id}.${meta.species}-map-ONT.bam
-        touch ${meta.id}
-        """
+        error "Invalid alignment mode: ${meta.species}"
 }
 
 process MINIMAP2_MAP_SYM {
     tag "${meta.id}"
     label "process_high"
-    conda "bioconda::minimap2"
-    publishDir "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/", mode: 'symlink'
+    conda "bioconda::minimap2 bioconda::samtools"
+    container 'quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:b411340b52d82a9c276d87c7a3dcffc880be762f-0'
+    publishDir path: { "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -97,6 +91,3 @@ process MINIMAP2_MAP_SYM {
     touch ${meta.id}
     """
 }
-
-
-

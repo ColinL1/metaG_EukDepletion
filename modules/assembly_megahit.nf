@@ -4,7 +4,8 @@ process MEGAHIT_PE {
     tag "${meta.id}"
     label "big_mem"
     conda "bioconda::megahit"
-    publishDir "${params.outdir}/assembly/${meta.id}", mode: 'symlink'
+    container 'quay.io/biocontainers/megahit:1.2.9--haf24da9_8'
+    publishDir path: { "${params.outdir}/assembly/${meta.id}" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)

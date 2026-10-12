@@ -1,8 +1,9 @@
 process BRACKEN_PE {
 	tag "$meta.id"
 	label 'min_mem'
-	publishDir "${params.outdir}/bracken/${meta.id}/", mode: 'symlink'
+	publishDir path: { "${params.outdir}/bracken/${meta.id}/" }, mode: 'symlink'
 	conda "bioconda::bracken"
+	container 'quay.io/biocontainers/bracken:2.8--py310h0dbaff4_1'
 	maxRetries params.bracken_threshold
 	errorStrategy { task.exitStatus != 0 ? 'retry' : 'terminate' }
 
@@ -36,8 +37,9 @@ process BRACKEN_PE {
 process BRACKEN_ONT {
 	tag "$meta.id"
 	label 'min_mem'
-	publishDir "${params.outdir}/bracken/${meta.id}/", mode: 'symlink'
+	publishDir path: { "${params.outdir}/bracken/${meta.id}/" }, mode: 'symlink'
 	conda "bioconda::bracken"
+	container 'quay.io/biocontainers/bracken:2.8--py310h0dbaff4_1'
 	// Retry up to 3 times (attempt 1 = threshold 5, 2 = threshold 3, 3 = threshold 0)
     errorStrategy { task.exitStatus != 0 ? 'retry' : 'terminate' }
     maxRetries params.bracken_threshold

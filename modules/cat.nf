@@ -1,14 +1,11 @@
 #!/usr/bin/env nextflow
 
-params.cat_db = "/home/colinl/databases/CAT/20231120_CAT_gtdb"
-params.cat_ex = "/home/colinl/databases/CAT/CAT_pack-5.3/CAT_pack/CAT"
-
 process CAT {
     tag "${meta.id}"
     label 'process_high'
-    conda "bioconda::cat"
-    publishDir "${params.outdir}/CAT/${meta.species}/${meta.id}/", mode: 'symlink'
-    publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'copy'
+    conda "bioconda::cat=5.3"
+    container 'quay.io/biocontainers/cat:5.3--hdfd78af_0'
+    publishDir path: { "${params.outdir}/CAT/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -20,7 +17,7 @@ process CAT {
 
     script:
     """
-    ${params.cat_ex} contigs -c ${reads} -d ${params.cat_db}/db -t ${params.cat_db}/tax/ -o ${meta.id} -n ${task.cpus} --compress
+    CAT contigs -c ${reads} -d ${params.cat_db}/db -t ${params.cat_db}/tax/ -o ${meta.id} -n ${task.cpus} --compress
     """
     stub:
     """
@@ -34,8 +31,9 @@ process CAT_ADD_NAMES {
     tag "${meta.id}"
     errorStrategy  { task.attempt <= 3 ? 'retry' : 'ignore' }
     label 'min_mem'
-    conda "bioconda::cat"
-    publishDir "${params.outdir}/CAT/${meta.species}/${meta.id}/", mode: 'symlink'
+    conda "bioconda::cat=5.3"
+    container 'quay.io/biocontainers/cat:5.3--hdfd78af_0'
+    publishDir path: { "${params.outdir}/CAT/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(report)
@@ -47,7 +45,7 @@ process CAT_ADD_NAMES {
 
     script:
     """
-    ${params.cat_ex} add_names -i  ${report} -o ${report}.tax_name.txt  -t ${params.cat_db}/tax
+    CAT add_names -i  ${report} -o ${report}.tax_name.txt  -t ${params.cat_db}/tax
     """
     stub:
     """

@@ -4,7 +4,8 @@ process KAIJU_SE {
     tag "${meta.id}"
     label "big_mem"
     conda "bioconda::kaiju"
-    publishDir "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/", mode: 'symlink'
+    container 'quay.io/biocontainers/kaiju:1.10.1--h5ca1c30_3'
+    publishDir path: { "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -26,7 +27,8 @@ process KAIJU_PE {
     tag "${meta.id}"
     label "big_mem"
     conda "bioconda::kaiju"
-    publishDir "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/", mode: 'symlink'
+    container 'quay.io/biocontainers/kaiju:1.10.1--h5ca1c30_3'
+    publishDir path: { "${params.outdir}/mapping/bacteria-kaiju/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)

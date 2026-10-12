@@ -5,7 +5,8 @@ process TRIMMOMATIC {
     tag "${meta.id}"
     label "med_mem"
     conda "bioconda::trimmomatic"
-    publishDir "${params.outdir}/trimmed_fastq/${meta.species}/${meta.id}/reads/", mode: 'symlink'
+    container 'quay.io/biocontainers/trimmomatic:0.39--hdfd78af_2'
+    publishDir path: { "${params.outdir}/trimmed_fastq/${meta.species}/${meta.id}/reads/" }, mode: 'symlink'
 
     input: 
     tuple val(meta), path(reads)

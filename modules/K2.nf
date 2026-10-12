@@ -4,7 +4,8 @@ process K2_SE {
     tag "${meta.id}"
     label "med_mem"
     conda "bioconda::kraken2"
-    publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
+    container 'quay.io/biocontainers/kraken2:2.17.1--pl5321h077b44d_0'
+    publishDir path: { "${params.outdir}/mapping/unmapped-K2/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -22,7 +23,7 @@ process K2_SE {
         --report ${meta.id}.report.txt \\
         --output ${meta.id}.out \\
         ${reads}
-    pigz ${meta.id}.out
+    gzip ${meta.id}.out
     """
     stub:
     """
@@ -35,7 +36,8 @@ process K2_PE {
     tag "${meta.id}"
     label "med_mem"
     conda "bioconda::kraken2"
-    publishDir "${params.outdir}/mapping/unmapped-K2/${meta.id}/", mode: 'symlink'
+    container 'quay.io/biocontainers/kraken2:2.17.1--pl5321h077b44d_0'
+    publishDir path: { "${params.outdir}/mapping/unmapped-K2/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -54,7 +56,7 @@ process K2_PE {
         --report ${meta.id}.report.txt \\
         --output ${meta.id}.out \\
         ${reads[0]} ${reads[1]}
-    pigz ${meta.id}.out
+    gzip ${meta.id}.out
     """
     stub:
     """

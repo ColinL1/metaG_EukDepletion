@@ -3,7 +3,7 @@
 process CONCAT_FASTQ {
     tag "${meta.id}"
     label 'min_mem'
-    publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'symlink'
+    publishDir path: { "${params.outdir}/concatenated_fastq/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads1), path(reads2)
