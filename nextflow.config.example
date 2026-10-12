@@ -8,14 +8,6 @@ executor {
   cpus = 250
 }
 
-profiles {
-  conda {
-  conda.enable = true
-  process.conda = "$baseDir/environment.yaml"
-  conda.useMamba = true
-  }
-}
-
 // Global default params
 params {
 
@@ -25,7 +17,7 @@ params {
   input_fq = "${params.input}/*_{1,2}.fq.gz"
 
   // trim adapter
-  adapters = "modules/adapters/Truseq_V.3_edited.fa"
+  adapters = "${projectDir}/assets/adapters/Truseq_V.3_edited.fa"
   illuminaclip = "2:30:10:8:TRUE"
   headcrop = 5
   leading = 3
@@ -52,16 +44,21 @@ params {
   names = '/path/to/kaiju/names.dmp'
   kaiju_db = '/path/to/kaiju/kaiju_db_refseq.fmi'
 
-  // CAT db and executable
-  cat_db = "/path/to/databases/CAT/CAT_gtdb"
-  cat_ex = "/path/to/databases/CAT/CAT_pack/CAT"
+  // CAT db (NR)
+  cat_db = "/path/to/databases/CAT/CAT_nr"
   
 }
 
 profiles {
   conda {
-    conda.enable = true
+    conda.enabled = true
     conda.useMamba = true
+    }
+  apptainer {
+    apptainer.enabled = true
+    apptainer.autoMounts = true
+    // references/databases are passed as path strings: bind any that live outside $HOME
+    // apptainer.runOptions = '-B /path/to/databases'
     }
 }
 

@@ -50,32 +50,29 @@ kaiju-makedb -s refseq
 
 ---
 
-## CAT database (GTDB)
+## CAT database (NR)
 
-The [CAT pack](https://github.com/MGXlab/CAT_pack) (Contig Annotation Tool) is used for taxonomic classification of assembled contigs. The pipeline uses a GTDB-based database, which must expose two subdirectories: `db/` and `tax/`.
+The [CAT pack](https://github.com/MGXlab/CAT_pack) (Contig Annotation Tool) is used for taxonomic classification of assembled contigs. The pipeline uses an NCBI NR-based database, which must expose two subdirectories: `db/` and `tax/`.
 
 Set `params.cat_db` to the database root directory in `nextflow.config`.
 
-### Option 1 — Download prebuilt GTDB database
+### Option 1 — Download prebuilt NR database
 
-```bash
-wget tbb.bio.uu.nl/tina/CAT_pack_prepare/20231120_CAT_gtdb.tar.gz   # GTDB release 214
-tar -xvzf 20231120_CAT_gtdb.tar.gz
-```
+Prebuilt databases are listed on the [CAT pack download page](https://github.com/MGXlab/CAT_pack#downloading-preconstructed-database-files). The pipeline was run with `20241212_CAT_nr_website`.
 
 ### Option 2 — Build from scratch
 
 ```bash
-# Download and process GTDB source files
-CAT_pack download --db gtdb -o path/to/gtdb_data_dir
+# Download and process NR source files
+CAT_pack download --db nr -o path/to/nr_data_dir
 
-# Build the CAT pack database
+# Build the CAT pack database (downloaded files carry a date prefix, e.g. 2024-12-12.nr.gz)
 CAT_pack prepare \
-  --db_fasta path/to/gtdb_data_dir/gtdb_proteins_aa_reps.faa \
-  --names path/to/gtdb_data_dir/names.dmp \
-  --nodes path/to/gtdb_data_dir/nodes.dmp \
-  --acc2tax path/to/gtdb_data_dir/acc2taxid.txt.gz \
-  --db_dir 20231120_CAT_gtdb
+  --db_fasta path/to/nr_data_dir/nr.gz \
+  --names path/to/nr_data_dir/names.dmp \
+  --nodes path/to/nr_data_dir/nodes.dmp \
+  --acc2tax path/to/nr_data_dir/prot.accession2taxid.FULL.gz \
+  --db_dir CAT_nr
 ```
 
 The resulting directory will contain `db/` and `tax/` subdirectories required by the pipeline.

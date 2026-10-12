@@ -185,4 +185,6 @@ nextflow run main.nf -profile conda \
   --outdir path/to/results/
 ```
 
+Use `-profile apptainer` instead to run every tool from its container (Apptainer/Singularity) rather than conda.
+
 > **Important:** Adjust CPU and RAM limits in `nextflow.config` and `process_resources.config` to match your machine.
