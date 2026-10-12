@@ -24,7 +24,6 @@ include { load_in_shm; clean_shm } from '../modules/load_k2_db_shm.nf'
 include { K2_SE ; K2_PE } from '../modules/K2.nf'
 include { BRACKEN_PE ; BRACKEN_ONT } from '../modules/bracken.nf'
 
-
 workflow K2_BRACKEN {
     take:
         reads_ch
@@ -34,7 +33,7 @@ workflow K2_BRACKEN {
     // ── Phase 1: Load DB ────────────────────────────────────────────────────
     // This can be change to a collect step to make the trigger be the end of all other processes
     // This way there is no conflict between loading the DB and other processes that may need RAM. 
-    load_in_shm(Channel.value(true))
+    load_in_shm(channel.value(true))
     db_signal = load_in_shm.out.db_loaded
 
     // ── Phase 2: Classification (K2 + Bracken) ─────────────────────────────
