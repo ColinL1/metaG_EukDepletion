@@ -15,24 +15,24 @@ process MINIMAP2_MAP_HOST {
     script:
     if( "${meta.species}" == 'H2' )
         """
-        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
+        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
         """
     else if( "${meta.species}" == 'F003' )
         """
-        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
+        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
         """
     else if( "${meta.species}" == 'Porites' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
-        
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+
         """
     else if ( "${meta.species}" == 'Acropora' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
         """
     else if ( "${meta.species}" == 'Pocillopora' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_file_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
         """
     else
         log.warn "Unknown species '${meta.species}' using ONT fallback alignment"
@@ -89,7 +89,7 @@ process MINIMAP2_MAP_SYM {
 
     script:
 	"""
-	minimap2 -t ${task.cpus} -ax map-ont ${params.ref_file_sym_ont} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
+	minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_sym} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
 	"""
     stub:
     """

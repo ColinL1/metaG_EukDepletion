@@ -6,14 +6,14 @@ process CONCAT_FASTQ {
     publishDir "${params.outdir}/concatenated_fastq/${meta.id}/", mode: 'symlink'
 
     input:
-    tuple val(meta), path(reads)
+    tuple val(meta), path(reads1), path(reads2)
 
     output:
     tuple val(meta), path("${meta.id}_R{1,2}.fastq.gz"), emit: concat_reads
-    
+
     script:
-    def r1_files = reads[0].collect { it.toString() }.join(' ')
-    def r2_files = reads[1].collect { it.toString() }.join(' ')
+    def r1_files = reads1.collect { it.toString() }.join(' ')
+    def r2_files = reads2.collect { it.toString() }.join(' ')
     """
     cat ${r1_files} > ${meta.id}_R1.fastq.gz
     cat ${r2_files} > ${meta.id}_R2.fastq.gz

@@ -36,7 +36,7 @@ process KAIJU_PE {
 
     script:
     """
-    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[0]} -a mem -z ${task.cpus} -o ${meta.id}.out
+    kaiju -t ${params.nodes} -f ${params.kaiju_db} -i ${reads[0]} -j ${reads[1]} -a mem -z ${task.cpus} -o ${meta.id}.out
     """
     stub:
     """

@@ -55,11 +55,7 @@ channel
             method: key[1],
             buffer: key[2]
         ]
-        def reads = [
-            reads_0.collect { it },
-            reads_1.collect { it }
-        ]
-        [meta, reads]
+        [meta, reads_0, reads_1]
     }
     .set { grouped_samples }
 

@@ -19,8 +19,8 @@ process BOWTIE2_MAP_HOST {
     script:
     if( "${meta.species}" == 'H2' )
         """
-        INDEX=`find -L ${params.ref_file_aip} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -29,8 +29,8 @@ process BOWTIE2_MAP_HOST {
         """
     else if( "${meta.species}" == 'F003' )
         """
-        INDEX=`find -L ${params.ref_file_aip} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -39,8 +39,8 @@ process BOWTIE2_MAP_HOST {
         """
     else if( "${meta.species}" == 'Porites' )
         """
-        INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -49,8 +49,8 @@ process BOWTIE2_MAP_HOST {
         """
     else if ( "${meta.species}" == 'Acropora' )
         """
-        INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -59,8 +59,8 @@ process BOWTIE2_MAP_HOST {
         """
     else if ( "${meta.species}" == 'Pocillopora' )
         """
-        INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -68,10 +68,10 @@ process BOWTIE2_MAP_HOST {
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
     else
-        log.warn "Unknown species '${meta.species}' - using default ref_file_scl"
+        log.warn "Unknown species '${meta.species}' - using default ref_bt2_scl"
         """
-        INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+        INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+        [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
         bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
@@ -136,8 +136,8 @@ process BOWTIE2_MAP_SYM {
 
     script:
     """
-    INDEX=`find -L ${params.ref_file_sym} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
-    [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_file_sym} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
+    INDEX=`find -L ${params.ref_bt2_sym} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
+    [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_sym} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
     [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
     bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.symbiodiniaceae.unmapped.fq.gz --al-conc-gz ${meta.id}.symbiodiniaceae.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam

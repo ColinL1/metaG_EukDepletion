@@ -34,14 +34,14 @@ params {
   minlen = 50
 
   // bowtie2 references index
-  ref_file_aip = '/path/to/references/ref_genomes_bowtie2/all_aiptasiidae*'
-  ref_file_scl = '/path/to/references/ref_genomes_bowtie2/all_scleractina*'
-  ref_file_sym = '/path/to/references/ref_genomes_bowtie2/all_symbiodiniaceae*'
+  ref_bt2_aip = '/path/to/references/ref_genomes_bowtie2/all_aiptasiidae*'
+  ref_bt2_scl = '/path/to/references/ref_genomes_bowtie2/all_scleractina*'
+  ref_bt2_sym = '/path/to/references/ref_genomes_bowtie2/all_symbiodiniaceae*'
 
   //minimap2 references index
-  ref_file_aip = '/path/to/references/ref_genomes_minimap2_contigs/all_aiptasiidae.mmi'
-  ref_file_scl = '/path/to/references/ref_genomes_minimap2_contigs/all_scleractinia.mmi'
-  ref_file_sym = '/path/to/references/ref_genomes_minimap2_contigs/all_symbiodiniaceae.mmi'
+  ref_mmi_aip = '/path/to/references/ref_genomes_minimap2_contigs/all_aiptasiidae.mmi'
+  ref_mmi_scl = '/path/to/references/ref_genomes_minimap2_contigs/all_scleractinia.mmi'
+  ref_mmi_sym = '/path/to/references/ref_genomes_minimap2_contigs/all_symbiodiniaceae.mmi'
 
   //megahit setting
   k_min = 27
