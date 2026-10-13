@@ -6,7 +6,7 @@ include { MAP_CONSE_ASSEMBLY } from './subworkflows/map_conse_assembly.nf'
 include { CAT_WORKFLOW } from './subworkflows/CAT.nf'
 
 workflow {
-channel
+channel //TODO: swtich to sample sheet input for cleaner more flexible handling. Low priority. 
     .fromFilePairs(params.input_fq)
     .map { id, reads ->
         def (species, replicate, method, buffer) = id.tokenize("_") //, other, unspecified
@@ -23,12 +23,15 @@ channel
         def newmap = [
             species: meta.species == "Po" ? "Porites" :
                     meta.species == "Por" ? "Porites" :
+                    meta.species == "Plob" ? "Porites" :
                     meta.species == "Ac" ? "Acropora" :
                     meta.species == "Acro" ? "Acropora" :
+                    meta.species == "Ahemp" ? "Acropora" :
                     meta.species == "F003" ? "F003" :
                     meta.species == "F3" ? "F003" :
                     meta.species == "H2" ? "H2" :
                     meta.species == "Poci" ? "Pocillopora" :
+                    meta.species == "Pver" ? "Pocillopora" :
                     meta.species == "Pr" ? "Pocillopora" :
                     "Unknown"
         ]

@@ -1,9 +1,9 @@
 #! /usr/bin/env nextflow
-// Process to concatenate the fastq files
+
 process CONCAT_FASTQ {
     tag "${meta.id}"
     label 'min_mem'
-    publishDir path: { "${params.outdir}/concatenated_fastq/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/coassembly_based/concatenated_fastq/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads1), path(reads2)

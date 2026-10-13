@@ -39,13 +39,23 @@ params {
   k_min = 27
   k_max = 127
 
-  //kaiju nodes, names and db 
+  //kaiju nodes, names and db (NR: kaiju-makedb -s nr)
   nodes = '/path/to/kaiju/nodes.dmp'
   names = '/path/to/kaiju/names.dmp'
-  kaiju_db = '/path/to/kaiju/kaiju_db_refseq.fmi'
+  kaiju_db = '/path/to/kaiju/kaiju_db_nr.fmi'
+  // ranks written by kaiju-addTaxonNames; the first one is used to recognise Bacteria
+  kaiju_ranks = 'superkingdom,phylum,class,order,family,genus,species'
 
   // CAT db (NR)
   cat_db = "/path/to/databases/CAT/CAT_nr"
+
+  // CAT read-mapping quantification of bacterial contigs
+  cat_quant_mode = 'both'   // persample | pooled | both
+  derep = true              // dereplicate the pooled catalogue (mmseqs easy-linclust)
+  derep_id = 0.95
+  derep_cov = 0.90
+  min_read_id = 0.95        // CoverM read identity filter
+  min_read_aln = 0.75       // CoverM aligned-fraction filter
   
 }
 
@@ -64,7 +74,7 @@ profiles {
 
 manifest {
   name        = 'ColinL1/metaG_EukDepletion'
-  description = 'Nextflow pipeline for kingdom-level taxonomic classification to assess eukaryotic DNA depletion in cnidarian metagenomics'
+  description = 'Nextflow pipeline for kingdom-level taxonomic classification to assess eukaryotic DNA depletion in hexacorallia metagenomics'
   author      = 'Luigi Colin'
   version     = '1.0.0'
   homePage    = 'https://github.com/ColinL1/metaG_EukDepletion'

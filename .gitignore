@@ -3,8 +3,10 @@
 work/
 input/*
 results/*
+results_stub
 !results/README.md
 references/*
+databases
 !references/README.md
 manual_piplines
 modules/exploratory/templates

@@ -5,7 +5,7 @@ process MINIMAP2_MAP_HOST {
     label 'process_high'
     conda "bioconda::minimap2 bioconda::samtools"
     container 'quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:b411340b52d82a9c276d87c7a3dcffc880be762f-0'
-    publishDir path: { "${params.outdir}/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/assembly_based/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -16,24 +16,24 @@ process MINIMAP2_MAP_HOST {
     script:
     if( "${meta.species}" == 'H2' )
         """
-        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
+        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
     else if( "${meta.species}" == 'F003' )
         """
-        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.aiptasiidae.bam
+        minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
     else if( "${meta.species}" == 'Porites' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
 
         """
     else if ( "${meta.species}" == 'Acropora' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
     else if ( "${meta.species}" == 'Pocillopora' )
         """
-	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.scleractina.bam
+	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
     else
         error "Invalid alignment mode: ${meta.species}"
@@ -41,27 +41,27 @@ process MINIMAP2_MAP_HOST {
     stub:
     if( "${meta.species}" == 'H2' )
         """
-        touch ${meta.id}.${meta.species}-map-H2.bam
+        touch ${meta.id}.host.bam
         touch ${meta.id}
         """
     else if( "${meta.species}" == 'F003' )
         """
-        touch ${meta.id}.${meta.species}-map-F003.bam
+        touch ${meta.id}.host.bam
         touch ${meta.id}
         """
     else if( "${meta.species}" == 'Porites' )
         """
-        touch ${meta.id}.${meta.species}-map-Porites.bam
+        touch ${meta.id}.host.bam
         touch ${meta.id}
         """
     else if ( "${meta.species}" == 'Acropora' )
         """
-        touch ${meta.id}.${meta.species}-map-Acropora.bam
+        touch ${meta.id}.host.bam
         touch ${meta.id}
         """
     else if ( "${meta.species}" == 'Pocillopora' )
         """
-        touch ${meta.id}.${meta.species}-map-Pocillopora.bam
+        touch ${meta.id}.host.bam
         touch ${meta.id}
         """
     else
@@ -73,7 +73,7 @@ process MINIMAP2_MAP_SYM {
     label "process_high"
     conda "bioconda::minimap2 bioconda::samtools"
     container 'quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:b411340b52d82a9c276d87c7a3dcffc880be762f-0'
-    publishDir path: { "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/assembly_based/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
@@ -89,5 +89,32 @@ process MINIMAP2_MAP_SYM {
     """
     touch ${meta.id}.symbiodiniaceae.bam
     touch ${meta.id}
+    """
+}
+
+process MINIMAP2_MAP_CATALOGUE {
+    tag "${meta.id} / ${mode}"
+    label 'process_high'
+    conda "bioconda::minimap2 bioconda::samtools"
+    container 'quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:b411340b52d82a9c276d87c7a3dcffc880be762f-0'
+    publishDir path: { "${params.outdir}/coassembly_based/quantification/${mode}/flagstat/" }, mode: 'copy', pattern: '*.flagstat'
+
+    input:
+    tuple val(meta), val(mode), path(reads), path(mmi)
+
+    output:
+    tuple val(meta), val(mode), path("${meta.id}.${mode}.bam"), path("${meta.id}.${mode}.bam.bai"), emit: bam
+    tuple val(meta), val(mode), path("${meta.id}.${mode}.flagstat"), emit: flagstat
+
+    script:
+    """
+    minimap2 -ax sr --secondary=no -t ${task.cpus} ${mmi} ${reads[0]} ${reads[1]} \\
+      | samtools sort -@ 4 -o ${meta.id}.${mode}.bam -
+    samtools index ${meta.id}.${mode}.bam
+    samtools flagstat ${meta.id}.${mode}.bam > ${meta.id}.${mode}.flagstat
+    """
+    stub:
+    """
+    touch ${meta.id}.${mode}.bam ${meta.id}.${mode}.bam.bai ${meta.id}.${mode}.flagstat
     """
 }
