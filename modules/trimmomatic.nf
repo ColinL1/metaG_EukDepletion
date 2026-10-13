@@ -1,5 +1,4 @@
 #!/usr/bin/env nextflow
-// Trimmomatic illumina reads trimming
 
 process TRIMMOMATIC {
     tag "${meta.id}"
