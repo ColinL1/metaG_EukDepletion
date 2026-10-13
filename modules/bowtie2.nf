@@ -5,11 +5,10 @@ process BOWTIE2_MAP_HOST {
     label "process_high"
     conda "bioconda::bowtie2 bioconda::samtools"
     container 'quay.io/biocontainers/mulled-v2-ac74a7f02cebcfcc07d8e8d1d750af9c83b4d45a:f70b31a2db15c023d641c32f433fb02cd04df5a6-0'
-    publishDir path: { "${params.outdir}/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/reads_based/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
-    // tuple val(meta2), path(index)
 
     output:
     tuple val(meta), path("*.bam"), emit: mapp_file
@@ -23,7 +22,7 @@ process BOWTIE2_MAP_HOST {
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.host.unmapped.fq.gz --al-conc-gz ${meta.id}.host.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.host.bam
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
@@ -33,7 +32,7 @@ process BOWTIE2_MAP_HOST {
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_aip} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.host.unmapped.fq.gz --al-conc-gz ${meta.id}.host.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.host.bam
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
@@ -43,7 +42,7 @@ process BOWTIE2_MAP_HOST {
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.host.unmapped.fq.gz --al-conc-gz ${meta.id}.host.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.host.bam
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done        
         """
@@ -53,7 +52,7 @@ process BOWTIE2_MAP_HOST {
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.host.unmapped.fq.gz --al-conc-gz ${meta.id}.host.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.host.bam
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
@@ -63,7 +62,7 @@ process BOWTIE2_MAP_HOST {
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
         [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.scleractina.unmapped.fq.gz --al-conc-gz ${meta.id}.scleractina.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+        bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.host.unmapped.fq.gz --al-conc-gz ${meta.id}.host.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.host.bam
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
@@ -72,33 +71,33 @@ process BOWTIE2_MAP_HOST {
     stub:
     if( "${meta.species}" == 'H2' )
         """
-        touch ${meta.id}-map-H2.bam
-        touch ${meta.id}-map-H2.unmapped_1.fq.gz ${meta.id}-map-H2.unmapped_2.fq.gz
-        touch ${meta.id}-map-H2.mapped_1.fq.gz ${meta.id}-map-H2.mapped_2.fq.gz
+        touch ${meta.id}.host.bam
+        touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
+        touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
     else if( "${meta.species}" == 'F003' )
         """
-        touch ${meta.id}-map-F003.bam
-        touch ${meta.id}-map-F003.unmapped_1.fq.gz ${meta.id}-map-F003.unmapped_2.fq.gz
-        touch ${meta.id}-map-F003.mapped_1.fq.gz ${meta.id}-map-F003.mapped_2.fq.gz
+        touch ${meta.id}.host.bam
+        touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
+        touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
     else if( "${meta.species}" == 'Porites' )
         """
-        touch ${meta.id}-map-Porites.bam
-        touch ${meta.id}-map-Porites.unmapped_1.fq.gz ${meta.id}-map-Porites.unmapped_2.fq.gz
-        touch ${meta.id}-map-Porites.mapped_1.fq.gz ${meta.id}-map-Porites.mapped_2.fq.gz
+        touch ${meta.id}.host.bam
+        touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
+        touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
     else if ( "${meta.species}" == 'Acropora' )
         """
-        touch ${meta.id}-map-Acropora.bam
-        touch ${meta.id}-map-Acropora.unmapped_1.fq.gz ${meta.id}-map-Acropora.unmapped_2.fq.gz
-        touch ${meta.id}-map-Acropora.mapped_1.fq.gz ${meta.id}-map-Acropora.mapped_2.fq.gz
+        touch ${meta.id}.host.bam
+        touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
+        touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
     else if ( "${meta.species}" == 'Pocillopora' )
         """
-        touch ${meta.id}-map-Pocillopora.bam
-        touch ${meta.id}-map-Pocillopora.unmapped_1.fq.gz ${meta.id}-map-Pocillopora.unmapped_2.fq.gz
-        touch ${meta.id}-map-Pocillopora.mapped_1.fq.gz ${meta.id}-map-Pocillopora.mapped_2.fq.gz
+        touch ${meta.id}.host.bam
+        touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
+        touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
     else
         error "Invalid alignment mode: ${meta.species}"
@@ -109,11 +108,10 @@ process BOWTIE2_MAP_SYM {
     label "process_high"
     conda "bioconda::bowtie2 bioconda::samtools"
     container 'quay.io/biocontainers/mulled-v2-ac74a7f02cebcfcc07d8e8d1d750af9c83b4d45a:f70b31a2db15c023d641c32f433fb02cd04df5a6-0'
-    publishDir path: { "${params.outdir}/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/reads_based/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(reads)
-    // tuple val(meta2), path(index)
 
     output:
     tuple val(meta), path("*.bam"), emit: mapp_file
@@ -126,14 +124,14 @@ process BOWTIE2_MAP_SYM {
     [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_sym} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
     [ -z "\$INDEX" ] && echo "Bowtie2 index files not found" 1>&2 && exit 1
 
-    bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.symbiodiniaceae.unmapped.fq.gz --al-conc-gz ${meta.id}.symbiodiniaceae.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.bam
+    bowtie2 --mm -x \$INDEX -1 ${reads[0]} -2 ${reads[1]} --un-conc-gz ${meta.id}.symbiodiniaceae.unmapped.fq.gz --al-conc-gz ${meta.id}.symbiodiniaceae.mapped.fq.gz -p ${task.cpus} | samtools view -S -b > ${meta.id}.symbiodiniaceae.bam
     ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
     ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
     """
     stub:
     """
-    touch ${meta.id}.bam
-    touch ${meta.id}.unmapped_1.fq.gz ${meta.id}.unmapped_2.fq.gz
-    touch ${meta.id}.mapped_1.fq.gz ${meta.id}.mapped_2.fq.gz
+    touch ${meta.id}.symbiodiniaceae.bam
+    touch ${meta.id}.symbiodiniaceae.unmapped_1.fq.gz ${meta.id}.symbiodiniaceae.unmapped_2.fq.gz
+    touch ${meta.id}.symbiodiniaceae.mapped_1.fq.gz ${meta.id}.symbiodiniaceae.mapped_2.fq.gz
     """
 }

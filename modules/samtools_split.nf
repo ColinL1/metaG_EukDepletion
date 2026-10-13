@@ -5,7 +5,7 @@ process SPLIT_BAM_HOST {
     label "med_mem"
     conda "bioconda::samtools"
     container 'quay.io/biocontainers/samtools:1.23--h96c455f_0'
-    publishDir path: { "${params.outdir}/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/assembly_based/mapping/${meta.species}/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
@@ -16,14 +16,14 @@ process SPLIT_BAM_HOST {
 
     script:
     """
-    samtools view -F 0x900 -F 0x4 ${bam} --threads ${task.cpus} -o ${meta.id}.scleractina.mapped.fa
-    samtools view -f 0x4 -F 0x900 ${bam} --threads ${task.cpus} -o ${meta.id}.scleractina.unmapped.fa
-    gzip ${meta.id}.scleractina.mapped.fa ${meta.id}.scleractina.unmapped.fa
+    samtools view -F 0x900 -F 0x4 ${bam} --threads ${task.cpus} -o ${meta.id}.host.mapped.fa
+    samtools view -f 0x4 -F 0x900 ${bam} --threads ${task.cpus} -o ${meta.id}.host.unmapped.fa
+    gzip ${meta.id}.host.mapped.fa ${meta.id}.host.unmapped.fa
     """
     stub:
     """
-    touch ${meta.id}.scleractina.unmapped.fa.gz
-    touch ${meta.id}.scleractina.mapped.fa.gz
+    touch ${meta.id}.host.unmapped.fa.gz
+    touch ${meta.id}.host.mapped.fa.gz
     """
 }
 
@@ -32,7 +32,7 @@ process SPLIT_BAM_SYM {
     label "med_mem"
     conda "bioconda::samtools"
     container 'quay.io/biocontainers/samtools:1.23--h96c455f_0'
-    publishDir path: { "${params.outdir}/mapping/Symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
+    publishDir path: { "${params.outdir}/assembly_based/mapping/symbiodiniaceae/${meta.id}/" }, mode: 'symlink'
 
     input:
     tuple val(meta), path(bam)
