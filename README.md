@@ -81,7 +81,7 @@ flowchart LR
     class T5,P,N,O,Q,R external
 ```
 
-Dashed nodes are run outside this Nextflow pipeline (R analysis, MAG recovery, qPCR).
+Dashed nodes are run outside this Nextflow pipeline (R analysis, MAG recovery — see [mag_recovery/](mag_recovery/README.md), qPCR).
 
 ---
 
@@ -198,3 +198,7 @@ nextflow run main.nf -profile conda \
 Use `-profile apptainer` instead to run every tool from its container (Apptainer/Singularity) rather than conda.
 
 > **Important:** Adjust CPU and RAM limits in `nextflow.config` and `process_resources.config` to match your machine.
+
+### 6. MAG recovery (nf-core/mag)
+
+MAGs are recovered by running nf-core/mag on the `main.nf` output (trimmed reads, per-sample assemblies and co-assemblies). Settings, samplesheet builder and run scripts are in [mag_recovery/](mag_recovery/README.md).
