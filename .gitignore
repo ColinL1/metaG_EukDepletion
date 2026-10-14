@@ -3,7 +3,7 @@
 work/
 input/*
 results/*
-results_stub
+results_*
 !results/README.md
 references/*
 databases
