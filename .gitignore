@@ -3,11 +3,12 @@
 work/
 input/*
 results/*
-results_stub
+results_*
 !results/README.md
 references/*
 databases
 !references/README.md
+R-scripts/exploratory/temp_to_delete
 manual_piplines
 modules/exploratory/templates
 modules/exploratory/mmseq2_diamond
