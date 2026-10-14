@@ -22,16 +22,16 @@ process MINIMAP2_MAP_HOST {
         """
         minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_aip} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
-    else if( "${meta.species}" == 'Porites' )
+    else if( "${meta.species}" == 'Plob' )
         """
 	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
 
         """
-    else if ( "${meta.species}" == 'Acropora' )
+    else if ( "${meta.species}" == 'Ahemp' )
         """
 	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
-    else if ( "${meta.species}" == 'Pocillopora' )
+    else if ( "${meta.species}" == 'Pver' )
         """
 	    minimap2 -t ${task.cpus} -ax asm5 ${params.ref_mmi_scl} ${reads} --split-prefix=tmp | samtools view -S -b > ${meta.id}.host.bam
         """
@@ -49,17 +49,17 @@ process MINIMAP2_MAP_HOST {
         touch ${meta.id}.host.bam
         touch ${meta.id}
         """
-    else if( "${meta.species}" == 'Porites' )
+    else if( "${meta.species}" == 'Plob' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}
         """
-    else if ( "${meta.species}" == 'Acropora' )
+    else if ( "${meta.species}" == 'Ahemp' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}
         """
-    else if ( "${meta.species}" == 'Pocillopora' )
+    else if ( "${meta.species}" == 'Pver' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}

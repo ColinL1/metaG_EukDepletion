@@ -36,7 +36,7 @@ process BOWTIE2_MAP_HOST {
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
-    else if( "${meta.species}" == 'Porites' )
+    else if( "${meta.species}" == 'Plob' )
         """
         INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
@@ -46,7 +46,7 @@ process BOWTIE2_MAP_HOST {
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done        
         """
-    else if ( "${meta.species}" == 'Acropora' )
+    else if ( "${meta.species}" == 'Ahemp' )
         """
         INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
@@ -56,7 +56,7 @@ process BOWTIE2_MAP_HOST {
         ls *.1.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.1.gz/_1.fq.gz/'g) ; done
         ls *.2.gz | while read line ; do mv \$line \$(echo \$line | sed s'/.fq.2.gz/_2.fq.gz/'g) ; done
         """
-    else if ( "${meta.species}" == 'Pocillopora' )
+    else if ( "${meta.species}" == 'Pver' )
         """
         INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2" | sed "s/\\.rev.1.bt2\$//"`
         [ -z "\$INDEX" ] && INDEX=`find -L ${params.ref_bt2_scl} -name "*.rev.1.bt2l" | sed "s/\\.rev.1.bt2l\$//"`
@@ -81,19 +81,19 @@ process BOWTIE2_MAP_HOST {
         touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
         touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
-    else if( "${meta.species}" == 'Porites' )
+    else if( "${meta.species}" == 'Plob' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
         touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
-    else if ( "${meta.species}" == 'Acropora' )
+    else if ( "${meta.species}" == 'Ahemp' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz
         touch ${meta.id}.host.mapped_1.fq.gz ${meta.id}.host.mapped_2.fq.gz
         """
-    else if ( "${meta.species}" == 'Pocillopora' )
+    else if ( "${meta.species}" == 'Pver' )
         """
         touch ${meta.id}.host.bam
         touch ${meta.id}.host.unmapped_1.fq.gz ${meta.id}.host.unmapped_2.fq.gz

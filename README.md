@@ -118,17 +118,17 @@ FASTQ files follow this naming pattern:
 {species}_{replicate}_{method}_{buffer}_{1,2}.fq.gz
 ```
 
-Species codes currently recognised by the pipeline:
+The `{species}` prefix is used as-is (`meta.species`) and selects the host reference in [modules/bowtie2.nf](modules/bowtie2.nf) and [modules/minimap2.nf](modules/minimap2.nf):
 
-| Code | Mapped to |
-|---|---|
-| `Ac`, `Acro`, `Ahemp` | Acropora |
-| `Po`, `Por`, `Plob` | Porites |
-| `Poci`, `Pr`, `Pver` | Pocillopora |
-| `F003`, `F3` | F003 (Aiptasia) |
-| `H2` | H2 (Aiptasia) |
+| Code | Species | Host reference |
+|---|---|---|
+| `Ahemp` | *Acropora hemprichii* | Scleractinia |
+| `Plob` | *Porites lobata* | Scleractinia |
+| `Pver` | *Pocillopora verrucosa* | Scleractinia |
+| `F003` | Aiptasia F003 | Aiptasia |
+| `H2` | Aiptasia H2 | Aiptasia |
 
-> Edit input channel logic in [main.nf](main.nf) to add/remove.
+> Any other prefix stops the run with `Invalid alignment mode`; add a branch in both modules to support it.
 ---
 
 ## Step-by-step setup

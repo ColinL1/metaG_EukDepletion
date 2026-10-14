@@ -9,7 +9,7 @@ There are two runs, which differ only in which assemblies they use:
 | **Co-binning** | one per sample, `assembly_based/assembly/` | `results_cobinning/` | `GenomeBinning/QC/gunc_checkm_summary.tsv` (`mags_non_co`) |
 | **Co-assembly** | one per group (species + extraction + buffer, replicates pooled), `coassembly_based/assembly/` | `results_coassembly/` | `GenomeBinning/QC/gunc_checkm_summary.tsv` (`mags_co`) |
 
-In both runs, reads from every sample in a group are mapped back to that group's assemblies for binning (`binning_map_mode: group`). A group has the same name as `main.nf`'s co-assembly, e.g. `Acropora_BBMB_DESS`.
+In both runs, reads from every sample in a group are mapped back to that group's assemblies for binning (`binning_map_mode: group`). A group has the same name as `main.nf`'s co-assembly, e.g. `Ahemp_BBMB_DESS`.
 
 ## Settings
 
