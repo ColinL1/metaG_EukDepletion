@@ -1,8 +1,7 @@
 #! /usr/bin/env Rscript
 # ==============================================================================
-# Pipeline to run all the scripts in order, producing the figures and tables for the paper.
-# Each script runs in its own fresh R session (separate Rscript process), so
-# nothing left over from one script can affect the next.
+# Runs all scripts in order, producing the figures and tables for the paper.
+# Each script runs in its own Rscript process.
 # Runnable from any location:  Rscript /path/to/R-scripts/run_all.r
 # ==============================================================================
 
