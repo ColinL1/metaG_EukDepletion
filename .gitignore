@@ -7,6 +7,7 @@ results_*
 !results/README.md
 references/*
 databases
+run_check
 !references/README.md
 R-scripts/exploratory/temp_to_delete
 R-scripts/exploratory/archived
