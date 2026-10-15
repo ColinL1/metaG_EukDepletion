@@ -117,7 +117,7 @@ process SEQKIT_SPLIT_KAIJU_PE {
     """
 }
 
-params.input = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/symbiodiniaceae/*/*.symbiodiniaceae.unmapped_{1,2}.fq.gz"
+params.input = "/path/to/metaG_EukDepletion/manual_piplines/reads/mapping/symbiodiniaceae/*/*.symbiodiniaceae.unmapped_{1,2}.fq.gz"
 
 Channel
     .fromFilePairs(params.input)
@@ -151,7 +151,7 @@ Channel
     }
     .set { samples_coral }
 
-params.input_kaiju = "/home/colinl/metaG/Git/metaG_EukDepletion/manual_piplines/reads/mapping/bacteria-kaiju/*/*.out"
+params.input_kaiju = "/path/to/metaG_EukDepletion/manual_piplines/reads/mapping/bacteria-kaiju/*/*.out"
 
 Channel
     .fromPath(params.input_kaiju)

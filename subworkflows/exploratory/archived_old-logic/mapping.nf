@@ -14,12 +14,12 @@ include { TRIM_PE } from '../subworkflows/trim_illumina.nf'
 
 params.nodes = "/share/databases/kaiju/nodes.dmp"
 params.kaiju_db = "/share/databases/kaiju/refseq/kaiju_db_refseq.fmi"
-params.barplot_script = "/home/colinl/metaG/Git/metaG_EukDepletion/R-scripts/Bar_plot_kaiju.r"
-params.parse_script = "/home/colinl/metaG/Git/metaG_EukDepletion/parse_json_cl_3f.py"
-params.sample_metadata_sheet = "/home/colinl/metaG/Git/metaG_EukDepletion/sample_metadata_sheet.csv"
+params.barplot_script = "/path/to/metaG_EukDepletion/R-scripts/Bar_plot_kaiju.r"
+params.parse_script = "/path/to/metaG_EukDepletion/parse_json_cl_3f.py"
+params.sample_metadata_sheet = "/path/to/metaG_EukDepletion/sample_metadata_sheet.csv"
 
-params.ref_host = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_scleractina" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/aiptasiidae.mmi" //"/home/colinl/metaG/Git/metaG_EukDepletion/kaiju/mem/split/ref_genomes/corals.mmi"
-params.ref_sym = "/home/colinl/metaG/Git/metaG_EukDepletion/references/ref_genomes_bowtie2/all_symbiodiniaceae"
+params.ref_host = "/path/to/metaG_EukDepletion/references/ref_genomes_bowtie2/all_scleractina" //"/path/to/metaG_EukDepletion/kaiju/mem/split/ref_genomes/aiptasiidae.mmi" //"/path/to/metaG_EukDepletion/kaiju/mem/split/ref_genomes/corals.mmi"
+params.ref_sym = "/path/to/metaG_EukDepletion/references/ref_genomes_bowtie2/all_symbiodiniaceae"
 
 /*
 ========================================================================================

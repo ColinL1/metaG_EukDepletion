@@ -34,8 +34,8 @@ process MULTIQC { //TODO: add ${seq_type}
 
 // individual tester #TODO:remove once complete
 // workflow {
-//     // Channel.fromFilePairs("/home/colinl/metaG/Git/metaG_EukDepletion/input/test_illumina/*_{1,2}_subsample.fq.gz").collect(it[0]).set {input_fq}
-//     Channel.fromPath("/home/colinl/metaG/Git/metaG_EukDepletion/modules/QC").set {input_fq}
+//     // Channel.fromFilePairs("/path/to/metaG_EukDepletion/input/test_illumina/*_{1,2}_subsample.fq.gz").collect(it[0]).set {input_fq}
+//     Channel.fromPath("/path/to/metaG_EukDepletion/modules/QC").set {input_fq}
 //     // input_fq.view()
 //     multiqc(input_fq)
 //     multiqc.out.html.view()
