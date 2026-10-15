@@ -24,7 +24,9 @@ Both runs use the same analysis settings ([params/](params/)):
 | Taxonomy | GTDB-Tk (release 220, nf-core default) |
 | Other | geNomad virus identification, MetaEuk eukaryotic gene prediction, Prokka, QUAST |
 
-The MAG tables (`R-scripts/tables/table_mags.r`) count bins with CheckM completeness ≥ 50 % (medium) or ≥ 90 % (high) and contamination ≤ 10 %.
+The MAG tables (`R-scripts/tables/table_mags.r`) count bins by CheckM quality: medium = completeness ≥ 50 % and contamination ≤ 10 %; high = completeness ≥ 90 % and contamination ≤ 5 % (MIMAG). The medium counts include the high-quality bins.
+
+The 305 medium-quality MAGs from the manuscript and their table (`Table_MAGs.xlsx`: quality, taxonomy, NCBI accessions) are on Zenodo: [10.5281/zenodo.23238935](https://doi.org/10.5281/zenodo.23238935).
 
 ## Requirements
 
@@ -64,4 +66,4 @@ Extra Nextflow options are passed through by the run scripts, e.g. `./run_cobinn
 
 ## Into the R analysis
 
-`R-scripts/00_setup.r` reads the two `gunc_checkm_summary.tsv` files. After both runs finish, switch `mags_co` / `mags_non_co` to the commented `mag_recovery/results_*` paths below them, then run `Rscript tables/table_mags.r` from `R-scripts/`.
+`R-scripts/00_setup.r` reads `GenomeBinning/QC/gunc_checkm_summary.tsv` from `results_cobinning/` and `results_coassembly/` in this folder (`MAG_RESULTS`). After both runs finish, run `Rscript tables/table_mags.r` from `R-scripts/`. If the outputs are elsewhere, change `MAG_RESULTS` at the top of `00_setup.r`.
