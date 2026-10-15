@@ -1,17 +1,19 @@
 #! /usr/bin/env Rscript
 # ==============================================================================
-# MAG tables: number of medium (>=50% complete) and high (>=90%) quality MAGs
-# (CheckM contamination <= 10%) per species x buffer x extraction protocol.
+# MAG tables: number of medium (>=50% complete, <=10% contamination) and high
+# (>=90% complete, <=5% contamination; MIMAG) quality MAGs (CheckM) per
+# species x buffer x extraction protocol.
 # Run from R-scripts/:  Rscript tables/table_mags.r
-# Output: ../results/tables/table_mags_cobinning.docx
-#         ../results/tables/table_mags_full.docx      (co-binning and co-assembly side by side)
+# Output: ../results/tables/table_mags_cobinning.docx   (manuscript table: Aiptasia Fresh and corals)
+#         ../results/tables/table_mags_full.docx         (co-binning and co-assembly side by side)
+# Protocol codes, Aiptasia buffer "Fresh", coral species in italics,
+# "-" = sequenced but no MAG, "NA" = not sequenced.
 # ==============================================================================
 source("00_setup.r")
 p_load(flextable, officer, rempsyc)
 
-extraction_long <- c(BT = "Blood & Tissue", BenzoBT = "Benzonase", MB = "Microbiome",
-                     BBMB = "Microbiome & Bead-Beating", SMB = "Microbiome & Spinning")
-q_cols <- c("≥50", "≥90")
+q_cols <- c("nMAGs", "nHQ-MAGs")
+species_levels <- c("H2", "F003", "Acropora", "Pocillopora", "Porites")
 
 # ---- data ---------------------------------------------------------------------
 check_inputs(paths$mags_co, paths$mags_non_co)
@@ -22,67 +24,63 @@ mags <- bind_rows(
     read_tsv(paths$mags_non_co, show_col_types = FALSE) %>%
         separate(genome, into = c("assembler", "binner", "temp"), sep = "-", remove = FALSE) %>%
         separate(temp, into = c("strain", "replicate", "treatment", "buffer_bin"), sep = "_") %>%
-        mutate(origin = "co-binning"),
+        mutate(origin = "Co-binning"),
     read_tsv(paths$mags_co, show_col_types = FALSE) %>%
         separate(genome, into = c("assembler", "binner", "group", "temp"), sep = "-", remove = FALSE) %>%
         separate(temp, into = c("strain", "treatment", "buffer_bin"), sep = "_") %>%
-        mutate(origin = "co-assembly")
+        mutate(origin = "Co-assembly")
 ) %>%
     separate(buffer_bin, into = c("buffer", "bin_id"), sep = "\\.") %>%
     mutate(strain    = canon_species(strain),
-           treatment = extraction_long[canon_extraction(treatment)],
-           buffer    = canon_buffer(buffer)) %>%
+           treatment = canon_extraction(treatment),
+           buffer    = recode(canon_buffer(buffer), PBS = "Fresh")) %>%
     filter(checkM.completeness >= 50, checkM.contamination <= 10) %>%
-    mutate(completeness_cat = ifelse(checkM.completeness >= 90, q_cols[2], q_cols[1]))
+    mutate(completeness_cat = ifelse(checkM.completeness >= 90 & checkM.contamination <= 5, q_cols[2], q_cols[1]))
 
-# counts per group; ">=50" includes the ">=90" MAGs; 0 shown as "-"
-summary_mags <- mags %>%
+# counts per group; nMAGs includes the HQ MAGs
+counts <- mags %>%
     count(strain, treatment, buffer, origin, completeness_cat) %>%
     pivot_wider(names_from = completeness_cat, values_from = n, values_fill = 0) %>%
-    mutate(!!q_cols[1] := .data[[q_cols[1]]] + .data[[q_cols[2]]],
-           across(all_of(q_cols), ~ ifelse(. == 0, "-", as.character(.)))) %>%
-    transmute(Species = factor(strain, levels = c("H2", "F003", "Acropora", "Pocillopora", "Porites")),
-              Buffer = factor(buffer, levels = c("PBS", "DESS")),
-              Extraction = factor(treatment, levels = extraction_long),
-              !!q_cols[1] := .data[[q_cols[1]]], !!q_cols[2] := .data[[q_cols[2]]], Origin = origin) %>%
-    arrange(Species, Buffer, Extraction)
+    mutate(!!q_cols[1] := .data[[q_cols[1]]] + .data[[q_cols[2]]]) %>%
+    pivot_longer(all_of(q_cols), names_to = "quality", values_to = "n") %>%
+    transmute(Species = strain, Buffer = buffer, Extraction = treatment,
+              col = paste(origin, quality, sep = "."), n = ifelse(n == 0, "-", as.character(n))) %>%
+    pivot_wider(names_from = col, values_from = n)
 
-co_assembly_data <- summary_mags %>% filter(Origin == "co-assembly") %>% select(-Origin)
-co_binning_data  <- summary_mags %>% filter(Origin == "co-binning") %>% select(-Origin)
-
-# ---- table 1: co-binning ------------------------------------------------------------
-table1 <- co_binning_data %>% mutate(across(everything(), ~ ifelse(is.na(.), "-", as.character(.))))
-print(table1, n = Inf)
-save_table(style_table(table1, group_cols = c("Species", "Buffer"), left_cols = c("Species", "Buffer", "Extraction"),
-                       right_cols = q_cols), "table_mags_cobinning")
-
-# ---- table 2: co-binning and co-assembly, every protocol listed -------------------------
-# combinations that were never sequenced are shown as "NA" (vs "-" = sequenced, no MAG)
+# every protocol of every sequenced species x buffer; never-sequenced combinations are "NA"
 not_sequenced <- tribble(
     ~Species, ~Buffer, ~Extraction,
-    "H2",     "DESS",  "Microbiome & Spinning",
-    "F003",   "DESS",  "Benzonase",
-    "F003",   "DESS",  "Microbiome",
-    "F003",   "DESS",  "Microbiome & Spinning")
+    "H2",     "DESS",  "SMB",
+    "F003",   "DESS",  "BenzoBT",
+    "F003",   "DESS",  "MB",
+    "F003",   "DESS",  "SMB")
+value_cols <- c("Co-binning.nMAGs", "Co-binning.nHQ-MAGs", "Co-assembly.nMAGs", "Co-assembly.nHQ-MAGs")
 
-full <- full_join(co_assembly_data, co_binning_data, by = c("Species", "Buffer", "Extraction"),
-                  suffix = c(".Co-assembly", ".Co-binning"))
-table2 <- expand_grid(Species = levels(summary_mags$Species), Buffer = levels(summary_mags$Buffer),
-                      Extraction = unname(extraction_long)) %>%
-    filter(!(Species %in% c("Acropora", "Porites", "Pocillopora") & Buffer == "PBS")) %>%
-    left_join(full %>% mutate(across(c(Species, Buffer, Extraction), as.character)),
-              by = c("Species", "Buffer", "Extraction")) %>%
-    mutate(across(ends_with(c(".Co-assembly", ".Co-binning")), ~ ifelse(is.na(.), "-", .))) %>%
-    rows_update(not_sequenced %>% mutate(`≥50.Co-assembly` = "NA", `≥90.Co-assembly` = "NA",
-                                         `≥50.Co-binning` = "NA", `≥90.Co-binning` = "NA"),
+full <- expand_grid(Species = species_levels, Buffer = c("Fresh", "DESS"), Extraction = extraction_levels) %>%
+    filter(!(Species %in% names(coral_species) & Buffer == "Fresh")) %>%
+    left_join(counts, by = c("Species", "Buffer", "Extraction")) %>%
+    mutate(across(all_of(value_cols), ~ ifelse(is.na(.), "-", .))) %>%
+    rows_update(not_sequenced %>% mutate(!!!setNames(rep(list("NA"), length(value_cols)), value_cols)),
                 by = c("Species", "Buffer", "Extraction"), unmatched = "ignore") %>%
-    mutate(Species = factor(Species, levels = levels(summary_mags$Species)),
-           Buffer = factor(Buffer, levels = levels(summary_mags$Buffer)),
-           Extraction = factor(Extraction, levels = extraction_long)) %>%
-    arrange(Species, Buffer, Extraction)
-names(table2) <- gsub("^(≥[0-9]+)\\.(Co-assembly|Co-binning)$", "\\2.\\1", names(table2))
-table2 <- table2 %>% select(Species, Buffer, Extraction, `Co-assembly.≥50`, `Co-assembly.≥90`, `Co-binning.≥50`, `Co-binning.≥90`)
+    mutate(Species = factor(Species, levels = species_levels),
+           Buffer = factor(Buffer, levels = c("Fresh", "DESS")),
+           Extraction = factor(Extraction, levels = extraction_levels)) %>%
+    arrange(Species, Buffer, Extraction) %>%
+    select(Species, Buffer, Extraction, all_of(value_cols))
+
+# ---- table 1: co-binning, Aiptasia Fresh and corals ----------------------------------
+table1 <- full %>%
+    filter(!(Species %in% c("H2", "F003") & Buffer == "DESS")) %>%
+    select(Species, Buffer, Extraction, nMAGs = `Co-binning.nMAGs`, `nHQ-MAGs` = `Co-binning.nHQ-MAGs`)
+print(table1, n = Inf)
+ft <- style_table(table1, group_cols = c("Species", "Buffer"), left_cols = c("Species", "Buffer", "Extraction"),
+                  right_cols = q_cols)
+save_table(italic_species(ft, j = "Species"), "table_mags_cobinning")
+
+# ---- table 2: co-binning and co-assembly, every species x buffer ----------------------
+table2 <- full
 print(table2, n = Inf)
-save_table(style_table(table2, group_cols = c("Species", "Buffer"), left_cols = c("Species", "Buffer", "Extraction"),
-                       right_cols = c("Co-assembly.≥50", "Co-assembly.≥90", "Co-binning.≥50", "Co-binning.≥90")),
-           "table_mags_full")
+ft <- style_table(table2, group_cols = c("Species", "Buffer"), left_cols = c("Species", "Buffer", "Extraction"),
+                  right_cols = value_cols) %>%
+    align(i = 1, j = value_cols, align = "center", part = "header")   # "Co-binning" / "Co-assembly" spans
+save_table(italic_species(ft, j = "Species"), "table_mags_full")
