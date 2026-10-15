@@ -1,35 +1,46 @@
 # R scripts: figures, statistics and tables for the manuscript
 
-All scripts are run from this folder, in the `metaG_EukDepletion` conda env:
+Requires R with the `pacman` package; each script loads (and installs if missing) the rest with `pacman::p_load`.
+
+Run `main.nf` and the two [nf-core/mag](../mag_recovery/README.md) runs first. With the default folders no paths need editing (see [Inputs](#inputs)). Then run everything in order:
+
+```bash
+Rscript R-scripts/run_all.r       # each script in its own R session
+```
+
+or run single scripts from this folder:
 
 ```bash
 cd R-scripts
-conda activate metaG_EukDepletion
 Rscript 01_stats_anova.r          # must run before 03_figure_3_reads.r
 Rscript 02_figure_2_qpcr.r
 Rscript 03_figure_3_reads.r
 Rscript 04_figure_4_family_intersections.r
 Rscript 05_figure_S2_aip_families.r
-Rscript fit_to_letter.r        # after the figure scripts
+Rscript fit_to_letter.r        # optional: after the figure scripts
 Rscript tables/table_counts.r
 Rscript tables/table_mags.r
 ```
 
 ## Inputs
 
-Every path is defined once in `00_setup.r`.
+Every path is defined once in `00_setup.r`. The two input folders are set at its top:
+
+```r
+PIPELINE_RESULTS <- file.path("..", "results")        # main.nf --outdir
+MAG_RESULTS      <- file.path("..", "mag_recovery")   # folder holding results_cobinning/ and results_coassembly/
+```
+
+The defaults (relative to `R-scripts/`) match a fresh run from the repository root: `main.nf` with `--outdir results`, then `run_cobinning.sh` and `run_coassembly.sh` from `mag_recovery/`. If you used another `--outdir` or moved the folders, edit these two lines only.
 
 | Input | Location |
 |---|---|
-| main.nf results | `PIPELINE_RESULTS` at the top of `00_setup.r` (currently `../results_binac2/results`). Change this one line when the results folder moves. |
 | read stats (Figure 3, stats, tables) | `<PIPELINE_RESULTS>/reads_based/stats/stats_reads.tsv` |
 | CAT quantification (Figure 4, S2) | `<PIPELINE_RESULTS>/coassembly_based/quantification/<mode>/contig_table.<mode>.tsv.gz` |
-| qPCR (Figure 2) | `../qPCR/MetaG_qPCR_*.csv` |
-| MAG quality (table_mags) | `../manual_piplines/binning/nf_core_MAG/gunc_checkm_summary_{co,non_co}.tsv` |
+| qPCR (Figure 2) | `../qPCR/MetaG_qPCR_*.csv` (see [qPCR/README.md](../qPCR/README.md)) |
+| MAG quality (table_mags) | `<MAG_RESULTS>/results_{cobinning,coassembly}/GenomeBinning/QC/gunc_checkm_summary.tsv` |
 
 Read categories from main.nf: host, Symbiodiniaceae, bacteria and archaea are kept as they are; viruses and non-mapped reads are pooled as "Other".
-
-`RSCRIPTS_INPUT=legacy Rscript <script>` runs a script on the pre-pipeline files under `manual_piplines/` instead. This mode exists only to check that the scripts reproduce the submitted figures.
 
 ## Outputs
 
@@ -57,6 +68,7 @@ Each figure script starts with a `DEFAULTS` list, which is the version in the pa
 R-scripts
 ├── README.md
 ├── 00_setup.r                          # paths, vocabulary, palettes, shared helpers and data loaders
+├── run_all.r                           # runs all scripts below in order
 ├── 01_stats_anova.r
 ├── 02_figure_2_qpcr.r
 ├── 03_figure_3_reads.r
