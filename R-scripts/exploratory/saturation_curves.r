@@ -15,10 +15,9 @@ N_POINTS <- 40                         # depths evaluated per curve
 
 grp_levels <- c("H2 - Fresh", "H2 - DESS", "F003 - Fresh", "F003 - DESS",
                 "Acropora - DESS", "Porites - DESS", "Pocillopora - DESS")
-quant_dir <- if (INPUT_SOURCE == "binac2") paths$cat_quant else paths$legacy_cat_quant
 
 curve_for_mode <- function(mode) {
-    contig_file <- file.path(quant_dir, mode, sprintf("contig_table.%s.tsv.gz", mode))
+    contig_file <- file.path(paths$cat_quant, mode, sprintf("contig_table.%s.tsv.gz", mode))
     check_inputs(contig_file)
     d <- read_tsv(contig_file, show_col_types = FALSE) %>%
         filter(superkingdom == "Bacteria", family != "Unassigned_family", !is.na(family), family != "")

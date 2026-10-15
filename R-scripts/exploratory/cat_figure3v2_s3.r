@@ -3,9 +3,7 @@
 # Exploratory CAT figures (not in the paper), from the same family table as
 # Figure 4 / Figure S2:
 #   extra_02_family_dots  - family dot plot, MB/BBMB/SMB, Aiptasia (Fresh) vs corals
-#                            (was figure3_v2_persample_raref)
 #   extra_03_family_upset - upset plot of families shared across species x buffer, SMB only
-#                            (was figure_s3_persample_raref)
 # Run from R-scripts/:  Rscript exploratory/cat_figure3v2_s3.r
 # Output: ../plots/extra/extra_02_family_dots.png, ../plots/extra/extra_03_family_upset.png
 # ==============================================================================
