@@ -5,6 +5,7 @@ input/*
 results/*
 results_*
 !results/README.md
+run_check
 references/*
 databases
 !references/README.md
