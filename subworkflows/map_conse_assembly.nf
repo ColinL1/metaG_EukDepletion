@@ -13,7 +13,7 @@ workflow MAP_CONSE_ASSEMBLY {
     MEGAHIT_PE(reads)
         MINIMAP2_MAP_HOST(MEGAHIT_PE.out.contigs_fa) 
             SPLIT_BAM_HOST(MINIMAP2_MAP_HOST.out.mapp_file)
-                MINIMAP2_MAP_SYM(SPLIT_BAM_HOST.out.unmapped_reads) // was run against mapped reads. not good. 
+                MINIMAP2_MAP_SYM(SPLIT_BAM_HOST.out.unmapped_reads)
                     SPLIT_BAM_SYM(MINIMAP2_MAP_SYM.out.mapp_file)
                         KAIJU_SE(SPLIT_BAM_SYM.out.unmapped_reads)
                             KAIJU_ADD_TAXON_NAMES(KAIJU_SE.out.report_kaiju_out)
