@@ -9,6 +9,7 @@ references/*
 databases
 !references/README.md
 R-scripts/exploratory/temp_to_delete
+R-scripts/exploratory/archived
 manual_piplines
 modules/exploratory/templates
 modules/exploratory/mmseq2_diamond
@@ -19,3 +20,11 @@ qPCR/*.csv
 
 nextflow.config
 process_resources.config
+
+# nf-core/mag runs (mag_recovery/)
+mag_recovery/samplesheets/
+mag_recovery/results_*
+mag_recovery/work/
+mag_recovery/.nextflow*
+!mag_recovery/nextflow.config
+!mag_recovery/process_resources.config

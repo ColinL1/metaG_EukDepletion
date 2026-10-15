@@ -40,6 +40,9 @@ paths <- list(
     qpcr          = file.path(ROOT, "qPCR"),
     mags_co       = file.path(ROOT, "manual_piplines", "binning", "nf_core_MAG", "gunc_checkm_summary_co.tsv"),
     mags_non_co   = file.path(ROOT, "manual_piplines", "binning", "nf_core_MAG", "gunc_checkm_summary_non_co.tsv"),
+    # after mag_recovery/ has been run, switch to:
+    # mags_co     = file.path(ROOT, "mag_recovery", "results_coassembly", "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
+    # mags_non_co = file.path(ROOT, "mag_recovery", "results_cobinning",  "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
     # legacy inputs (validation only)
     legacy_reads  = file.path(ROOT, "manual_piplines", "reads", "mapping", "stats_reads_sanitised.txt"),
     legacy_kaiju  = file.path(ROOT, "manual_piplines", "202505_kaiju_re-check", "split_fq", "fq", "stats_reads_sanitised.txt"),

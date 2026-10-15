@@ -1,0 +1,16 @@
+{
+    "input": "samplesheets/samplesheet.csv",
+    "assembly_input": "samplesheets/samplesheet_co_assemblies.csv",
+    "outdir": "results_coassembly",
+    "multiqc_title": "MAGs_metaG_EukDepletion_coassembly",
+    "coassemble_group": true,
+    "binning_map_mode": "group",
+    "min_contig_size": 1000,
+    "refine_bins_dastool": true,
+    "postbinning_input": "refined_bins_only",
+    "binqc_tool": "checkm",
+    "checkm_db": "/path/to/checkM_databases",
+    "run_gunc": true,
+    "run_virus_identification": true,
+    "metaeuk_db": "/path/to/MetaEuk_Tara_2020"
+}

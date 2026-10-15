@@ -81,7 +81,7 @@ flowchart LR
     class T5,P,N,O,Q,R external
 ```
 
-Dashed nodes are run outside this Nextflow pipeline (R analysis, MAG recovery, qPCR).
+Dashed nodes are run outside this Nextflow pipeline (R analysis, MAG recovery — see [mag_recovery/](mag_recovery/README.md), qPCR).
 
 ---
 
@@ -118,17 +118,17 @@ FASTQ files follow this naming pattern:
 {species}_{replicate}_{method}_{buffer}_{1,2}.fq.gz
 ```
 
-Species codes currently recognised by the pipeline:
+The `{species}` prefix is used as-is (`meta.species`) and selects the host reference in [modules/bowtie2.nf](modules/bowtie2.nf) and [modules/minimap2.nf](modules/minimap2.nf):
 
-| Code | Mapped to |
-|---|---|
-| `Ac`, `Acro`, `Ahemp` | Acropora |
-| `Po`, `Por`, `Plob` | Porites |
-| `Poci`, `Pr`, `Pver` | Pocillopora |
-| `F003`, `F3` | F003 (Aiptasia) |
-| `H2` | H2 (Aiptasia) |
+| Code | Species | Host reference |
+|---|---|---|
+| `Ahemp` | *Acropora hemprichii* | Scleractinia |
+| `Plob` | *Porites lobata* | Scleractinia |
+| `Pver` | *Pocillopora verrucosa* | Scleractinia |
+| `F003` | Aiptasia F003 | Aiptasia |
+| `H2` | Aiptasia H2 | Aiptasia |
 
-> Edit input channel logic in [main.nf](main.nf) to add/remove.
+> Any other prefix stops the run with `Invalid alignment mode`; add a branch in both modules to support it.
 ---
 
 ## Step-by-step setup
@@ -198,3 +198,7 @@ nextflow run main.nf -profile conda \
 Use `-profile apptainer` instead to run every tool from its container (Apptainer/Singularity) rather than conda.
 
 > **Important:** Adjust CPU and RAM limits in `nextflow.config` and `process_resources.config` to match your machine.
+
+### 6. MAG recovery (nf-core/mag)
+
+MAGs are recovered by running nf-core/mag on the `main.nf` output (trimmed reads, per-sample assemblies and co-assemblies). Settings, samplesheet builder and run scripts are in [mag_recovery/](mag_recovery/README.md).

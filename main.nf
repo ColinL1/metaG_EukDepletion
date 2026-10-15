@@ -19,27 +19,7 @@ channel //TODO: swtich to sample sheet input for cleaner more flexible handling.
         ]
         [meta, reads]
     }
-    .map { meta, reads ->
-        def newmap = [
-            species: meta.species == "Po" ? "Porites" :
-                    meta.species == "Por" ? "Porites" :
-                    meta.species == "Plob" ? "Porites" :
-                    meta.species == "Ac" ? "Acropora" :
-                    meta.species == "Acro" ? "Acropora" :
-                    meta.species == "Ahemp" ? "Acropora" :
-                    meta.species == "F003" ? "F003" :
-                    meta.species == "F3" ? "F003" :
-                    meta.species == "H2" ? "H2" :
-                    meta.species == "Poci" ? "Pocillopora" :
-                    meta.species == "Pver" ? "Pocillopora" :
-                    meta.species == "Pr" ? "Pocillopora" :
-                    "Unknown"
-        ]
-        [meta + newmap, reads]
-    }
     .set { samples_coral }
-
-    
 
     TRIMMOMATIC(samples_coral)
         MAP_CONSE_PE(TRIMMOMATIC.out.trimmed_fq_out)
