@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 # ==============================================================================
-# 00_setup.r — shared configuration for every script in R-scripts/
+# 00_setup.r - shared configuration for every script in R-scripts/
 #
 # Sourced at the top of each figure / stats / table script:
 #     source("00_setup.r")
@@ -9,15 +9,15 @@
 # (e.g. `cd R-scripts && Rscript 02_figure_2_qpcr.r`).
 # ==============================================================================
 
-# ---- results folder of the main.nf run: the ONLY line to edit when it moves --
-PIPELINE_RESULTS <- file.path("..", "results_binac2", "results")
-
-# ---- input source -------------------------------------------------------------
-# "binac2" = main.nf output above (default). "legacy" = the pre-pipeline files
-# under manual_piplines/ that produced the submitted figures; kept only to prove
-# the refactor reproduces them. Override without editing: RSCRIPTS_INPUT=legacy
-INPUT_SOURCE <- Sys.getenv("RSCRIPTS_INPUT", unset = "binac2")
-stopifnot(INPUT_SOURCE %in% c("binac2", "legacy"))
+# ---- input folders ------------------------------------------------------------
+# Paths are relative to R-scripts/. The defaults match a fresh run from the
+# repository root:
+#   nextflow run main.nf ... --outdir results       -> results/
+#   cd mag_recovery && ./run_cobinning.sh            -> mag_recovery/results_cobinning/
+#   cd mag_recovery && ./run_coassembly.sh           -> mag_recovery/results_coassembly/
+# If you used another --outdir or moved the folders, change these two lines.
+PIPELINE_RESULTS <- file.path("..", "results")        # main.nf --outdir
+MAG_RESULTS      <- file.path("..", "mag_recovery")   # folder holding results_cobinning/ and results_coassembly/
 
 # ---- working directory check ----------------------------------------------------
 if (basename(getwd()) != "R-scripts") {
@@ -36,18 +36,11 @@ paths <- list(
     # main.nf outputs
     reads_stats   = file.path(PIPELINE_RESULTS, "reads_based", "stats", "stats_reads.tsv"),
     cat_quant     = file.path(PIPELINE_RESULTS, "coassembly_based", "quantification"),
-    # inputs not produced by main.nf
+    # nf-core/mag outputs (mag_recovery/)
+    mags_co       = file.path(MAG_RESULTS, "results_coassembly", "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
+    mags_non_co   = file.path(MAG_RESULTS, "results_cobinning",  "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
+    # inputs not produced by a pipeline
     qpcr          = file.path(ROOT, "qPCR"),
-    mags_co       = file.path(ROOT, "manual_piplines", "binning", "nf_core_MAG", "gunc_checkm_summary_co.tsv"),
-    mags_non_co   = file.path(ROOT, "manual_piplines", "binning", "nf_core_MAG", "gunc_checkm_summary_non_co.tsv"),
-    # after mag_recovery/ has been run, switch to:
-    # mags_co     = file.path(ROOT, "mag_recovery", "results_coassembly", "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
-    # mags_non_co = file.path(ROOT, "mag_recovery", "results_cobinning",  "GenomeBinning", "QC", "gunc_checkm_summary.tsv"),
-    # legacy inputs (validation only)
-    legacy_reads  = file.path(ROOT, "manual_piplines", "reads", "mapping", "stats_reads_sanitised.txt"),
-    legacy_kaiju  = file.path(ROOT, "manual_piplines", "202505_kaiju_re-check", "split_fq", "fq", "stats_reads_sanitised.txt"),
-    legacy_cat_quant = file.path(ROOT, "manual_piplines", "CAT", "QUANTIY_ReWORK", "results_quant_fix"),
-    legacy_cat_depth = file.path(ROOT, "manual_piplines", "CAT", "QUANTIY_ReWORK", "fastq_concat_input", "counts.txt"),
     # outputs
     plots         = file.path(ROOT, "plots"),
     plots_supp    = file.path(ROOT, "plots", "supplementary"),
@@ -56,7 +49,6 @@ paths <- list(
     tables        = file.path(ROOT, "results", "tables")
 )
 paths$anova_csv <- file.path(paths$results, "anova_posthoc_contrasts.csv")
-
 # stop early, naming every missing input
 check_inputs <- function(...) {
     files <- c(...)
@@ -68,7 +60,7 @@ check_inputs <- function(...) {
 }
 
 # ==============================================================================
-# Vocabulary (one canonical spelling for every naming scheme in the inputs)
+# unify names per species, extraction protocol and buffer
 # ==============================================================================
 canon_species <- function(x) {
     recode(x,
@@ -83,13 +75,14 @@ canon_extraction <- function(x) {
 canon_buffer <- function(x) recode(x, P = "PBS", D = "DESS")
 
 extraction_levels <- c("BT", "BenzoBT", "MB", "BBMB", "SMB")
+coral_species <- c(Porites = "P. lobata", Acropora = "A. hemprichii", Pocillopora = "P. verrucosa")
 protocol_full <- c(BT = "Blood & Tissue Kit", BenzoBT = "Benzonase + BT", MB = "Microbiome Kit",
                    BBMB = "Bead-beating + Microbiome Kit", SMB = "Spinning + Microbiome Kit")
 grouping_levels <- c("H2 - PBS", "H2 - DESS", "F003 - PBS", "F003 - DESS",
                      "Acropora - DESS", "Porites - DESS", "Pocillopora - DESS")
 
 # ==============================================================================
-# Palettes (checked against the colours in the submitted figures)
+# Palettes
 # ==============================================================================
 col_protocol <- c(BT = "#FFB94F", BenzoBT = "#D97474", MB = "#9AE0EC", BBMB = "#87ACE9", SMB = "#9C80BA")
 col_protocol_full <- setNames(col_protocol, protocol_full[names(col_protocol)])
@@ -107,7 +100,7 @@ col_qpcr <- c("Blood & Tissue Kit" = "#FFB94F", "Microbiome Kit" = "#9AE0EC", "B
 #   pbs_fresh  TRUE: show the PBS buffer as "Fresh"
 custom_labeller <- function(labels, style = c("inline", "stacked"), aip_raw = FALSE, pbs_fresh = FALSE) {
     style <- match.arg(style)
-    coral_name <- c(Porites = "P. lobata", Acropora = "A. hemprichii", Pocillopora = "P. verrucosa")
+    coral_name <- coral_species
     format_label <- function(label) {
         parts <- unlist(strsplit(as.character(label), " - ", fixed = TRUE))
         has_suffix <- length(parts) > 1
@@ -186,7 +179,7 @@ style_table <- function(df, group_cols, left_cols, right_cols) {
     })
     ft <- do.call(set_formatter, c(list(ft), setNames(formatters, group_cols)))
     ft %>%
-        align(j = left_cols, align = "left", part = "body") %>%
+        align(j = left_cols, align = "left", part = "all") %>%
         align(j = right_cols, align = "right", part = "all") %>%
         autofit() %>%
         fontsize(size = 9, part = "all") %>%
@@ -195,6 +188,28 @@ style_table <- function(df, group_cols, left_cols, right_cols) {
         bold(part = "header") %>%
         width(j = left_cols, width = 1.2) %>%
         width(j = right_cols, width = 1.0)
+}
+
+# Coral species names in italics.
+#   header labels "<genus> - <buffer>" -> "<italic species> - <buffer>"
+#   body column j: genus values -> italic species names (Aiptasia strains stay upright)
+# Column names cannot hold the species names: nice_table() splits headers on ".".
+italic_species <- function(ft, j = NULL) {
+    for (g in names(coral_species)) {
+        for (col in grep(paste0("^", g, " - "), ft$col_keys, value = TRUE)) {
+            ft <- compose(ft, part = "header", j = col,
+                          value = as_paragraph(as_i(coral_species[[g]]), sub(g, "", col, fixed = TRUE)))
+        }
+    }
+    if (!is.null(j)) {
+        vals  <- as.character(ft$body$dataset[[j]])
+        first <- c(TRUE, vals[-1] != vals[-length(vals)])   # style_table() prints a group label on its first row only
+        for (i in which(first & vals %in% names(coral_species))) {
+            g <- vals[i]
+            ft <- compose(ft, i = i, j = j, part = "body", value = as_paragraph(as_i(coral_species[[g]])))
+        }
+    }
+    bold(ft, part = "header")
 }
 
 save_table <- function(ft, name) {
@@ -210,16 +225,15 @@ save_table <- function(ft, name) {
 #   sample, species, replicate, extraction, buffer, grouping, mapping, num_seqs
 #   mapping: Host, Symbiodiniaceae, Bacteria, Archaea, Other (viruses + non-mapped), total
 # ==============================================================================
-load_read_stats <- function(source = INPUT_SOURCE, kaiju = TRUE) {
-    raw <- if (source == "binac2") .read_stats_binac2() else .read_stats_legacy(kaiju = kaiju)
-    raw %>%
+load_read_stats <- function() {
+    .read_stats_pipeline() %>%
         mutate(species    = canon_species(species),
                extraction = canon_extraction(extraction),
                buffer     = canon_buffer(buffer),
                grouping   = paste(species, buffer, sep = " - "))
 }
 
-.read_stats_binac2 <- function() {
+.read_stats_pipeline <- function() {
     check_inputs(paths$reads_stats)
     s <- read_tsv(paths$reads_stats, show_col_types = FALSE) %>%
         filter(str_detect(file, "(_R1|_1)\\.fq\\.gz$")) %>%
@@ -237,35 +251,6 @@ load_read_stats <- function(source = INPUT_SOURCE, kaiju = TRUE) {
         summarise(num_seqs = sum(num_seqs), .groups = "drop")
 }
 
-# The pre-pipeline file-name parsing, unchanged (validation only)
-.read_stats_legacy <- function(kaiju = TRUE) {
-    check_inputs(paths$legacy_reads, paths$legacy_kaiju)
-    data_reads <- read.table(paths$legacy_reads, header = TRUE, sep = "\t")
-    if (kaiju) {
-        # bacteria / other counts from the 2025-07 Kaiju re-run replace the original ones
-        data_reads_kaiju <- read.table(paths$legacy_kaiju, header = TRUE, sep = "\t")
-        data_reads <- data_reads %>%
-            left_join(data_reads_kaiju, by = "file", suffix = c("", ".kaiju")) %>%
-            mutate(num_seqs = ifelse(is.na(num_seqs.kaiju), num_seqs, num_seqs.kaiju)) %>%
-            select(-ends_with(".kaiju"))
-    }
-    data_reads <- data_reads %>% filter(!grepl("_2.fq.gz", file), !grepl("R2.fq.gz", file))
-    temp <- basename(data_reads$file)
-    temp <- gsub("_TRIM_paried_1.fq.gz", ".total", temp)
-    temp <- gsub("_TRIM_paried_R1.fq.gz", ".total", temp)
-    temp <- gsub("_L[0-9]\\.", "\\.", temp)
-    temp <- gsub("_EKDN230034839-1A_HG3F2DSX7|_EKDN230034842-1A_HG3WCDSX7|_EKDN230034838-1A_HG3F2DSX7|_EKDN230034843-1A_HFVN2DSX7", "", temp)
-    temp <- gsub("_TRIM_paried", "", temp)
-    temp <- gsub(".mapped_1.fq.gz|.unmapped_1.fq.gz", "", temp)
-    data_reads %>%
-        mutate(temp = temp) %>%
-        separate(temp, c("sample", "mapping"), sep = "\\.") %>%
-        separate(sample, c("species", "replicate", "extraction", "buffer"), sep = "_", remove = FALSE) %>%
-        mutate(mapping = recode(mapping, scleractina = "Host", aiptasia = "Host",
-                                symbiodiniaceae = "Symbiodiniaceae", bacteria = "Bacteria", other = "Other")) %>%
-        select(sample, species, replicate, extraction, buffer, mapping, num_seqs)
-}
-
 # ==============================================================================
 # Loader: CAT bacterial family table (Figure 4, Figure S2, exploratory CAT plots)
 #
@@ -277,10 +262,8 @@ load_read_stats <- function(source = INPUT_SOURCE, kaiju = TRUE) {
 # Returns list(d, meta, fam, plot_dat)
 # ==============================================================================
 prepare_cat_families <- function(mode = "persample", rarefy = TRUE, presence_frac = 0.9,
-                                 min_breadth = NULL, cov_method = "trimmed_mean", top_n = 35,
-                                 source = INPUT_SOURCE) {
-    quant_dir <- if (source == "binac2") paths$cat_quant else paths$legacy_cat_quant
-    contig_file <- file.path(quant_dir, mode, sprintf("contig_table.%s.tsv.gz", mode))
+                                 min_breadth = NULL, cov_method = "trimmed_mean", top_n = 35) {
+    contig_file <- file.path(paths$cat_quant, mode, sprintf("contig_table.%s.tsv.gz", mode))
     check_inputs(contig_file)
 
     d <- read_tsv(contig_file, show_col_types = FALSE) %>%
@@ -306,7 +289,7 @@ prepare_cat_families <- function(mode = "persample", rarefy = TRUE, presence_fra
 
     # step 2 ---------------------------------------------------------------------
     if (rarefy) {
-        total_reads <- cat_total_depth(meta, source)
+        total_reads <- cat_total_depth(meta)
         # "non-bacterial" bucket so each row sums to the library's TOTAL depth
         non_bacterial <- total_reads[rownames(counts)] - rowSums(counts)
         stopifnot(all(non_bacterial > 0))
@@ -379,40 +362,24 @@ prepare_cat_families <- function(mode = "persample", rarefy = TRUE, presence_fra
 }
 
 # Total sequencing depth (R1 + R2 reads) per CAT sample, named by CAT sample id
-cat_total_depth <- function(meta, source = INPUT_SOURCE) {
+cat_total_depth <- function(meta) {
     key <- function(sp, trt, buf) paste(canon_species(sp), canon_extraction(trt), canon_buffer(buf), sep = "_")
 
-    if (source == "binac2") {
-        check_inputs(paths$reads_stats)
-        per_group <- read_tsv(paths$reads_stats, show_col_types = FALSE) %>%
-            filter(str_detect(file, "_TRIM_paried_R1\\.fq\\.gz$")) %>%
-            separate(sample, c("species", "replicate", "extraction", "buffer"), sep = "_") %>%
-            mutate(key = key(species, extraction, buffer)) %>%
-            group_by(key) %>%
-            summarise(total = sum(num_seqs) * 2, .groups = "drop") %>%
-            deframe()
-    } else {
-        check_inputs(paths$legacy_cat_depth)
-        seq_stats <- read.table(paths$legacy_cat_depth, header = TRUE, sep = "\t", stringsAsFactors = FALSE,
-                                check.names = FALSE, fill = TRUE, quote = "", comment.char = "")
-        seq_stats <- seq_stats[seq_stats$file != "file", ]
-        per_group <- seq_stats %>%
-            as_tibble() %>%
-            filter(str_detect(file, "_1\\.fq\\.gz$")) %>%
-            mutate(parts = str_split(str_replace(str_remove(file, "_1\\.fq\\.gz$"), "_concat_", "_"), "_"),
-                   # buffer-less stems are SMB, run in PBS only
-                   key = map_chr(parts, ~ key(.x[1], .x[2], if (length(.x) == 3) .x[3] else "P")),
-                   total = as.numeric(gsub(",", "", num_seqs)) * 2) %>%
-            select(key, total) %>%
-            deframe()
-    }
+    check_inputs(paths$reads_stats)
+    per_group <- read_tsv(paths$reads_stats, show_col_types = FALSE) %>%
+        filter(str_detect(file, "_TRIM_paried_R1\\.fq\\.gz$")) %>%
+        separate(sample, c("species", "replicate", "extraction", "buffer"), sep = "_") %>%
+        mutate(key = key(species, extraction, buffer)) %>%
+        group_by(key) %>%
+        summarise(total = sum(num_seqs) * 2, .groups = "drop") %>%
+        deframe()
 
     samples <- meta %>% distinct(sample, species, treatment, buffer) %>%
         mutate(key = key(species, treatment, buffer))
     unmatched <- samples$sample[!samples$key %in% names(per_group)]
     if (length(unmatched) > 0) {
         stop("No total sequencing depth found for CAT sample(s): ", paste(unmatched, collapse = ", "),
-             "\n  (source: ", source, "). Something is inconsistent between the CAT quantification",
+             "\n  Something is inconsistent between the CAT quantification",
              " and the read stats - check before going further.", call. = FALSE)
     }
     setNames(per_group[samples$key], samples$sample)
