@@ -1,8 +1,13 @@
-# Folder with precomputed reference indexes
+# References and databases
 
-This folder holds the precomputed indexes required by the pipeline: **Bowtie2** indexes (reads-based branch), **Minimap2** indexes (assembly-based branch), the **Kaiju** database (taxonomic classification), and the **CAT** database (contig taxonomic annotation).
+This folder holds the reference indexes and databases the pipeline needs. None of it is in git. Set each path in `nextflow.config` (copied from [nextflow.config.example](../nextflow.config.example)):
 
-> All paths to these files must be set as `params` in `nextflow.config`. See `nextflow.config.example` for the expected parameter names.
+| Param | What | Used by |
+|---|---|---|
+| `ref_bt2_aip`, `ref_bt2_scl`, `ref_bt2_sym` | Bowtie2 indexes of Aiptasiidae, Scleractinia, Symbiodiniaceae | reads based |
+| `ref_mmi_aip`, `ref_mmi_scl`, `ref_mmi_sym` | Minimap2 indexes of the same references | assembly based |
+| `nodes`, `names`, `kaiju_db` | Kaiju taxonomy and index | reads based, assembly based |
+| `cat_db` | CAT database root (with `db/` and `tax/`) | co-assembly based |
 
 ---
 
@@ -13,7 +18,7 @@ Taxon IDs used in the manuscript: `42823` (Aiptasiidae), `6127` (Acropora), `467
 ### 1. Download reference genome
 
 ```bash
-# Example for Acropora (taxon 6127) — repeat for each taxon
+# Example for Acropora (taxon 6127). Repeat for each taxon
 datasets download genome taxon 6127 --reference
 unzip ncbi_dataset.zip
 cat ncbi_dataset/*/*.fna > 6127_genome.fna && pigz 6127_genome.fna
@@ -35,18 +40,20 @@ minimap2 -x asm5 -d 6127_genome.mmi 6127_genome.fna.gz -t number_threads
 
 ## Kaiju database
 
-Pre-built indexes can be downloaded from the Kaiju [downloads page](https://bioinformatics-centre.github.io/kaiju/downloads.html):
+The manuscript run used the NCBI NR index. Pre-built indexes can be downloaded from the Kaiju [downloads page](https://bioinformatics-centre.github.io/kaiju/downloads.html):
 
 ```bash
 wget https://kaiju-idx.s3.eu-central-1.amazonaws.com/2024/kaiju_db_nr_2024-08-25.tgz
 tar xvf kaiju_db_nr_2024-08-25.tgz
 ```
 
-Or build from scratch with:
+Or build it from scratch:
 
 ```bash
-kaiju-makedb -s refseq
+kaiju-makedb -s nr
 ```
+
+Set `nodes`, `names` and `kaiju_db` (the `.fmi` file) to the extracted files.
 
 ---
 
@@ -54,13 +61,11 @@ kaiju-makedb -s refseq
 
 The [CAT pack](https://github.com/MGXlab/CAT_pack) (Contig Annotation Tool) is used for taxonomic classification of assembled contigs. The pipeline uses an NCBI NR-based database, which must expose two subdirectories: `db/` and `tax/`.
 
-Set `params.cat_db` to the database root directory in `nextflow.config`.
-
-### Option 1 — Download prebuilt NR database
+### Option 1: download a prebuilt NR database
 
 Prebuilt databases are listed on the [CAT pack download page](https://github.com/MGXlab/CAT_pack#downloading-preconstructed-database-files). The pipeline was run with `20241212_CAT_nr_website`.
 
-### Option 2 — Build from scratch
+### Option 2: build from scratch
 
 ```bash
 # Download and process NR source files

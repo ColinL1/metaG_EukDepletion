@@ -1,10 +1,10 @@
-# Output folder for the pipeline
+# Pipeline output
 
-All nextflow pipeline outputs are written here, grouped by the three branches of the pipeline:
+Default `--outdir` of `main.nf` (not in git). Outputs are grouped by branch: reads based, assembly based and co-assembly based.
 
 ```text
 results
-├── trimmed_fastq/                 # Trimmomatic output, input to all three branches
+├── trimmed_fastq/<species>/       # Trimmomatic output, input to all three branches
 ├── reads_based/
 │   ├── mapping/
 │   │   ├── <species>/             # Bowtie2 host BAM, mapped / unmapped reads
@@ -30,4 +30,4 @@ results
 
 `persample/` and `pooled/` each hold `family_table`, `contig_table`, `mapping_summary`, `coverm/` and `flagstat/`.
 
-> Outputs are written as symlinks by default to avoid duplicating large files. Set `mode: 'copy'` in the relevant module if hard copies are needed.
+> Reads, BAMs, assemblies and CAT files are published as symlinks into the Nextflow `work/` folder, so they disappear if `work/` is deleted. Tables (stats, Kaiju summaries, quantification, catalogue) are copied. Set `mode: 'copy'` in a module's `publishDir` to copy all files.
