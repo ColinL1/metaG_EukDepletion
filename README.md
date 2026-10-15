@@ -1,6 +1,7 @@
 # metaG_EukDepletion
 
-Code: [![Code DOI](static/badges/zenodo.19912536.svg)](https://doi.org/10.5281/zenodo.19912536) · Data: [![Data DOI](static/badges/zenodo.23238935.svg)](https://doi.org/10.5281/zenodo.23238935)
+[![Code DOI](static/badges/doi-code.svg)](https://doi.org/10.5281/zenodo.19912536)
+[![Data DOI](static/badges/doi-data.svg)](https://doi.org/10.5281/zenodo.23238935)
 
 [![Nextflow](static/badges/nextflow.svg)](https://www.nextflow.io/)
 [![run with apptainer](static/badges/apptainer.svg)](https://apptainer.org/)
