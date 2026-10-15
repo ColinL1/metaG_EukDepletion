@@ -1,8 +1,15 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the article and the software as below."
 type: software
-title: "metaG_EukDepletion"
-abstract: "Nextflow pipeline and R analysis used to assess host and algal symbiont DNA depletion for hexacorallian shotgun metagenomics."
+title: "metaG_EukDepletion: Nextflow pipeline and R analysis for host and algal symbiont DNA depletion in hexacorallian genome-resolved metagenomics"
+abstract: >-
+  Nextflow pipeline and R analysis to assess host and algal symbiont DNA depletion
+  for shotgun and genome-resolved metagenomics of hexacorals (Aiptasia and
+  scleractinian corals). For each DNA extraction method, the pipeline quantifies the
+  host, Symbiodiniaceae and prokaryotic fractions by read mapping, per-sample assembly
+  and co-assembly with taxonomic classification, and prepares the input for MAG
+  recovery with nf-core/mag. The R scripts produce the figures, statistics and tables
+  of the manuscript. Data: 10.5281/zenodo.23238935.
 authors:
   - family-names: "Colin"
     given-names: "Luigi"
