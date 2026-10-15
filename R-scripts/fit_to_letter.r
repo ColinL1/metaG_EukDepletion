@@ -5,7 +5,7 @@
 # Reads  ../plots/pdf/Figure_{2,3,4}.pdf (run the figure scripts first)
 # Writes ../plots/pdf/letter/Figure_{2,3,4}.pdf
 # Each figure is scaled uniformly (vector, no re-plotting) so it fits inside the
-# page minus MARGIN_MM on every side, and centred. Layout and design are untouched.
+# page minus MARGIN_MM on every side, and centred.
 # Needs the command-line tools `pdfinfo` (poppler) and `pdfjam` (TeX Live).
 # ==============================================================================
 source("00_setup.r")
