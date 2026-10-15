@@ -1,19 +1,64 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software, please cite the article and the software as below."
 type: software
 title: "metaG_EukDepletion"
-abstract: "Nextflow pipeline to assess eukaryotic DNA depletion efficiency in cnidarian metagenomics."
+abstract: "Nextflow pipeline and R analysis used to assess host and algal symbiont DNA depletion for hexacorallian shotgun metagenomics."
 authors:
   - family-names: "Colin"
     given-names: "Luigi"
-    orcid: https://orcid.org/0000-0002-6966-2817
+    orcid: "https://orcid.org/0000-0002-6966-2817"
+    affiliation: "University of Konstanz"
+  - family-names: "Voolstra"
+    given-names: "Christian R."
+    orcid: "https://orcid.org/0000-0003-4555-3795"
+    affiliation: "University of Konstanz"
 repository-code: "https://github.com/ColinL1/metaG_EukDepletion"
+doi: "10.5281/zenodo.19912536"
 license: MIT
-version: "1.0.0"
-date-released: "2026-04-29"
+version: "2.0.0"
+date-released: "2026-10-15"
 keywords:
   - metagenomics
+  - shotgun metagenomics
   - nextflow
-  - eukaryotic depletion
-  - cnidarian
+  - host depletion
+  - hexacorallia
+  - metagenome-assembled genomes
   - taxonomic classification
+preferred-citation:
+  type: article
+  title: "A Field-Compatible Workflow for Host and Algal Symbiont Depletion Enables Effective Prokaryotic Enrichment for Hexacorallian Shotgun Metagenomics"
+  year: 2026
+  authors:
+    - family-names: "Colin"
+      given-names: "Luigi"
+      orcid: "https://orcid.org/0000-0002-6966-2817"
+    - family-names: "Dörr"
+      given-names: "Melanie Sophie"
+      orcid: "https://orcid.org/0000-0002-8710-2194"
+    - family-names: "Neave"
+      given-names: "Matthew"
+      orcid: "https://orcid.org/0000-0002-8108-0553"
+    - family-names: "Cardenas"
+      given-names: "Anny"
+      orcid: "https://orcid.org/0000-0002-4080-9010"
+    - family-names: "Voolstra"
+      given-names: "Christian R."
+      orcid: "https://orcid.org/0000-0003-4555-3795"
+references:
+  - type: data
+    title: "A Field-Compatible Workflow for Host and Algal Symbiont Depletion Enables Effective Prokaryotic Enrichment for Hexacorallian Shotgun Metagenomics"
+    doi: "10.5281/zenodo.23238935"
+    year: 2026
+    license: CC-BY-4.0
+    authors:
+      - family-names: "Colin"
+        given-names: "Luigi"
+      - family-names: "Dörr"
+        given-names: "Melanie Sophie"
+      - family-names: "Neave"
+        given-names: "Matthew"
+      - family-names: "Cardenas"
+        given-names: "Anny"
+      - family-names: "Voolstra"
+        given-names: "Christian R."
