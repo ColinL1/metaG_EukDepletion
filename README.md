@@ -179,7 +179,7 @@ If you use this code, please cite the article and the software release. Both are
 
 > Colin L., Dörr M. S., Neave M., Cardenas A., Voolstra C. R. (2026). A Field-Compatible Workflow for Host and Algal Symbiont Depletion Enables Effective Prokaryotic Enrichment for Hexacorallian Shotgun Metagenomics.
 
-Changes between releases are in [CHANGELOG.md](CHANGELOG.md).
+Changes between releases are in the [release notes](https://github.com/ColinL1/metaG_EukDepletion/releases).
 
 ## License
 
