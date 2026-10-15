@@ -1,8 +1,14 @@
 # metaG_EukDepletion
 
-[![DOI](static/zenodo.19912536.svg)](https://doi.org/10.5281/zenodo.19912536)
+Code: [![Code DOI](static/badges/zenodo.19912536.svg)](https://doi.org/10.5281/zenodo.19912536) · Data: [![Data DOI](static/badges/zenodo.23238935.svg)](https://doi.org/10.5281/zenodo.23238935)
 
-Code used for analysis of kingdom taxonomy to assess the development of a cnidarian metagenomic protocol for efficient eukaryotic DNA removal
+[![Nextflow](static/badges/nextflow.svg)](https://www.nextflow.io/)
+[![run with apptainer](static/badges/apptainer.svg)](https://apptainer.org/)
+[![run with conda](static/badges/conda.svg)](https://docs.conda.io/)
+[![MAGs with nf-core/mag](static/badges/nf-core-mag.svg)](mag_recovery/README.md)
+[![License: MIT](static/badges/license.svg)](LICENSE)
+
+Nextflow pipeline and R analysis for *A Field-Compatible Workflow for Host and Algal Symbiont Depletion Enables Effective Prokaryotic Enrichment for Hexacorallian Shotgun Metagenomics*. The pipeline measures how much host (Aiptasia or scleractinian coral) and Symbiodiniaceae DNA is left after each extraction method, and what remains of the prokaryotic fraction.
 
 ---
 
@@ -29,7 +35,7 @@ flowchart LR
         J2@{ label: "<div style='font-weight:bold'>seqkit</div> Split: Bacteria / Archaea / Viruses / Non-mapped" }
         S2@{ label: "<div style='font-weight:bold'>seqkit stats</div> Contigs per Fraction" }
   end
- subgraph subGraph2["coassembly based"]
+ subgraph subGraph2["co-assembly based"]
         K["Concatenate Reads per Group"]
         L@{ label: "<div style='font-weight:bold'>Megahit</div> Co-assemble Reads" }
         M@{ label: "<div style='font-weight:bold'>CAT</div> Classify Contigs" }
@@ -39,9 +45,9 @@ flowchart LR
         T3@{ label: "<div style='font-weight:bold'>CoverM</div> Contig Coverage" }
         T4["Merge CAT Family and Coverage"]
   end
- subgraph mags["MAGs recovery"]
+ subgraph mags["MAG recovery"]
         N["nf-core/mag"]
-        O@{ label: "<div style='font-weight:bold'>METABAT2 / MAXBIN2 / CONCOCT</div> Binning modes (multi-sample, co-assembly)" }
+        O@{ label: "<div style='font-weight:bold'>MetaBAT2 / MaxBin2 / CONCOCT</div> Binning modes (multi-sample, co-assembly)" }
   end
  subgraph qPCR["qPCR"]
         Q["qPCR Ct data"]
@@ -81,44 +87,29 @@ flowchart LR
     class T5,P,N,O,Q,R external
 ```
 
-Dashed nodes are run outside this Nextflow pipeline (R analysis, MAG recovery — see [mag_recovery/](mag_recovery/README.md), qPCR).
-
----
-
-## Prerequisites
-
-- Nextflow
-- Conda / mamba for environment management
-- Kaiju database files:
-  - `nodes.dmp`
-  - `kaiju_db_refseq.fmi`
-- Pre-built reference genome indexes (Bowtie2 for reads-based; Minimap2 for assembly-based):
-  - Host - Aiptasiidae or Scleractinia
-  - Symbiont - Symbiodiniaceae
-
-> Taxon IDs used in the manuscript: `42823` (Aiptasiidae), `6127` (Acropora), `46730` (Pocillopora), `46719` (Porites), `252141` (Symbiodiniaceae)
+Dashed nodes run outside this Nextflow pipeline: R analysis ([R-scripts/](R-scripts/README.md)), MAG recovery ([mag_recovery/](mag_recovery/README.md)) and qPCR ([qPCR/](qPCR/README.md)).
 
 ---
 
 ## Pipeline overview
 
-The pipeline runs **three parallel branches** from trimmed reads:
+`main.nf` trims the reads with Trimmomatic and runs three branches on them. Per-step diagrams are in [subworkflows/README.md](subworkflows/README.md), the output layout in [results/README.md](results/README.md).
 
 | Branch | Subworkflow | Steps |
 |---|---|---|
-| Reads-based | `MAP_CONSE_PE` | Bowtie2 (host) → Bowtie2 (Symbiodiniaceae) → Kaiju → bacteria / archaea / viruses / non-mapped split → seqkit stats |
-| Assembly-based | `MAP_CONSE_ASSEMBLY` | MEGAHIT → Minimap2 (host) → Minimap2 (Symbiodiniaceae) → Kaiju → bacteria / archaea / viruses / non-mapped split → seqkit stats |
-| Co-assembly / CAT | `CAT_WORKFLOW` | Reads grouped by species+method+buffer → CAT contig classification → read mapping of bacterial contigs (Minimap2, CoverM) → family tables |
+| Reads based | `MAP_CONSE_PE` | Bowtie2 (host) → Bowtie2 (Symbiodiniaceae) → Kaiju → bacteria / archaea / viruses / non-mapped split → seqkit stats |
+| Assembly based | `MAP_CONSE_ASSEMBLY` | MEGAHIT → Minimap2 (host) → Minimap2 (Symbiodiniaceae) → Kaiju → bacteria / archaea / viruses / non-mapped split → seqkit stats |
+| Co-assembly based | `CAT_WORKFLOW` | Reads grouped by species, method and buffer → MEGAHIT → CAT → read mapping of bacterial contigs (Minimap2, CoverM) → family tables |
 
-### Input file naming assumptions
+### Input file names
 
-FASTQ files follow this naming pattern:
+FASTQ files must be named:
 
-```
+```text
 {species}_{replicate}_{method}_{buffer}_{1,2}.fq.gz
 ```
 
-The `{species}` prefix is used as-is (`meta.species`) and selects the host reference in [modules/bowtie2.nf](modules/bowtie2.nf) and [modules/minimap2.nf](modules/minimap2.nf):
+`{species}` selects the host reference in [modules/bowtie2.nf](modules/bowtie2.nf) and [modules/minimap2.nf](modules/minimap2.nf):
 
 | Code | Species | Host reference |
 |---|---|---|
@@ -128,77 +119,67 @@ The `{species}` prefix is used as-is (`meta.species`) and selects the host refer
 | `F003` | Aiptasia F003 | Aiptasia |
 | `H2` | Aiptasia H2 | Aiptasia |
 
-> Any other prefix stops the run with `Invalid alignment mode`; add a branch in both modules to support it.
+Any other code stops the run with `Invalid alignment mode`. To support it, add a branch in both modules.
+
 ---
 
-## Step-by-step setup
+## Requirements
 
-### 1. Clone the repository
+- Nextflow ≥ 23.0
+- Apptainer (recommended) or conda / mamba
+- Bowtie2 and Minimap2 indexes of the host (Aiptasiidae, Scleractinia) and Symbiodiniaceae references
+- Kaiju database (`nodes.dmp`, `names.dmp`, `.fmi` index)
+- CAT database (NR)
+
+How to download and build each of these is described in [references/README.md](references/README.md).
+
+## Quick start
 
 ```bash
 git clone https://github.com/ColinL1/metaG_EukDepletion.git
 cd metaG_EukDepletion
-```
 
-### 2. Build the Kaiju database - [GitHub](https://github.com/bioinformatics-centre/kaiju)
-
-Pre-built indexes can be downloaded directly from the Kaiju [downloads page](https://bioinformatics-centre.github.io/kaiju/downloads.html):
-
-```bash
-wget https://kaiju-idx.s3.eu-central-1.amazonaws.com/2024/kaiju_db_nr_2024-08-25.tgz
-tar xvf kaiju_db_nr_2024-08-25.tgz
-```
-
-Or build from scratch with:
-
-```bash
-kaiju-makedb -s refseq
-```
-
-### 3. Download reference genomes - [NCBI Datasets](https://github.com/ncbi/datasets)
-
-```bash
-# Example for Acropora (taxon 6127)
-datasets download genome taxon 6127 --reference
-unzip ncbi_dataset.zip
-cat ncbi_dataset/*/*.fna > 6127_genome.fna && pigz 6127_genome.fna
-```
-
-Repeat for each reference taxon (host and symbiont).
-
-### 4. Build reference indexes
-
-**Bowtie2** (reads-based branch):
-
-```bash
-bowtie2-build 6127_genome.fna.gz 6127_genome -p number_threads --large-index
-```
-
-**Minimap2** (assembly-based branch):
-
-```bash
-minimap2 -x asm5 -d 6127_genome.mmi 6127_genome.fna.gz -t number_threads
-```
-
-### 5. Configure and run
-
-Copy and edit the example config:
-
-```bash
+# set the reference, database and resource paths
 cp nextflow.config.example nextflow.config
-# Edit paths for references, Kaiju DB, and resource limits
-```
 
-```bash
-nextflow run main.nf -profile conda \
+nextflow run main.nf -profile apptainer \
   --input path/to/reads/ \
   --outdir path/to/results/
 ```
 
-Use `-profile apptainer` instead to run every tool from its container (Apptainer/Singularity) rather than conda.
+Use `-profile conda` to run with conda environments instead of containers. Adjust the CPU and memory limits in `nextflow.config` and [labels.config](labels.config) to your machine.
 
-> **Important:** Adjust CPU and RAM limits in `nextflow.config` and `process_resources.config` to match your machine.
+## After the pipeline
 
-### 6. MAG recovery (nf-core/mag)
+- **MAG recovery**: nf-core/mag 3.3.1 on the trimmed reads and assemblies from `main.nf`. See [mag_recovery/README.md](mag_recovery/README.md).
+- **Figures, statistics and tables**: R scripts in [R-scripts/](R-scripts/README.md).
 
-MAGs are recovered by running nf-core/mag on the `main.nf` output (trimmed reads, per-sample assemblies and co-assemblies). Settings, samplesheet builder and run scripts are in [mag_recovery/](mag_recovery/README.md).
+## Repository layout
+
+| Folder | Content |
+|---|---|
+| [modules/](modules/README.md) | Nextflow processes |
+| [subworkflows/](subworkflows/README.md) | The three branches |
+| [references/](references/README.md) | Reference indexes and databases (not in git) |
+| [results/](results/README.md) | Pipeline output (not in git) |
+| [mag_recovery/](mag_recovery/README.md) | nf-core/mag settings and run scripts |
+| [R-scripts/](R-scripts/README.md) | Figures, statistics and tables for the manuscript |
+| [qPCR/](qPCR/README.md) | qPCR input for Figure 2 (not in git) |
+| `bin/` | Helper scripts used by the pipeline |
+| `assets/` | Trimmomatic adapter files |
+
+## Data availability
+
+MAGs (305 FASTA files), the MAG table and the qPCR raw data are on Zenodo: [10.5281/zenodo.23238935](https://doi.org/10.5281/zenodo.23238935).
+
+## Citation
+
+If you use this code, please cite the article and the software release. Both are listed in [CITATION.cff](CITATION.cff); GitHub shows them under **Cite this repository**.
+
+> Colin L., Dörr M. S., Neave M., Cardenas A., Voolstra C. R. (2026). A Field-Compatible Workflow for Host and Algal Symbiont Depletion Enables Effective Prokaryotic Enrichment for Hexacorallian Shotgun Metagenomics.
+
+Changes between releases are in [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+[MIT](LICENSE)
